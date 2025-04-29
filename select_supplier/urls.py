@@ -15,8 +15,28 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
+
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', include('primary.urls')),
+    path('supplier/', include('supplier.urls')),
+    # path('delivery/', include('delivery.urls')),
+    # path('customs/', include('customs.urls')),
+    # path('bank/', include('bank_clearing.urls')),
+    # path('cost/', include('cost_comparison.urls')),
+    # path('analytics/', include('analytics.urls')),
+    path('users/', include('users.urls')),
+
 ]
+
+if settings.DEBUG:
+    # from debug_toolbar.toolbar import debug_toolbar_urls
+    # urlpatterns += debug_toolbar_urls()
+    urlpatterns += static(settings.STATIC_URL,
+                          document_root=settings.STATIC_ROOT)
+    urlpatterns += static(settings.MEDIA_URL,
+                          document_root=settings.MEDIA_ROOT)

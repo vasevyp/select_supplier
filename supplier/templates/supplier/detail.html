@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% load django_bootstrap5 %}
+
+{% block title %}
+{{ block.super }}: О поставщике
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card shadow-lg">
+        <!-- <div class="card-header bg-primary text-white"> -->
+            <div class="card-header bg-info text-white">
+            <h2 class="mb-0">{{ supplier.name }}</h2>
+        </div>
+        
+        <div class="card-body">
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <h4 class="text-primary">Основная информация</h4>
+                    <dl class="row">
+                        <dt class="col-sm-4">Страна:</dt>
+                        <dd class="col-sm-8">{{ supplier.country }}</dd>
+
+                        <dt class="col-sm-4">Категория:</dt>
+                        <dd class="col-sm-8">{{ supplier.category }}</dd>
+
+                        <dt class="col-sm-4">Веб-сайт:</dt>
+                        <dd class="col-sm-8">
+                            <a href="{{ supplier.website }}" target="_blank" class="text-decoration-none">
+                                {{ supplier.website }}
+                            </a>
+                        </dd>
+                    </dl>
+                </div>
+
+                <div class="col-md-6">
+                    <h4 class="text-primary">Контакты</h4>
+                    <div class="border p-3 rounded bg-light">
+                        {{ supplier.contact|linebreaks }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <h4 class="text-primary">Описание компании</h4>
+                    <div class="border p-3 rounded bg-light">
+                        <h5>На английском:</h5>
+                        <p>{{ supplier.description }}</p>
+                        <hr>
+                        <h5>На русском:</h5>
+                        <p>{{ supplier.description_ru }}</p>
+                    </div>
+                </div>
+
+                <div class="col-md-6 mb-4">
+                    <h4 class="text-primary">Продукция</h4>
+                    <div class="border p-3 rounded bg-light">
+                        <h5>На английском:</h5>
+                        <p>{{ supplier.product }}</p>
+                        <hr>
+                        <h5>На русском:</h5>
+                        <p>{{ supplier.product_ru }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                <a href="{% url 'supplier_selection' %}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left"></i> Назад к поиску
+                </a>
+                <a href="{% url 'main' %}?supplier={{ supplier.name|urlencode }}&product={{ supplier.product_ru|urlencode }}" 
+                   class="btn btn-success">
+                    <i class="bi bi-cart-plus"></i> Оформить заказ
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,22 @@
+{% extends 'simple.html' %}
+
+{% block title %}
+{{ block.super }}: Registration
+{% endblock %}
+
+{% block content %}
+
+<div class="container col-6 mx-auto mb-3">
+  <h5>Регистрация</h5>
+
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary btn-block">Регистрация</button>
+  </form>
+
+</div>
+
+
+
+{% endblock %}

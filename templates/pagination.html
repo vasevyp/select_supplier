@@ -1,0 +1,21 @@
+<div class="pagination" style="margin:3rem,30rem;">
+        <div class="ms-5">
+          <span>
+            {% if page_obj.has_other_pages %}
+            {% if page_obj.has_previous %}
+            <a class='pagination_a' href="?page=1">первая</a>
+            <a class='pagination_a' href="?page={{ page_obj.previous_page_number }}">&laquo;prev&laquo;</a>
+            {% endif %}
+
+            <span class="current">
+              стр. {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}.
+            </span>
+
+            {% if page_obj.has_next %}
+            <a class='pagination_a' href="?page={{ page_obj.next_page_number }}">&raquo;next&raquo;</a>
+            <a class='pagination_a' href="?page={{ page_obj.paginator.num_pages }}">последняя</a>
+            {% endif %}
+            {% endif %}
+          </span>
+        </div>
+      </div> 

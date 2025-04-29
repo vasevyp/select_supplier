@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+{{ block.super }}: Категории-загрузка
+{% endblock %}
+
+{% block content %}
+<div class="shadow-lg continer mt-5">
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <div class="row">
+      <div class="ms-5 col-md-7 col-xs-12">
+        <div class="x_panel">
+          <div class="x_title">
+            <h5>Загрузка данных по новым категориям</h5>
+            <div class="col-12 bgc-secondary">
+              <a target="_blank" class="text-decoration-none"
+                href="/admin/mainsearch/category/export/?">Скачать
+                Шаблон для файла данных можно здесь (выберите Формат: xlsx)</a></div>
+            <h5>Выберите файл для импорта (xlsx)</h5>
+
+            <div class="clearfix"></div>
+          </div>
+          <div class="x_content">
+
+            <div class="col-md-8 col-sm-12 col-xs-12 form-group">
+
+              </label>
+            </div>
+
+            <input type="file" name="myfile" class="form-control font80">
+
+            <button type="submit" class="btn btn-info btn-sm my-3 btn-bg">Загрузить</button>
+           
+            {% if myfile %}           
+            <h6 class="text-success">
+              Файл <b>{{myfile}}</b> успешно загружен!</h6>
+            {% else %}
+            {% if loading_except  %}
+            {% else %}
+            <h6 class="text-primary">Файл пока не загружен</h6>
+            {% endif %}
+            {% endif %}
+
+            {% if item_except %}
+            <h6 class="text-primary">В загружаемом файле <b>ОШИБКА</b>, необходимо исправить </h6>
+            <h6 class="text-danger">Ошибка загрузки: {{item_except}}</h6>
+            {% endif %}
+
+            <!-- {% if loading_except %}
+            <h6 class="text-primary">{{loading_except}}!</h6>
+            <a href="{% url 'object_data_loading' %}" type="submit" target="_blank"
+              class="btn btn-sm btn-primary btn-block" name="export">Очистить базу EnergyData, исправить файл .xlsx и повторить <b>|Загрузить|</b>. </a>
+              <br><b>Или</b><br>
+                            <a href="/admin/basic/objectdata/" type="submit" target="_blank"
+              class="btn btn-sm btn-secondary btn-block mb-2" name="export">Исправить данные в базе и повторить <b>|Сохранить|</b>. </a>
+            {% endif %} -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+<!--cell-->
+
+<!--/cell-->
+
+{% endblock %}

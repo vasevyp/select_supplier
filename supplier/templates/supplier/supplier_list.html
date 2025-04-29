@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% load django_bootstrap5 %}
+
+{% block title %}
+{{ block.super }}: Поставщики
+{% endblock %}
+
+{% block content %}
+<div class="col-12 mx-auto"></div>
+    <h3>Поставщики</h3>
+    
+    
+      {% if items %}
+      <table class="table table-striped demotable">
+        <thead style="position: sticky;
+  top: -1px;
+  z-index:1;background: #9d9e9e; font-size:14px">
+            <tr>
+                <th scope="col">Поставщик</th>
+                <th scope="col">Страна</th>
+                <th scope="col">Категория</th>
+                <th scope="col">Контакты</th>               
+                <th scope="col">Product</th>            
+                <th scope="col">Продукты</th>
+               
+                
+
+            </tr>
+        </thead>
+        <tbody style="font-size:12px">
+            {% for item in items%}
+            <tr>
+                <th> <a href="{% url 'supplier_detail' item.pk %}"> {{ item.name }}</a></th>
+
+                <td> {{item.country}} </td>
+                <td>{{item.category}}</td>
+                <td>{{item.contact|slice:":25"}}</td>
+            
+                <td class='text-danger  data_no'>{{item.product|slice:":25"}}</td>
+            
+                <td class='text-danger data_no'>{{item.product_ru |slice:":25" }}</td>
+               
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+      {% else %}
+      <p>Нет данных по поставщикам</p>
+      {% endif %}
+    </div>
+   
+{% endblock %}

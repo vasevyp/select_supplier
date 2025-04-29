@@ -1,0 +1,22 @@
+{% extends 'simple.html' %}
+
+{% block title %}
+{{ block.super }}: Login
+{% endblock %}
+
+
+{% block content %}
+<div class="container col-6 mx-auto mb-3">
+  <h5 class="my-5">Login</h5>
+
+
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary btn-block">Login</button>
+  </form>
+  <div class="mt-3">Если Вы не зарегистированы, перейдите на страницу регистрации - <a
+      class="btn btn-outline-secondary " href="{% url 'register' %}">Регистрация</a></div>
+</div>
+
+{% endblock %}

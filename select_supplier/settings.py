@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-5o0!9n2342f04=-yjk)56+-@fj!f(oz=mv2svsrl1d2xdmqtr4
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -37,6 +37,21 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.humanize',
+
+    # third party
+    'import_export',
+    'django_bootstrap5',
+
+    #myapp
+    'primary.apps.PrimaryConfig',
+    'supplier.apps.SupplierConfig',
+    'delivery.apps.DeliveryConfig',
+    'customs.apps.CustomsConfig',
+    'bank_clearing.apps.BankClearingConfig',
+    'cost_comparison.apps.CostComparisonConfig',
+    'analytics.apps.AnalyticsConfig',
+    'users.apps.UsersConfig',
 ]
 
 MIDDLEWARE = [
@@ -54,7 +69,7 @@ ROOT_URLCONF = 'select_supplier.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR/'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -77,6 +92,9 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
+        'OPTIONS': {
+            "timeout": 20,  # 5 seconds is the default, but we can increase it to, e.g., 20s
+        },
     }
 }
 
@@ -103,9 +121,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'Ru-ru'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Moscow'
 
 USE_I18N = True
 
@@ -116,6 +134,13 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = str(BASE_DIR/'static/')
+STATICFILES_DIRS = [str(BASE_DIR/'select_supplier/static/')]
+# STATICFILES_DIRS = [str(BASE_DIR / 'static')]
+MEDIA_URL = '/media/'
+MEDIA_ROOT = (BASE_DIR, 'media/')
+
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
