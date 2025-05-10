@@ -8,5 +8,5 @@ def process_http_request(environ, start_response):
     return [text]
 
 # pip install gunicorn
-# gunicorn -b 127.0.0.1:8001 searchapp.wsgi:application 
+# gunicorn -b 127.0.0.1:8001 select_supplier.wsgi:application 
 # kill -9 `ps aux | grep gunicorn | awk '{print $2}'` 

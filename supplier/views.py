@@ -4,7 +4,6 @@ from openpyxl import load_workbook
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.views import View
-from django.contrib.postgres.search import SearchVector, SearchQuery
 from django.core.paginator import Paginator
 from django.views.generic import ListView, DetailView
 

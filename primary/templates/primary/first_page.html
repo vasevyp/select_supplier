@@ -19,14 +19,14 @@
     
 
    
-    {% if user.is_authenticated %}
+     {% if user.is_authenticated %}
     <div class="text-center">
         <a class="btn  btn-outline-secondary mt-3" href="{% url 'main' %}">На Главную</a>
     </div>
     <div class="text-center">
         <a class="btn  btn-outline-primary mt-3" href="{% url 'logout' %}">Logout</a>
     </div>
-    {% else %}
+    {% else %} 
     <p class="text-center">Для работы с приложением необходимо<br> <a class=" btn btn-sm btn-outline-secondary mt-3"
         href="{% url 'login' %}">авторизоваться</a> <br>или<br> <a class="btn btn-sm btn-outline-secondary "
         href="{% url 'register' %}">зарегистрироваться</a></p>

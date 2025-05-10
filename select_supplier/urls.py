@@ -34,8 +34,6 @@ urlpatterns = [
 ]
 
 if settings.DEBUG:
-    # from debug_toolbar.toolbar import debug_toolbar_urls
-    # urlpatterns += debug_toolbar_urls()
     urlpatterns += static(settings.STATIC_URL,
                           document_root=settings.STATIC_ROOT)
     urlpatterns += static(settings.MEDIA_URL,
