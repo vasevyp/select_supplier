@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-5o0!9n2342f04=-yjk)56+-@fj!f(oz=mv2svsrl1d2xdmqtr4
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
-
+# 
 
 # Application definition
 
@@ -158,3 +158,9 @@ MEDIA_ROOT = (BASE_DIR, 'media/')
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+  
+CSRF_TRUSTED_ORIGINS = [
+    'https://data-y-sr.ru',
+    'http://data-y-sr.ru',
+]
