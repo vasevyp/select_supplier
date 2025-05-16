@@ -25,7 +25,7 @@ from . prod_settings import *
 
 
 # SECURITY WARNING: keep the secret key used in production secret!
-# SECRET_KEY = 'django-insecure-5o0!9n2342f04=-yjk)56+-@fj!f(oz=mv2svsrl1d2xdmqtr4'
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # DEBUG = True
@@ -94,26 +94,6 @@ WSGI_APPLICATION = 'select_supplier.wsgi.application'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': 'portal',
-#         'USER': 'portal',
-#         'PASSWORD': 'portal2025',
-#         'HOST': 'localhost',
-#         'PORT': 5432,
-#     }
-# }
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#         'OPTIONS': {
-#             "timeout": 20,  # 5 seconds is the default, but we can increase it to, e.g., 20s
-#         },
-#     }
-# }
 
 
 # Password validation
