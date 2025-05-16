@@ -51,7 +51,7 @@ class Supplier(models.Model):
     product_ru = models.TextField(db_index=True, verbose_name='Продукция (русский)')
     email = models.EmailField(max_length=254, blank=True, null=True)
     tn_ved = models.CharField(max_length=50,verbose_name='Код ТН ВЭД', blank=True, null=True)
-    price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Цена')
+    price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Цена', default=10)
     price_date = models.DateField(verbose_name='Дата цены',
                                   help_text="2022-08-01", blank=True, null=True)
     created_date = models.DateField(
