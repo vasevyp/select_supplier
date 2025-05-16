@@ -9,16 +9,16 @@
 
 {% block content %}
 <div class="container col-12 mx-auto mb-3 content">
-    <div class="text-center my-4"> <img src="{% static 'logo/logo.png' %}" alt="logo" height="60"></div>
+    <div class="text-center my-4"><a href="{% url 'login' %}"> <img src="{% static 'logo/logo.png' %}" alt="logo" height="60"></a></div>
 
-    <h3 class="text-center mt-5">Информационная система «Поиск поставщиков продукции»</h3>
-
-    <h5 class="text-center mt-5">Демо-версия. Django-приложение</h5>
-
-
+    <h2 class="text-center my-5">Информационная система «Поиск поставщиков продукции»</h2>
+    <p class="fs-5 mt-4">Приложение <b>Информационная система «Поиск поставщиков продукции»</b> сейчас  находится <b>в разработке</b> и скоро будет доступно для
+        пользователей.
+    </p>
+    <p class="fs-5 mt-4">В Приложении будет большой перечень предприятий, с описанием производимой продукции.</p>
+    <p class="fs-5 mt-4"> С помощью Приложения пользователь по запросу сможет находить необходимого производителя/поставщика заданного
+        продукта по всем странам, выполнять расчет таможенных платежей и логистики.</p>
     
-
-   
      {% if user.is_authenticated %}
     <div class="text-center">
         <a class="btn  btn-outline-secondary mt-3" href="{% url 'main' %}">На Главную</a>
@@ -26,14 +26,9 @@
     <div class="text-center">
         <a class="btn  btn-outline-primary mt-3" href="{% url 'logout' %}">Logout</a>
     </div>
-    {% else %} 
-    <p class="text-center">Для работы с приложением необходимо<br> <a class=" btn btn-sm btn-outline-secondary mt-3"
-        href="{% url 'login' %}">авторизоваться</a> <br>или<br> <a class="btn btn-sm btn-outline-secondary "
-        href="{% url 'register' %}">зарегистрироваться</a></p>
+        {% endif %}
 
-    {% endif %}
 
-  
 
 
 </div>

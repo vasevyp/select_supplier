@@ -20,8 +20,10 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
+admin.site.site_url = "/main"
+
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('admind25/', admin.site.urls),
     path('', include('primary.urls')),
     path('supplier/', include('supplier.urls')),
     # path('delivery/', include('delivery.urls')),

@@ -10,22 +10,27 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
-from pathlib import Path
+# from pathlib import Path
+from . prod_settings import *
+# from . local_settings import *
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+# # Build paths inside the project like this: BASE_DIR / 'subdir'.
+# BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
+
+
+
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-5o0!9n2342f04=-yjk)56+-@fj!f(oz=mv2svsrl1d2xdmqtr4'
+# SECRET_KEY = 'django-insecure-5o0!9n2342f04=-yjk)56+-@fj!f(oz=mv2svsrl1d2xdmqtr4'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+# ALLOWED_HOSTS = ['*']
 # 
 
 # Application definition
@@ -89,16 +94,16 @@ WSGI_APPLICATION = 'select_supplier.wsgi.application'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'portal',
-        'USER': 'portal',
-        'PASSWORD': 'portal2025',
-        'HOST': 'localhost',
-        'PORT': 5432,
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'portal',
+#         'USER': 'portal',
+#         'PASSWORD': 'portal2025',
+#         'HOST': 'localhost',
+#         'PORT': 5432,
+#     }
+# }
 
 # DATABASES = {
 #     'default': {

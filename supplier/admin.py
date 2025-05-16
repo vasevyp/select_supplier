@@ -26,35 +26,5 @@ class SupplierAdmin(ImportExportModelAdmin):
     search_fields = ('name', 'product', 'product_ru')
     list_filter = ('country', 'category')
     save_on_top = True
-    # autocomplete_fields = ('country', 'category')
     list_per_page = 20
-    
-    fieldsets = (
-        ('Основная информация', {
-            'fields': (
-                'country', 
-                'category',
-                'name', 
-                'website',               
-            )
-        }),
-       
-        ('Описание и продукция (английский)', {
-            'fields': (
-                'description',
-                'product',
-            )
-        }),
-         ('Контактная информация', {
-            'fields': ('contact',)
-        }),
-        ('Описание и продукция (русский)', {
-            'fields': (
-                'description_ru',
-                'product_ru',
-            )
-        }),
-    )
 
-    # def get_queryset(self, request):
-    #     return super().get_queryset(request).select_related('country', 'category')
