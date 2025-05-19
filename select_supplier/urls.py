@@ -23,7 +23,7 @@ from django.conf.urls.static import static
 admin.site.site_url = "/main"
 
 urlpatterns = [
-    path('admind25/', admin.site.urls),
+    path('admin/', admin.site.urls),
     path('', include('primary.urls')),
     path('supplier/', include('supplier.urls')),
     # path('delivery/', include('delivery.urls')),
