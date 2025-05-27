@@ -3,9 +3,9 @@ from django.db import models
 class Country(models.Model):
     '''Страны.'''
     index=models.IntegerField()
-    code = models.CharField(max_length=10, unique=True)
-    country = models.CharField(max_length=100, db_index=True)
-    mode = models.CharField(max_length=2, choices=[("a", "благоприятный режим"), ("b", "особый режим")])
+    code = models.CharField(max_length=10, verbose_name='Код страны', unique=True)
+    country = models.CharField(max_length=100, verbose_name='Страна', db_index=True)
+    mode = models.CharField(max_length=2, verbose_name='Режим ВЭД', choices=[("a", "благоприятный режим"), ("b", "особый режим")])
     created_date = models.DateField(
         auto_now_add=True, verbose_name='Создан', null=True)
     updated_date = models.DateField(
@@ -23,8 +23,8 @@ class Country(models.Model):
 
 class Category(models.Model):
     index=models.IntegerField()
-    code = models.CharField(max_length=10, unique=True)
-    category = models.CharField(max_length=100, db_index=True)
+    code = models.CharField(max_length=10, verbose_name='Код категории', unique=True)
+    category = models.CharField(max_length=100, verbose_name='Категория', db_index=True)
     created_date = models.DateField(
         auto_now_add=True, verbose_name='Создан', null=True)
     updated_date = models.DateField(
