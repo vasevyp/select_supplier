@@ -1,164 +1,133 @@
-import sqlite3
-import time
+import logging
 from datetime import datetime
-import re
 import openpyxl
-import pandas as pd
 from django.shortcuts import render, redirect
-from django.conf import settings
-from django.db.models import Count, Sum, F
-from django.core.exceptions import ValidationError 
-
+from django.contrib import messages
+from django.db import transaction
 
 from .models import Supplier, Category, Country
+from .forms import UploadExcelForm
 
-def country_upload(request):
-    '''1.Загрузка данных country из xlsx file with pandas'''
-    print('start country_upload')
-    start = time.time()
-    # data=ObjectData.objects.all().delete()
-    try:
-        if request.method == 'POST' and request.FILES['myfile']:
-            print('if POST -OK')#+
-            myfile = request.FILES['myfile']
-            print('myfile==',myfile)#+
-            wookbook = openpyxl.load_workbook(myfile)
-            worksheet = wookbook.active
-            print(worksheet)
-            data = worksheet.values
-            # Get the first line in file as a header line
-            columns = next(data)[0:]
-            df = pd.DataFrame(data, columns=columns)
-            print('dataframe shape ==\n',df.tail(2),'\ntype data:',type(df))            
-            conn = sqlite3.connect('db.sqlite3')
-            print('conn--',conn)
-            df.to_sql('supplier_country',
-                                conn, if_exists='append') 
-             #таблица для данных
-            data=Supplier.objects.all()  #append   replace  
-            
-
-            return render(request, 'upload/upload_country.html', 
-                          {'myfile': myfile, 'datas':data}
-                          )
-    except TypeError as identifier:
-        print('Exception as identifier=', identifier)
-        return render(request, 'upload/upload_country.html', {'item_except': identifier})
-    record_time=time.time()-start
-    print('Время исполнения: ',record_time/60, 'мин.')
-    return render(request, 'upload/upload_country.html', {})
-
-def category_upload(request):
-    '''1.Загрузка данных category из xlsx file with pandas'''
-    print('start category_upload')
-    start = time.time()
-    # data=ObjectData.objects.all().delete()
-    try:
-        if request.method == 'POST' and request.FILES['myfile']:
-            print('if POST -OK')#+
-            myfile = request.FILES['myfile']
-            print('myfile==',myfile)#+
-            wookbook = openpyxl.load_workbook(myfile)
-            worksheet = wookbook.active
-            print(worksheet)
-            data = worksheet.values
-            # Get the first line in file as a header line
-            columns = next(data)[0:]
-            df = pd.DataFrame(data, columns=columns)
-            print('dataframe shape ==\n',df.tail(2),'\ntype data:',type(df))            
-            conn = sqlite3.connect('db.sqlite3')
-            print('conn--',conn)
-            df.to_sql('supplier_category',
-                                conn, if_exists='append') 
-             #таблица для данных
-            data=Supplier.objects.all()  #append   replace  
-            
-
-            return render(request, 'upload/upload_category.html', 
-                          {'myfile': myfile, 'datas':data}
-                          )
-    except TypeError as identifier:
-        print('Exception as identifier=', identifier)
-        return render(request, 'upload/upload_category.html', {'item_except': identifier})
-    record_time=time.time()-start
-    print('Время исполнения: ',record_time/60, 'мин.')
-    return render(request, 'upload/upload_category.html', {})
+# Инициализация логгера для текущего модуля
+logger = logging.getLogger(__name__)
 
 
+def upload_excel(request):
+    """upload data to supplier postgresql"""
+    if request.method == "POST":
+        form = UploadExcelForm(request.POST, request.FILES)
+        if form.is_valid():
+            try:
+                # Открываем XLSX файл
+                excel_file = request.FILES["excel_file"]
+                wb = openpyxl.load_workbook(excel_file)
+                ws = wb.active
 
-def supplier_upload(request):
-    '''1.Загрузка данных по supplier из xlsx file with pandas'''
-    print('start supplier_upload')
-    start = time.time()
-    # data=ObjectData.objects.all().delete()
-    try:
-        if request.method == 'POST' and request.FILES['myfile']:
-            print('if POST -OK')#+
-            myfile = request.FILES['myfile']
-            print('myfile==',myfile)#+
-            wookbook = openpyxl.load_workbook(myfile)
-            worksheet = wookbook.active
-            print(worksheet)
-            data = worksheet.values
-            # Get the first line in file as a header line
-            columns = next(data)[0:]
-            df = pd.DataFrame(data, columns=columns)
-            print('dataframe shape ==\n',df.tail(2),'\ntype data:',type(df))            
-            conn = sqlite3.connect('db.sqlite3')
-            print('conn--',conn)
-            df.to_sql('supplier_supplier',
-                                conn, if_exists='append') 
-             #таблица для данных
-            data=Supplier.objects.all()  #append   replace  
-            record_time=time.time()-start
-            print('Время исполнения: ',record_time/60, 'мин.')
+                # Проверяем заголовки
+                headers = [cell.value for cell in ws[1]]
+                required_headers = [
+                    "id",
+                    "index",
+                    "country",
+                    "category",
+                    "name",
+                    "website",
+                    "description",
+                    "product",
+                    "contact",
+                    "description_ru",
+                    "product_ru",
+                    "email",
+                    "tn_ved",
+                    "price",
+                    "price_date",
+                    "created_date",
+                    "updated_date",
+                ]
+                if headers != required_headers:
+                    messages.error(request, "Неверные заголовки в файле Excel")
+                    return render(request, "upload_excel.html", {"form": form})
 
-            return render(request, 'upload/upload_supplier.html', 
-                          {'myfile': myfile, 'datas':data}
-                          )
-    except TypeError as identifier:
-        print('Exception as identifier=', identifier)
-        return render(request, 'upload/upload_supplier.html', {'item_except': identifier})
-    
-    return render(request, 'upload/upload_supplier.html', {})
+                # Обрабатываем строки
+                suppliers_to_create = []
+                errors = []
+                for row_num, row in enumerate(
+                    ws.iter_rows(min_row=2), start=2
+                ):  # start=2 — номер первой строки данных
+                    row_data = [cell.value for cell in row]
+                    # for row_num, row in ws.iter_rows(min_row=2):
+                    #     row_data = [cell.value for cell in row]
 
-# def object_data_save(request):
-#     '''1-1.Сохранение импортированных из xlsx файла данных по объектам в Базу Данных'''
-#     start = time.time() 
-#     print('Выполняется Функция object_data_save')
-#     #function data
-#     object_loads = ObjectDataLoad.objects.all()
+                    # Проверка длины поля product
+                    product_value = str(row_data[7]) if row_data[7] else ""
+                    if len(product_value.encode("utf-8")) > 2704:
+                        logger.error(
+                            f"Ошибка в строке {row_num}: значение поля 'product' слишком длинное"
+                        )
+                        messages.error(
+                            request,
+                            f"Ошибка в строке {row_num}: значение поля 'product' слишком длинное",
+                        )
+                        continue  # Пропускаем эту строку
 
-#     for item in object_loads:
-#         try:
-#             if bool(re.search('[а-яА-Я]', str(item.construction_date))):
-#                 item.construction_date=item.construction_date[:10]
-#             # else:
-#             #     item.construction_date = datetime.strptime(item.construction_date, '%d.%m.%Y' )#date format               
+                    # Проверка длины поля product_ru
+                    product_value = str(row_data[10]) if row_data[10] else ""
+                    if len(product_value.encode("utf-8")) > 2704:
+                        logger.error(
+                            f"Ошибка в строке {row_num}: значение поля 'product_ru' слишком длинное"
+                        )
+                        messages.error(
+                            request,
+                            f"Ошибка в строке {row_num}: значение поля 'product_ru' слишком длинное",
+                        )
+                        continue  # Пропускаем эту строку
 
-#                 print(item.address,'==', item.construction_date,type(item.construction_date))
-#                 # item.construction_date = item.construction_date.strftime('%Y-%m-%d') #str format
-                
-#                 if bool(re.search('[а-яА-Я]', str(item.construction_date))):
-#                     item.construction_date=''
-#                     print(item.address,'==', item.construction_date, type(item.construction_date))       
-#             # item.save()
-    
-#             ObjectData.objects.get_or_create(
-#                 address=item.address,
-#                 object_type=item.object_type,
-#                 floors=item.floors,
-#                 construction_date=item.construction_date,
-#                 area=item.area,
-#                  )
-#             print(item.address,'==', item.area) 
-#         except Exception as e:
-#             print('Exception as identifier=', e)
-#             return render(request, 'loading/energy_data_loading.html', {'loading_except': f' ОШИБКА: - {e}'})
+                    
 
-#     print('ObjectDB created')
-    
-#     success = 'Загрузка и сохранение данных выполнена успешно!'
-#     record_time=time.time()-start
-#     print('Время исполнения: ',record_time/60, 'мин.')
-#     return render(request, 'loading/object_data_loading.html', context={'message_success': success, 'record_time':record_time/60})
+                    # Преобразование дат
+                    def parse_date(date_str):
+                        if date_str and isinstance(date_str, str):
+                            try:
+                                return datetime.strptime(date_str, "%Y-%m-%d").date()
+                            except ValueError:
+                                return None
+                        return date_str if isinstance(date_str, datetime) else None
+
+                    supplier = Supplier(
+                        index=int(row_data[1]) if row_data[1] is not None else None,
+                        country=str(row_data[2]) if row_data[2] else "",
+                        category=str(row_data[3]) if row_data[3] else "",
+                        name=str(row_data[4]) if row_data[4] else "",
+                        website=str(row_data[5]) if row_data[5] else "",
+                        description=str(row_data[6]) if row_data[6] else "",
+                        product=str(row_data[7]) if row_data[7] else "",
+                        contact=str(row_data[8]) if row_data[8] else "",
+                        description_ru=str(row_data[9]) if row_data[9] else "",
+                        product_ru=str(row_data[10]) if row_data[10] else "",
+                        email=str(row_data[11]) if row_data[11] else None,
+                        tn_ved=str(row_data[12]) if row_data[12] else None,
+                        price=float(row_data[13]) if row_data[13] is not None else 10.0,
+                        price_date=parse_date(row_data[14]),
+                        created_date=parse_date(row_data[15]),
+                        updated_date=parse_date(row_data[16]),
+                    )
+                    suppliers_to_create.append(supplier)
+
+                # Массовое добавление
+                with transaction.atomic():
+                    Supplier.objects.bulk_create(suppliers_to_create)
+                # Supplier.objects.bulk_create(suppliers_to_create)
+                messages.success(
+                    request, f"Успешно загружено {len(suppliers_to_create)} записей"
+                )
+                return redirect("upload_suppliers")
+
+            except Exception as e:
+                # Логируем ошибку
+                logger.error(f"Ошибка загрузки файла: {str(e)}")
+                # Отображаем сообщение пользователю
+                messages.error(request, f"Ошибка при обработке файла: {str(e)}")
+    else:
+        form = UploadExcelForm()
+
+    return render(request, "upload/upload_excel.html", {"form": form})

@@ -37,6 +37,22 @@ class SupplierSearchForm(forms.Form):
     )
     product = forms.CharField(label='Наименование продукта')
 
+
+
+
+class UploadExcelForm(forms.Form):
+    excel_file = forms.FileField(
+        label='Выберите XLSX файл для загрузки данных',
+        help_text='Поддерживается только формат .xlsx',
+        widget=forms.FileInput(attrs={'accept': '.xlsx'})
+    )
+    def clean_excel_file(self):
+        file = self.cleaned_data['excel_file']
+        if file.size > 90 * 1024 * 1024:  # 90 MB
+            raise forms.ValidationError("Файл слишком большой (максимум 90MB)")
+        return file
+
+    
 class ImportForm(forms.Form):
     file = forms.FileField(
         label='Выберите файл Excel (.xlsx)',

@@ -22,6 +22,7 @@ class Country(models.Model):
  
 
 class Category(models.Model):
+    '''Категории товаров'''
     index=models.IntegerField()
     code = models.CharField(max_length=10, verbose_name='Код категории', unique=True)
     category = models.CharField(max_length=100, verbose_name='Категория', db_index=True)
@@ -39,6 +40,7 @@ class Category(models.Model):
         return self.category
     
 class Supplier(models.Model):
+    '''Поставщики товаров'''
     index=models.IntegerField()
     country = models.CharField(max_length=255, db_index=True, verbose_name='Страна')
     category = models.CharField(max_length=255,verbose_name='Категория')
@@ -49,7 +51,7 @@ class Supplier(models.Model):
     contact = models.TextField(verbose_name='Контактная информация')
     description_ru = models.TextField(verbose_name='Описание (русский)')
     product_ru = models.TextField(db_index=True, verbose_name='Продукция (русский)')
-    email = models.EmailField(max_length=254, blank=True, null=True)
+    email = models.EmailField(max_length=254)
     tn_ved = models.CharField(max_length=50,verbose_name='Код ТН ВЭД', blank=True, null=True)
     price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Цена', default=10)
     price_date = models.DateField(verbose_name='Дата цены',

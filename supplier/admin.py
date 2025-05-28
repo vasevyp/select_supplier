@@ -7,7 +7,7 @@ from .models import Country, Category, Supplier
 
 @admin.register(Country)
 class CountryAdmin(ImportExportModelAdmin):
-    list_display = ("country", "index", "code", "mode", "created_date")
+    list_display = ("country", "code", "mode", "index", "created_date")
     search_fields = ("country", "mode")
     ordering = (
         "mode",
@@ -18,7 +18,7 @@ class CountryAdmin(ImportExportModelAdmin):
 
 @admin.register(Category)
 class CategoryAdmin(ImportExportModelAdmin):
-    list_display = ("category", "index", "code", "created_date")
+    list_display = ("category", "code", "index", "created_date")
     search_fields = ("category",)
     ordering = ("category",)
     list_per_page = 20
