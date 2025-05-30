@@ -1,96 +1,240 @@
-''' supplier app views'''
+"""supplier app views"""
+
 import logging
+
 # from openpyxl import load_workbook
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.views import View
 from django.core.paginator import Paginator
 from django.views.generic import ListView, DetailView
+from django.db.models import Q
+from django.contrib.postgres.search import SearchVector, SearchQuery
 
-from .forms import ImportForm, SupplierSearchForm
+from .forms import ImportForm, SupplierSearchForm, SupplierSearchForm2
 from .models import Supplier, Country, Category
 
 
 class Category_list(ListView):
-    model=Category
-    template_name="supplier/category_list.html"
+    model = Category
+    template_name = "supplier/category_list.html"
     context_object_name = "items"
-    paginate_by = 10 # add this
+    paginate_by = 10  # add this
+
 
 class Country_list(ListView):
-    model=Country
-    template_name="supplier/country_list.html"
+    model = Country
+    template_name = "supplier/country_list.html"
     context_object_name = "items"
-    paginate_by = 10 # add this
+    paginate_by = 10  # add this
 
 
 class Supplier_list(ListView):
-    model=Supplier
-    template_name="supplier/supplier_list.html"
+    model = Supplier
+    template_name = "supplier/supplier_list.html"
     context_object_name = "items"
-    paginate_by = 10 # add this
+    paginate_by = 10  # add this
 
-    
 
 class SupplierDetailView(DetailView):
     model = Supplier
-    template_name = 'supplier/detail.html'
-    context_object_name = 'supplier'
+    template_name = "supplier/detail.html"
+    context_object_name = "supplier"
 
-def  supplier_detail(request, pk):
+
+def supplier_detail(request, pk):
     """Детальная информация по поставщику"""
     supplier = Supplier.objects.get(pk=pk)
-    return render(request, "supplier/detail.html", {"supplier":supplier})    
+    return render(request, "supplier/detail.html", {"supplier": supplier})
+
+
+# def supplier_selection_first(request):
+#     """Выбор полных данных по поставщику за все периоды"""
+#     form = SupplierSearchForm
+#     items_list = ""
+#     items = ""
+#     product = ""
+#     language = ""
+#     page_obj = ""
+#     select_except = 0
+#     country = Country.objects.all()
+#     if request.method == "POST":
+#         country_id = request.POST.get("country")
+#         language = request.POST.get("language")
+#         product = request.POST.get("product")
+#         # country=Country.objects.get(id=country_id)
+#         print("REQuest=", country, language, product)
+#         product = product.strip()
+#         print("country_id ==", country_id)
+#         if country_id == "":
+#             if language == "ru":
+#                 print("Ru language", language)
+#                 # items = Supplier.objects.filter(product_ru__icontains=product).order_by('-id')
+#                 items = Supplier.objects.filter(
+#                     Q(product_ru__icontains=product)
+#                     | Q(description_ru__icontains=product)
+#                 ).order_by("name")
+
+#             else:
+#                 print("En language", language)
+#                 # items = Supplier.objects.filter(product__icontains=product).order_by('-id')
+#                 items = Supplier.objects.filter(
+#                     Q(product__icontains=product) | Q(description__icontains=product)
+#                 ).order_by("name")
+#         else:
+#             country = Country.objects.get(id=country_id)
+#             if language == "ru":
+#                 print("Ru language", language)
+#                 # items = Supplier.objects.filter(country=country, product_ru__icontains=product).order_by('-id')
+#                 items = Supplier.objects.filter(
+#                     Q(product_ru__icontains=product)
+#                     | Q(description_ru__icontains=product),
+#                     country=country,
+#                 ).order_by("name")
+
+#             else:
+#                 print("En language", language)
+#                 # items = Supplier.objects.filter(country=country, product__icontains=product).order_by('-id')
+#                 items = Supplier.objects.filter(
+#                     Q(product_ru__icontains=product)
+#                     | Q(description_ru__icontains=product),
+#                     country=country,
+#                 ).order_by("name")
+
+#         if items:
+#             items_list = items
+#         else:
+#             select_except = "Вернитесь к форме выбора и повторите поиск."
+
+#     # objects=Supplier.objects.all().order_by('-id')[:100]
+#     # objects=Supplier.objects.all()
+#     paginator = Paginator(items_list, 20)  # Show 25 contacts per page
+#     page_number = request.GET.get("page")
+#     page_obj = paginator.get_page(page_number)
+
+#     count = Supplier.objects.all().count()
+
+#     return render(
+#         request,
+#         "supplier/supplier_search.html",
+#         {
+#             # 'objects':objects,
+#             "page_obj": page_obj,
+#             "language": language,
+#             "product": product,
+#             "count": count,
+#             "items": items_list,
+#             "select_except": select_except,
+#             "form": form,
+#         },
+#     )
+
 
 def supplier_selection(request):
-    '''Выбор полных данных по поставщику за все периоды'''
-    form=SupplierSearchForm
-    items_list=''
-    items = ''
-    product=''
+    """Выбор полных данных по поставщику за все периоды Полнотекстовый поиск"""
+    form = SupplierSearchForm
+    results = []
     language=''
-    page_obj=''
+    search_result=''
     select_except=0
-    country=Country.objects.all()
+    product=''
     if request.method == "POST":
         country_id = request.POST.get("country")
-        language= request.POST.get("language")
-        product = request.POST.get("product")
-        country=Country.objects.get(id=country_id)
-        print('REQuest=', country, language, product)
-        product=product.strip()        
-        if language == 'ru':
-            print('Ru language', language)
-            items = Supplier.objects.filter(country=country, product_ru__icontains=product).order_by('-id')
-        
+        language = request.POST.get("language")
+        product = request.POST.get("product")        
+        print("REQuest=", country_id, language, product)
+        query = product.strip()
+        print("country_id ==", country_id)
+
+        # Определяем, по какому полю искать
+        if language == "ru":
+            search_field = "product_ru"
+            search_query = SearchQuery(query)  # Создаем SearchQuery
+            
         else:
-            print('En language', language)
-            items = Supplier.objects.filter(country=country, product__icontains=product).order_by('-id')
-        
-        if items:
-            items_list=items
+            search_field = "product"
+            search_query = SearchQuery(query)  # Создаем SearchQuery
+            
+        # Создаем SearchQuery
+        # search_query = SearchQuery(query)
+
+        # Используем динамический SearchVector
+        if not country_id:
+            results = Supplier.objects.annotate(search=SearchVector(search_field)).filter(
+            Q(search=search_query)
+        )
         else:
-            select_except='Вернитесь к форме выбора и повторите поиск.'
-                                                                  
-    # objects=Supplier.objects.all().order_by('-id')[:100]
-    # objects=Supplier.objects.all()
-    paginator = Paginator(items_list, 20)  # Show 25 contacts per page
+            country=Country.objects.get(id=country_id)
+            results = Supplier.objects.annotate(search=SearchVector(search_field)).filter(
+            Q(search=search_query) & Q(country=country)
+        )    
+        if results:
+            search_result=results
+        else:
+            select_except = "Вернитесь к форме выбора и повторите поиск."
+
+
+    count = Supplier.objects.all().count()
+    paginator = Paginator(results, 20)  # Show 25 contacts per page
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
 
-    count=Supplier.objects.all().count()
+    return render(
+        request,
+        "supplier/supplier_search.html",
+        {
+            # 'objects':objects,
+            "page_obj": page_obj,
+            "language": language,
+            "product": product,
+            "count": count,
+            "items": search_result,
+            "select_except": select_except,
+            "form": form,
+        },
+    )
 
-    return render(request, "supplier/supplier_search.html", 
-                  {
-                    # 'objects':objects, 
-                   'page_obj': page_obj, 
-                   'language':language, 
-                   'product':product, 
-                   'count':count, 
-                   'items':items_list,
-                   'select_except':select_except,
-                   'form':form})   
- 
+
+"""
+from django.db.models import Q
+
+class SearchAPI(APIView):
+    def get(self, request, search_text, format=None, **kwargs):
+        Model.objects.filter(Q(search_tags__contains=search_text) | Q(auto_tags__contains=search_text) 
+"""
+
+
+def supplier_search(request):
+    form = SupplierSearchForm2(request.GET or None)
+    results = []
+
+    if form.is_valid():
+        country = form.cleaned_data["country"]
+        language = form.cleaned_data["language"]
+        query = form.cleaned_data["query"]
+
+        # Определяем, по какому полю искать
+        if language == "ru":
+            search_field = "product_ru"
+            search_query = SearchQuery(query)  # Создаем SearchQuery
+            
+        else:
+            search_field = "product"
+            search_query = SearchQuery(query)  # Создаем SearchQuery
+            
+        # Создаем SearchQuery
+        # search_query = SearchQuery(query)
+
+        # Используем динамический SearchVector
+        results = Supplier.objects.annotate(search=SearchVector(search_field)).filter(
+            Q(search=search_query) & Q(country=country)
+        )
+
+    return render(
+        request, "supplier/search_results.html", {"form": form, "results": results}
+    )
+
+
 # def supplier_selection(request):
 #     form = SupplierSearchForm(request.GET or None)  # Инициализация формы с GET-данными
 #     items_list = Supplier.objects.none()
@@ -111,13 +255,13 @@ def supplier_selection(request):
 #                     items = Supplier.objects.filter(country=country, product_ru__icontains=product)
 #                 else:
 #                     items = Supplier.objects.filter(country=country, product__icontains=product)
-                
+
 #                 items = items.order_by('-id')
 #                 items_list = items
-                
+
 #                 if not items.exists():
 #                     select_except = 'Ничего не найдено. Попробуйте изменить критерии поиска.'
-                    
+
 #             except Exception as e:
 #                 select_except = f'Ошибка поиска: {str(e)}'
 

@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load django_bootstrap5 %}
+{% load static %}
 
 {% block title %}
 {{ block.super }}: О поставщике
@@ -9,7 +10,8 @@
 <div class="container mt-5">
     <div class="card shadow-lg">
         <!-- <div class="card-header bg-primary text-white"> -->
-            <div class="card-header bg-info text-white">
+            <div class="card-header bcolor-blue mcolor" style="background-color: #2980B9; color:#FFFFFF
+">
             <h2 class="mb-0">{{ supplier.name }}</h2>
         </div>
         

@@ -23,10 +23,13 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django.contrib.humanize",
+    'django.contrib.postgres',
+
     # third party
     "import_export",
     "django_bootstrap5",
     "crispy_forms",
+    
     # myapp
     "primary.apps.PrimaryConfig",
     "supplier.apps.SupplierConfig",

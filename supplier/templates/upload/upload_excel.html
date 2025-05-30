@@ -16,16 +16,17 @@
         <button type="submit" class="btn btn-primary my-3">Загрузить</button>
     </form>
     <div >
-    <a class="text-decoration-none fw-bold" href="{% url 'upload_suppliers' %}">Загрузить ещё</a>
+    <a class="text-decoration-none fw-bold" href="{% url 'upload_suppliers' %}">Загрузить ещё один файл</a>
 </div>
     <hr>
     <h5>Требования к файлу:</h5>
      <ul>
         <!-- <li>Файл должен быть в формате XLSX</li> -->
-        <li>Первая строка - заголовки колонок</li>
-        <li>Обязательные поля: index, country, category, name, website, description, product, contact, description_ru, product_ru, email</li>
+        <li><strong>Первая строка - заголовки:</strong> id, index, country, category, name, website, description, product, contact, description_ru, product_ru, email, tn_ved, price, price_date, created_date, updated_date
+</li>
+        <li><strong>Обязательные поля:</strong> index, country, category, name, website, description, product, contact, description_ru, product_ru, email</li>
         <!-- <li>Длина полей product и product_ru не должна превышать {{ max_length }} символов</li> -->
-        <li>Дата должна быть в формате YYYY-MM-DD</li>
+        <li><strong>Дата </strong>должна быть в формате YYYY-MM-DD</li>
     </ul>
 </div>
 {% endblock %}

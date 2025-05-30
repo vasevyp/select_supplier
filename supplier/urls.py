@@ -1,8 +1,8 @@
 '''urls for supplier app'''
 from django.urls import path
 
-from .views import SupplierDetailView, supplier_selection, supplier_detail, Category_list, Country_list, Supplier_list
-from .upload import upload_excel
+from . views import SupplierDetailView, supplier_selection, supplier_search, Category_list, Country_list, Supplier_list
+from . upload import upload_excel, export_to_excel, supplier_delete
 
 
 urlpatterns = [
@@ -16,5 +16,8 @@ urlpatterns = [
     path('country_list', Country_list.as_view(), name='country_list'),
     path('supplier_list', Supplier_list.as_view(), name='supplier_list'),
     path('upload-suppliers/', upload_excel, name='upload_suppliers'),
+    path('search/', supplier_search, name='supplier_search'),
+    path('export/', export_to_excel, name='export_to_excel'),
+    path('delete/', supplier_delete, name='supplier_delete')
     
 ]

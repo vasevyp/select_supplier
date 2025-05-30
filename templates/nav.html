@@ -18,6 +18,10 @@
                     <a class="nav-link active" aria-current="page"
                         href="{% url 'supplier_selection' %}">Поиск поставщика</a>
                 </li>
+                 <!-- <li class="nav-item">
+                    <a class="nav-link active" aria-current="page"
+                        href="{% url 'supplier_search' %}">Supplier Search</a>
+                </li> -->
                 {% if request.user.is_superuser %}
 
                 <li class="nav-item dropdown">
@@ -27,8 +31,10 @@
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                         <li><a class="dropdown-item" href="{% url 'upload_suppliers' %}">Загрузить Поставщиков</a></li>
-                        <li><a class="dropdown-item" href="#">Загрузить Страны</a></li>
-                        <li><a class="dropdown-item" href="#">Загрузить Категории</a></li>
+                        <li><a class="dropdown-item" href="/admin/supplier/category/import/">Загрузить Категории (в admin)</a></li>
+                        <li><a class="dropdown-item" href="/admin/supplier/country/import/">Загрузить Страны (в admin)</a></li>
+                        <!-- <li><a class="dropdown-item" href="{% url 'export_to_excel' %}">Export to Excel</a></li>
+                        <li><a class="dropdown-item" href="{% url 'supplier_delete' %}">Supplier_delete</a></li> -->
                        
                        
                     </ul>

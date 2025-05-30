@@ -37,6 +37,23 @@ class SupplierSearchForm(forms.Form):
     )
     product = forms.CharField(label='Наименование продукта')
 
+# forms.py
+class SupplierSearchForm2(forms.Form):
+    COUNTRY_CHOICES = [
+        ('Россия', 'Россия'),
+        ('Китай', 'Китай'),
+        ('Германия', 'Германия'),
+        # Добавьте другие страны
+    ]
+
+    LANGUAGE_CHOICES = [
+        ('ru', 'Русский'),
+        ('en', 'Английский'),
+    ]
+
+    country = forms.ChoiceField(choices=COUNTRY_CHOICES, label='Страна')
+    language = forms.ChoiceField(choices=LANGUAGE_CHOICES, label='Язык поиска')
+    query = forms.CharField(label='Наименование товара')
 
 
 

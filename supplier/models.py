@@ -1,4 +1,6 @@
 from django.db import models
+from django.contrib.postgres.search import SearchVectorField
+from django.contrib.postgres.indexes import GinIndex
 
 class Country(models.Model):
     '''Страны.'''
@@ -47,10 +49,10 @@ class Supplier(models.Model):
     name = models.CharField(max_length=255, verbose_name='Наименование компании')
     website = models.URLField(verbose_name='Сайт')  
     description = models.TextField(verbose_name='Описание (английский)')
-    product = models.TextField(db_index=True, verbose_name='Продукция (английский)')
+    product = models.TextField(db_index=False, verbose_name='Продукция (английский)')
     contact = models.TextField(verbose_name='Контактная информация')
     description_ru = models.TextField(verbose_name='Описание (русский)')
-    product_ru = models.TextField(db_index=True, verbose_name='Продукция (русский)')
+    product_ru = models.TextField(db_index=False, verbose_name='Продукция (русский)')
     email = models.EmailField(max_length=254)
     tn_ved = models.CharField(max_length=50,verbose_name='Код ТН ВЭД', blank=True, null=True)
     price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Цена', default=10)
@@ -60,12 +62,18 @@ class Supplier(models.Model):
         auto_now_add=True, verbose_name='Создан', null=True)
     updated_date = models.DateField(
         auto_now=True,  verbose_name='Изменен', null=True)
+    search_vector_product = SearchVectorField('product', null=True, blank=True)
+    search_vector_product_ru = SearchVectorField('product_ru', null=True, blank=True)
 
 
     class Meta:
         """Help Supplier data"""
         verbose_name = 'Поставщика'
         verbose_name_plural = 'Поставщики'
+        indexes = [
+            GinIndex(fields=['search_vector_product']),
+            GinIndex(fields=['search_vector_product_ru']),
+        ]
 
     def __str__(self):
         return self.name
