@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block title %}
+{{ block.super }}:profile
+{% endblock %}
+
+{% block content %}
+
+<h2>Профиль</h2>
+<p><strong>Имя:</strong> {{ request.user.username }}</p>
+<p><strong>Email:</strong> {{ request.user.email }}</p>
+<p><strong>Компания:</strong> {{ request.user.profile.company }}</p>
+<p><strong>ИНН:</strong> {{ request.user.profile.inn }}</p>
+<p><strong>ОГРН:</strong> {{ request.user.profile.ogrn }}</p>
+<p><strong>Адрес:</strong> {{ request.user.profile.address }}</p>
+<p><strong>Телефон:</strong> {{ request.user.profile.phone }}</p>
+<p><strong>Подписка до:</strong> {{ request.user.profile.subscription_end|date:"d.m.Y" }}</p>
+
+{% endblock %}

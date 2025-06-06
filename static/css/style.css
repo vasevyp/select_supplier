@@ -1,20 +1,89 @@
-body { 
- font-size:14px;
- background-color: #F5F7FA;
- color: #2C3E50;
-}
-.mcolor{
-    color:#2C3E50;
-}
-.bcolor-fon{
-    background-color: #D1D8E0;
-}
-
-.bcolor-blue{
-    background-color: #2980B9;
-
+:root {
+    --color-light: #F5F7FA;
+    --color-second: #D1D8E0;
+    --color-blue: #2980B9;
+    --color-dark: #2C3E50;
+    --color-second-text: #5D6D7E;
+    --color-blue-text: #2472A3;
+    --color-hover: #7FB3D5;
+    --color-button-text: #FFFFFF;
 }
 
-.bcolor-accent{
-    background-color: #2C3E50;
+.roboto-font {
+    font-family: "Roboto", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+    font-variation-settings:
+        "wdth" 100;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background-color: var(--color-light);
+    color: var(--color-dark);
+}
+.color-light1{
+   color: var(--color-light);
+}
+.color-second1{
+    color:var(--color-second);
+}
+.color-blue1{
+    color:var(--color-blue);
+}
+.color-blue-text{
+    color:var(--color-blue-text);
+}
+.color-second-text{
+    color:var(--color-second-text);
+}
+.color-dark1{
+    color:var(--color-dark);
+}
+.color-hover1{
+    color:var(--color-hover)
+}
+
+.color-button-text{
+    color:var(--color-button-text)
+}
+
+.bg-light1{
+   background-color: var(--color-light);
+}
+.bg-second1{
+    background-color:var(--color-second);
+}
+.bg-blue1{
+    background-color:var(--color-blue);
+}
+.bg-dark1{
+    background-color:var(--color-dark);
+}
+.bg-hover1:hover{
+    background-color:var(--color-hover);
+}
+.vedinfo-logo{
+    font-family:Arial, Helvetica, sans-serif;
+    text-align: center;
+    font-weight: 600;
+    font-size: 28px;
+    margin: 10px auto 0 auto;
+    color:var(--color-dark);    
+}
+.nav-vedinfo-logo{
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--color-dark);
+}
+
+.nav-widht{
+    max-width: 1300px;
+    text-align: center;
+}
+.reg_text2{
+    /* font-size: 0.8rem; */
+    color:var(--color-second-text)
 }
