@@ -32,6 +32,7 @@ urlpatterns = [
     # path('cost/', include('cost_comparison.urls')),
     # path('analytics/', include('analytics.urls')),
     path('users/', include('users.urls')),
+    path('captcha/', include('captcha.urls')),
 
 ]
 

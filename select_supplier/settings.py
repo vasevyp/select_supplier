@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     "import_export",
     "django_bootstrap5",
     "crispy_forms",
+    "captcha",
     
     # myapp
     "primary.apps.PrimaryConfig",
@@ -149,3 +150,5 @@ LOGGING = {
         },
     },
 }
+
+CAPTCHA_CHALLENGE_FUNCT = 'captcha.helpers.math_challenge'

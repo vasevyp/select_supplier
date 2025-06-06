@@ -22,7 +22,8 @@ class SupplierSearchForm(forms.Form):
         queryset=Country.objects.all(),
         required=False,
         label='Страна',
-        empty_label='выбрать страну'
+        empty_label='выбрать страну-экспортера ',
+        # widget=forms.SelectMultiple(attrs={'size': '1', 'height': '30'})  # Задаем длину 100 и высоту 50 для поля `my_field`
     )
 
     LANGUAGE_CHOICES = [

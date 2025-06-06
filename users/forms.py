@@ -2,6 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
+from captcha.fields import CaptchaField
 from .models import Profile
 
 
@@ -67,6 +68,8 @@ class RegisterForm(UserCreationForm):
         widget=forms.TextInput(attrs={"class": "form-control", "autocomplete": "off"}),
     )
 
+    captcha = CaptchaField()
+
 
     class Meta:
         model = User
@@ -104,6 +107,7 @@ class LoginForm(AuthenticationForm):
     password = forms.CharField(
         label="Пароль", widget=forms.PasswordInput(attrs={"class": "form-control"})
     )
+    # captcha = CaptchaField(label="")
 
 
 # =====================
@@ -117,6 +121,7 @@ class UserLoginForm(AuthenticationForm):
     password = forms.CharField(
         label="Пароль", widget=forms.PasswordInput(attrs={"class": "form-control"})
     )
+    # captcha = CaptchaField(label="")
 
 
 class UserRegisterForm(UserCreationForm):
