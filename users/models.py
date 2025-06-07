@@ -4,6 +4,8 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
+# User._meta.get_field('email')._unique = True
+
 class Profile(models.Model):
     '''профиль пользователя'''
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -14,6 +16,10 @@ class Profile(models.Model):
     phone = models.CharField('Телефон', max_length=20)
     is_email_verified = models.BooleanField('Email подтвержден', default=False)
     subscription_end = models.DateTimeField('Окончание подписки', null=True, blank=True)
+
+     # Поля для ограничения входа
+    registered_ip = models.GenericIPAddressField('Зарегистрированный IP', null=True, blank=True)
+    device_fingerprint = models.TextField('Устройство', null=True, blank=True)  # Например, хэш User-Agent + другие параметры
 
     class Meta:
     

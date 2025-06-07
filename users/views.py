@@ -1,19 +1,15 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth import login, logout,  authenticate
-
 from django.core.mail import send_mail
 from django.conf import settings
 from django.urls import reverse
 from django.contrib.sites.shortcuts import get_current_site
 from django.contrib.auth.models import User
-
 from django.shortcuts import get_object_or_404
 
 from .forms import RegisterForm, LoginForm, UserLoginForm
-
-
-from .utils import verify_token, generate_verification_token
+from .utils import verify_token, generate_verification_token, get_client_ip, get_device_fingerprint
 from .models import Profile
 
 
@@ -26,6 +22,12 @@ def register_view(request):
         if form.is_valid():
             user = form.save()
             login(request, user)
+
+             # Получаем данные о пользователе
+            profile = user.profile
+            profile.registered_ip = get_client_ip(request)
+            profile.device_fingerprint = get_device_fingerprint(request)
+            profile.save()
 
             # Отправляем подтверждение
             token = generate_verification_token(user)
@@ -55,11 +57,33 @@ def login_view(request):
             password = form.cleaned_data.get('password')
             user = authenticate(username=username, password=password)
             if user is not None:
-                if user.profile.is_email_verified:
-                    login(request, user)
-                    return redirect('profile')
-                else:
+                # if user.profile.is_email_verified:
+                #     login(request, user)
+                #     return redirect('profile')
+                # else:
+                #     return render(request, 'users/email_not_verified.html')
+                # Проверяем email
+                if not user.profile.is_email_verified:
                     return render(request, 'users/email_not_verified.html')
+                
+                # Проверяем IP и устройство
+                registered_ip = user.profile.registered_ip
+                current_ip = get_client_ip(request)
+                
+                registered_device = user.profile.device_fingerprint
+                current_device = get_device_fingerprint(request)
+
+                if registered_ip != current_ip or registered_device != current_device:
+                    # Ошибка: IP или устройство не совпадают
+                    messages.error(
+                        request,
+                        "Вход заблокирован. Ваш IP-адрес или устройство не совпадают с зарегистрированными."
+                    )
+                    return render(request, 'users/login.html', {'form': form})
+                
+                # Всё ок — авторизуем
+                login(request, user)
+                return redirect('profile')
         
     else:
         form = LoginForm()

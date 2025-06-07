@@ -7,7 +7,14 @@
 
 {% block content %}
 <div class="container col-lg-6 col-md-8 col-12 mx-auto mb-3">
-  <h5 class="my-5">Login</h5>
+   {% if messages %}
+  <div class="messages">
+    {% for message in messages %}
+      <div{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</div>
+    {% endfor %}
+  </div>
+{% endif %}
+  <h5 class="my-5">Авторизация</h5>
 
 
   <form method="post">

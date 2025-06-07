@@ -1,3 +1,16 @@
-<h2>Email не подтвержден</h2>
-<p>Пожалуйста, подтвердите ваш email перед входом.</p>
+{% extends 'simple.html' %}
+
+{% block title %}
+{{ block.super }}: Login
+{% endblock %}
+
+{% block content %}
+<div class="container mt-3">
+    <h2>Email не подтвержден</h2>
+<p>Для подтверждения Вашего email при регистрации Вам было выслано письмо.</p>
+<p> Вы не подтвердили ваш email при регистрации.</p>
+<p>Пожалуйста, повторите регистрацию о обязательно подтвердите ваш email.</p>
 <a href="{% url 'register' %}">Повторить регистрацию</a>
+</div>
+
+{% endblock %}
