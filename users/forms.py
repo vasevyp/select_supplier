@@ -9,7 +9,7 @@ from .models import Profile
 class RegisterForm(UserCreationForm):
     username = forms.CharField(
         label="Логин пользователя",
-        help_text="До 150 символов (буквы, цифры, знаки: _ , @ , +, . , - )",
+        help_text="До 150 символов (латинские буквы, цифры, знаки: _ , @ , +, . , - )",
         widget=forms.TextInput(attrs={"class": "form-control", "autocomplete": "off"}),
     )
 

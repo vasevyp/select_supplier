@@ -21,3 +21,6 @@ def primary(request):
         'country_list': country_list,
         'category_list': category_list
     })
+
+def privacy_policy(request):
+    return render(request, 'primary/privacy_policy.html')

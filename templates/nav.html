@@ -1,11 +1,11 @@
 {% load static %}
-<div class="nav-widht container bg-light1 border-bottom">
+<div class="nav-widht container bg-light1 border-bottom sticky-top">
 
 
 <nav class="navbar navbar-expand-lg navbar-light   my-2">
     <div class="container-fluid">
-        <!-- <a class="navbar-brand" href="{% url 'start' %}"><img style="width: 40px;" src="{% static '/logo/logo.png' %}"
-                alt="photo"></a> -->
+        <a class="navbar-brand" href="{% url 'start' %}"><img style="width: 40px;" src="{% static '/logo/logo.png' %}"
+                alt="photo"></a>
         <a class="navbar-brand nav-vedinfo-logo" href="{% url 'start' %}">VEDINFO.ONLINE</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
             aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Переключатель навигации">
@@ -47,9 +47,9 @@
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                         <li><a class="dropdown-item color-dark1" href="{% url 'upload_suppliers' %}">Загрузить Поставщиков</a></li>
-                        <li><a class="dropdown-item color-dark1" href="/admin/supplier/category/import/">Загрузить Категории (в
+                        <li><a class="dropdown-item color-dark1" href="/adminrav25/supplier/category/import/">Загрузить Категории (в
                                 admin)</a></li>
-                        <li><a class="dropdown-item color-dark1" href="/admin/supplier/country/import/">Загрузить Страны (в
+                        <li><a class="dropdown-item color-dark1" href="/adminrav25/supplier/country/import/">Загрузить Страны (в
                                 admin)</a></li>
                         <!-- <li><a class="dropdown-item" href="{% url 'export_to_excel' %}">Export to Excel</a></li>
                         <li><a class="dropdown-item" href="{% url 'supplier_delete' %}">Supplier_delete</a></li> -->
