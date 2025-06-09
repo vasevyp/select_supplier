@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% load django_bootstrap5 %}
+
+
+{% block title %}
+{{ block.super }}: Контакты
+{% endblock %}
+
+
+{% block content %}
+<div class=" col-12 margin-mb100">
+    <p class="mt-3 color-dark1 fs-4 bg-second1 text-center fw-medium">VEDINFO.ONLINE</p>
+
+<div class=" my-1 color-second-text">в стадии разработки</div>
+    <section class="py-1">
+        <div class="container ">
+            <div class="row">
+                <div class="col-md-12 rounded border shadow-sm">
+                    <div class="row">
+                        <div class="col-12 col-md-4 col-lg-6 siderImg">
+                            <div class="contact-header">
+                                <h3 class="mt-2"> Контакты</h3>
+                            </div>
+                            <div class="contact-body">
+                                <p><i class="fa fa-map-marker" aria-hidden="true"></i>
+                                    <span>Адрес:</span>
+                                    <span class="add-ln"> Казнь, 100002</span>
+                                </p>
+                                <p><i class="fa fa-phone" aria-hidden="true"></i>
+                                    Телефон:<span>+7-*** *** </span>
+                                </p>
+                                <p><i class="fa fa-envelope" aria-hidden="true"></i>
+                                    <span><a href="mailto:htmlcss3tutorials@gmail.com">vedinfo@gmail.com</a></span>
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class=" col-12 col-md-8 col-lg-6 bg-second1">
+                            <div class="py-2">
+                                <h3 class=" heading">Свяжитесь с нами</h3>
+                            </div>
+                            <form id="signupForm2" method="post" action="">
+                                <div class="form-row ">
+                                    <div class="mb-2 form-group col-md-8">
+                                        <input placeholder="Введите свое полное имя" class="form-control" type="text">
+                                    </div>
+                                    <div class="mb-2 form-group col-md-8">
+                                        <input type="email" class="form-control" name=""
+                                            placeholder="Введите свой адрес электронной почты">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="mb-2 form-group col-md-8">
+                                        <input placeholder="Телефон" class="form-control" type="text">
+                                    </div>
+                                    <div class="mb-2 form-group col-md-8">
+                                        <input placeholder="Введите тему" class="form-control" type="text">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="mb-2 form-group col-md-12">
+                                        <textarea class="form-control" name="message"
+                                            placeholder="Введите сообщение здесь">Введите сообщение здесь</textarea>
+                                    </div>
+                                </div>
+
+                                <div class="form-row pb-4 ">
+                                    <input class="btn btn-primary sub-btn" type="submit" value="Отправить">
+                                </div>
+                            </form>
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+
+
+</div>
+
+
+{% endblock %}

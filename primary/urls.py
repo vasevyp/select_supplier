@@ -1,12 +1,13 @@
 
 from django.urls import path
 
-from .views import first_page, primary, privacy_policy
+from .views import first_page, primary, privacy_policy, contact
 
 
 urlpatterns = [
     path('', first_page, name='start'),
     path('main', primary, name='main'),
     path('policy', privacy_policy, name='policy'),
+    path('contact', contact, name='contact'),
    
 ]

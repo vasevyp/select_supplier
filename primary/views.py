@@ -24,3 +24,6 @@ def primary(request):
 
 def privacy_policy(request):
     return render(request, 'primary/privacy_policy.html')
+
+def contact(request):
+    return render(request, 'primary/contact.html')

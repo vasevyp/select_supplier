@@ -1,7 +1,6 @@
 """supplier app views"""
 
 import logging
-
 # from openpyxl import load_workbook
 from django.shortcuts import render, redirect
 from django.contrib import messages
@@ -10,6 +9,7 @@ from django.core.paginator import Paginator
 from django.views.generic import ListView, DetailView
 from django.db.models import Q
 from django.contrib.postgres.search import SearchVector, SearchQuery
+from django.contrib.auth.decorators import login_required  
 
 from .forms import ImportForm, SupplierSearchForm, SupplierSearchForm2
 from .models import Supplier, Country, Category
@@ -130,6 +130,7 @@ def supplier_detail(request, pk):
 #     )
 
 
+# @login_required 
 def supplier_selection(request):
     """Выбор полных данных по поставщику за все периоды Полнотекстовый поиск"""
     form = SupplierSearchForm

@@ -6,11 +6,11 @@
 
 {% block content %}
 
-<h2>Вход</h2>
+<h2>Вход для администратора и сотрудников</h2>
 <form method="post">
   {% csrf_token %}
   {{ form.as_p }}
-  <button type="submit">Войти</button>
+  <button type="submit" class="btn bg-hover1 bg-blue1 color-button-text btn-block">Войти</button>
 </form>
 
 {% endblock %}

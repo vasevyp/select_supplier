@@ -67,17 +67,17 @@ def login_view(request):
                     return render(request, 'users/email_not_verified.html')
                 
                 # Проверяем IP и устройство
-                registered_ip = user.profile.registered_ip
-                current_ip = get_client_ip(request)
+                # registered_ip = user.profile.registered_ip
+                # current_ip = get_client_ip(request)
                 
                 registered_device = user.profile.device_fingerprint
                 current_device = get_device_fingerprint(request)
 
-                if registered_ip != current_ip or registered_device != current_device:
+                if registered_device != current_device:
                     # Ошибка: IP или устройство не совпадают
                     messages.error(
                         request,
-                        "Вход заблокирован. Ваш IP-адрес или устройство не совпадают с зарегистрированными."
+                        "Вход заблокирован. Ваше устройство не совпадает с зарегистрированными."
                     )
                     return render(request, 'users/login.html', {'form': form})
                 
@@ -123,7 +123,7 @@ def admin_login(request):
             return redirect('main')
     else:
         form = UserLoginForm()
-    return render(request, 'profile/login.html', {"form": form})
+    return render(request, 'profile/admin_login.html', {"form": form})
 
 
 def user_logout(request):

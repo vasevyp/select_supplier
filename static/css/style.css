@@ -87,3 +87,7 @@ body {
     /* font-size: 0.8rem; */
     color:var(--color-second-text)
 }
+
+.margin_mb80{
+    margin-bottom: 80px !important;
+}

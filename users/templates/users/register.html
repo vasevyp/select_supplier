@@ -6,7 +6,7 @@
 
 {% block content %}
 
-<div class="container col-lg-6 col-md-8 col-12">
+<div class="container col-lg-6 col-md-8 col-12 margin-mb100">
   <h2>Регистрация</h2>
   <form method="post">
     {% csrf_token %}
@@ -84,7 +84,7 @@
     <p>Регистрируясь на сайте, пользователь соглашается с настоящим <a href="{% url 'policy' %}" target="_blank">пользовательским соглашением</a> и принимает на себя
       указанные в нём права и обязанности, связанные с использованием и функционированием сайта</p>
 
-    <button class="btn btn-primary my-3" type="submit">Зарегистрироваться</button>
+    <button class="btn bg-blue1 color-button-text bg-hover1 my-3" type="submit">Зарегистрироваться</button>
   </form>
 
 

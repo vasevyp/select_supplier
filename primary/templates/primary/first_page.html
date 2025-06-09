@@ -10,7 +10,7 @@
 {% block content %}
 <div class="container col-12 mx-auto mb-3">
     
-    <div class="text-center mt-3" ><a href="{% url 'login' %}"> <img src="{% static 'logo/logo.png' %}" alt="logo"  height="60"></a></div>
+    <div class="text-center mt-3" ><a href="{% url 'main' %}"> <img src="{% static 'logo/logo.png' %}" alt="logo"  height="60"></a></div>
     <div class="vedinfo-logo">VEDINFO.ONLINE</div>
    
 
@@ -28,12 +28,12 @@
         продукта по всем странам, выполнять расчет таможенных платежей и логистики.</p>
 
     {% if user.is_authenticated %}
-    <div class="text-center">
+    <!-- <div class="text-center">
         <a class="btn  btn-outline-secondary color-button-text bg-dark1 mt-3" href="{% url 'main' %}">На Главную</a>
     </div>
     <div class="text-center">
         <a class="btn  bg-blue1 color-button-text bg-hover1 mt-3" href="{% url 'logout' %}">Logout</a>
-    </div>
+    </div> -->
     {% endif %}
 
 
