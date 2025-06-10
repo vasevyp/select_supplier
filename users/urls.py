@@ -10,4 +10,6 @@ urlpatterns = [
     path('profile/', profile_view, name='profile'),
     path('verification-sent/', TemplateView.as_view(template_name='users/verification_sent.html'), name='verification_sent'),
     path('verify-email/<str:token>/', verify_email, name='verify_email'),
+    path('password-reset/', password_reset_request, name='password_reset'),
+    path('password-reset-confirm/<str:token>/', password_reset_confirm, name='password_reset_confirm'),
 ]

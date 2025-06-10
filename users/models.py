@@ -20,7 +20,10 @@ class Profile(models.Model):
      # Поля для ограничения входа
     registered_ip = models.GenericIPAddressField('Зарегистрированный IP', null=True, blank=True)
     device_fingerprint = models.TextField('Устройство', null=True, blank=True)  # Например, хэш User-Agent + другие параметры
-
+    
+     # Поля восстановления пароля
+    password_reset_token = models.CharField(max_length=100, blank=True, null=True)
+    password_reset_expires = models.DateTimeField(blank=True, null=True)
     class Meta:
     
         verbose_name = 'Профиль'

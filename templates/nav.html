@@ -7,10 +7,12 @@
             <a class="navbar-brand" href="{% url 'start' %}"><img style="width: 40px;"
                     src="{% static '/logo/logo.png' %}" alt="photo"></a>
             <a class="navbar-brand nav-vedinfo-logo" href="{% url 'start' %}">VEDINFO.ONLINE</a>
-            <!-- <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Переключатель навигации">
-            <span class="navbar-toggler-icon"></span>
-        </button> -->
+                <!--mobile nav button-->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Переключатель навигации">
+                <span class="navbar-toggler-icon"></span>
+            </button>
 
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
 
@@ -52,9 +54,10 @@
                         <a class="nav-link active color-dark1" aria-current="page"
                             href="{% url 'register' %}">Регистрация</a>
                     </li>
-                   
+
                     <li class="nav-item">
-                        <a class="nav-link active color-dark1" aria-current="page" href="{% url 'login_a' %}">AdminLogin</a>
+                        <a class="nav-link active color-dark1" aria-current="page"
+                            href="{% url 'login_a' %}">AdminLogin</a>
                     </li>
 
 
@@ -97,11 +100,12 @@
                     <li class="nav-item text-secondary"><a class="nav-link" target="_blank"
                             href="{% url 'admin:index' %}">Admin</a></li>
                     {% endif %}
-                     <li class="nav-item">
-                        <a class="nav-link active color-dark1" aria-current="page" href="{% url 'contact' %}">Контакты</a>
+                    <li class="nav-item">
+                        <a class="nav-link active color-dark1" aria-current="page"
+                            href="{% url 'contact' %}">Контакты</a>
                     </li>
                 </ul>
-                
+
                 {% if user.is_authenticated %}
                 <div class="position-absolute end-0">
                     <span><b> {{ user.username }} </b></span>

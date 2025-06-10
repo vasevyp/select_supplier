@@ -25,11 +25,11 @@ content="The application provides the user with a search for manufacturers of sp
 
 </head>
 {% endblock %}
-<body class="bg-light1" oncopy="return false;">
+<body class="bg-light1" oncopy="return false;" style="display:flex; flex-direction: column; min-height: 100vh;">
     <div >
         {% block content %}{% endblock %}
     </div>
-    {% block footer %}{% endblock %}
+    {% block footer %} {% include 'footer.html' %}{% endblock %}
     {% block scripts %}{% endblock %}
 
 </body>

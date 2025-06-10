@@ -7,6 +7,7 @@ from django.urls import reverse
 
 signer = TimestampSigner()
 
+# Регистрация пользователя. Генерация токенов и получение IP и хеш-оборудования
 def generate_verification_token(user):
     return signer.sign(user.id)
 
@@ -32,3 +33,14 @@ def get_device_fingerprint(request):
     accept = request.META.get('HTTP_ACCEPT', '')
     device_string = f"{user_agent}|{accept}|{os.getenv('SECRET_KEY', 'default_salt')}"
     return hashlib.sha256(device_string.encode()).hexdigest()  
+
+# Смена пароля пользователя самим пользователем
+def generate_password_reset_token(user):
+    return signer.sign(user.id)
+
+def verify_password_reset_token(token, max_age=86400):  # 24 часа
+    try:
+        user_id = signer.unsign(token, max_age=max_age)
+        return user_id
+    except (SignatureExpired, BadSignature):
+        return None

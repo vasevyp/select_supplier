@@ -11,7 +11,7 @@
     <meta name="description"
         content="The application provides the user with a search for manufacturers of specified products in all countries of the world, selection of the optimal logistics solution for delivery of products, calculation of the cost of customs clearance of products for import into Russia.">
     <link rel="shortcut icon" type="image/png" href="{% static 'logo/logo.png' %}" />
-  
+
     <title>{% block title %}Сервис{% endblock %}</title>
 
     {% bootstrap_css %}
@@ -20,15 +20,17 @@
     {% bootstrap_messages %}
     <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
+        rel="stylesheet">
 
 
 
 </head>
 {% endblock %}
 
-<body class="bg-color roboto-font">
+<body class="bg-color roboto-font" style="display:flex; flex-direction: column; min-height: 100vh;">
     <!-- oncopy="return false;" document.onselectstart ="noselect;" -->
     {% block nav %}
     {% include 'nav.html' %}
@@ -39,12 +41,11 @@
         {% include 'pagination.html' %}
         <!-- end pagination -->
     </div>
-     {% block footer %}
-       <footer class="bg-dark1 fixed-bottom row max-vh-2 ">
-<p class=" color-light1 mt-3 mx-2">© 2025 Любое использование контента без письменного разрешения запрещено</p>
-</footer>
-     {% endblock %}
-  
+    {% block footer %}
+
+    {% include 'footer.html' %}
+    {% endblock %}
+
     {% block scripts %}{% endblock %}
 
 
