@@ -33,6 +33,7 @@ urlpatterns = [
     # path('analytics/', include('analytics.urls')),
     path('users/', include('users.urls')),
     path('captcha/', include('captcha.urls')),
+    path('account/', include('customer_account.urls')),
 
 ]
 

@@ -1,0 +1,32 @@
+{% extends 'profile_base.html' %}
+
+{% load static %}
+{% load django_bootstrap5 %}
+
+
+{% block title %}
+{{ block.super }}: запросы
+{% endblock %}
+
+
+{% block content %}
+<div class="container col-12 margin-mb100">
+    <!-- <div class="vedinfo-logo">VEDINFO.ONLINE</div>
+    <div class="text-center color-second-text">Мир без границ — расчеты без ошибок</div> -->
+
+
+    <h3 class=" mt-5">История запросов клиента {{user.username}} </h3>
+
+
+    <div class=" my-3 color-second-text">в стадии разработки</div>
+
+   
+        
+      
+
+        
+</div>
+
+
+{% endblock %}
+

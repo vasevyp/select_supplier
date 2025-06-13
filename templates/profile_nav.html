@@ -1,0 +1,111 @@
+{% load static %}
+<div class="nav-widht container bg-second1 h-5 border-bottom sticky-top">
+
+
+    <nav class="navbar navbar-expand-lg navbar-light   my-2">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{% url 'start' %}"><img style="width: 40px;"
+                    src="{% static '/logo/logo.png' %}" alt="photo"></a>
+            <a class="navbar-brand nav-vedinfo-logo" href="{% url 'start' %}">VEDINFO.ONLINE</a>
+            <!--mobile nav button-->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Переключатель навигации">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link active color-dark1" aria-current="page"
+                            href="{% url 'dashbord' %}">Главная</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active color-dark1" aria-current="page"
+                            href="{% url 'supplier_selection' %}">Поиск
+                            поставщика</a>
+                    </li>
+                    <li class="nav-item mx-6">
+                        <a class="nav-link " href="{% url 'subscribe' %}">Подписка</a>
+                    </li>
+                    <li class="nav-item mx-6">
+                        <a class="nav-link " href="{% url 'castomer_request' %}">Мои запросы</a>
+                    </li>
+                    <li class="nav-item mx-6">
+                        <a class="nav-link " href="{% url 'castomer_mail' %}">Письма</a>
+                    </li>
+
+
+
+
+
+                    <li class="nav-item mx-6">
+                        <a class="nav-link " href="{% url 'customer_calculation' %}">Расчеты</a>
+                    </li>
+
+
+
+
+
+
+
+
+
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle text-secondary " href="#" id="navbarDropdownMenuLink"
+                            role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Профиль
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                            <li><a class="dropdown-item color-dark1" href="{% url 'profile' %}">Карточка компании</a>
+                            </li>
+                            <li><a class="dropdown-item color-dark1" href="{% url 'profile' %}">Реквизиты</a></li>
+                            <li><a class="dropdown-item color-dark1" href="{% url 'profile' %}">Договор</a></li>
+                             <li><a class="dropdown-item color-dark1" href="{% url 'payment' %}">Карта</a></li>
+                            <li><a class="dropdown-item text-danger" type="submit"
+                        onclick="return confirm('Вы хотите удалить личный кабинет и профиль?')" href="{% url 'logout' %}">Удалить Личный кабинет</a></li>
+                        <!-- <li><a class="dropdown-item" href="{% url 'supplier_delete' %}">Supplier_delete</a></li> -->
+
+
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle text-secondary" href="#" id="navbarDropdownMenuLink"
+                            role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Аналитика
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                            <li><a class="dropdown-item" href="{% url 'profile' %}">Поставщиков</a></li>
+                            <li><a class="dropdown-item" href="{% url 'profile' %}">Логистики</a></li>
+                            <li><a class="dropdown-item" href="{% url 'profile' %}">Стран</a></li>
+
+
+                        </ul>
+                    </li>
+
+
+
+                </ul>
+
+
+
+                <div class="position-absolute end-0">
+
+                    <a class="text-decoration-none color-second-text mx-2" href="{% url 'main' %}" type="submit"
+                        onclick="return confirm('Хотите выйти из личного кабинета?')"  >
+                    <img style="width: 22px;" title="Выйти из личного кабинета" src="{% static '/images/v1.webp' %}"
+                        alt="exit"></a>
+                   
+
+
+                </div>
+
+                <!-- <span class="position-absolute end-0 me-3"> Логин: <b> {{ user.username }} </b></span> -->
+
+            </div>
+        </div>
+
+
+    </nav>
+</div>

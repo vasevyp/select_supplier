@@ -1,0 +1,60 @@
+{% extends 'profile_base.html' %}
+
+{% load static %}
+{% load django_bootstrap5 %}
+
+
+{% block title %}
+{{ block.super }}: подписка
+{% endblock %}
+
+
+{% block content %}
+<div class="container col-12 margin-mb100">
+    <!-- <div class="vedinfo-logo">VEDINFO.ONLINE</div>
+    <div class="text-center color-second-text">Мир без границ — расчеты без ошибок</div> -->
+
+
+    <h3 class="text-center mt-5">Подписка на систему «Поиск поставщиков продукции»</h3>
+
+
+    <div class="text-center my-3 color-second-text">в стадии разработки</div>
+
+   
+        <h5>Приложение имеет следующие вырианты подписки: </h5>
+
+        <div class="ms-3 d-flex flex-column flex-lg-row ">
+            <div class="col-12 col-lg-2 ">
+               <p>на 3 дня,</p>
+               <p class=" color-blue1 bg-hover1 m-1">при регистрации (без оплаты)</p> 
+              
+             </div>
+            <div class="col-12 col-lg-2 "><p>на 111 месяц</p>
+               <p>***** руб</p> 
+            <button type="submit" class="btn bg-blue1 bg-hover1 color-button-text m-1">Подписаться</button>
+         </div>
+            <div class="col-12 col-lg-2 "><p>на 3 месяца</p>
+               <p>***** руб</p> 
+            <button type="submit" class="btn bg-blue1 bg-hover1 color-button-text m-1">Подписаться</button>
+        </div>
+
+            <div class="col-12 col-lg-2"><p>на 6 месяцев</p>
+               <p>***** руб</p> 
+            <button type="submit" class="btn bg-blue1 bg-hover1 color-button-text m-1">Подписаться</button>
+        </div>
+             <div class="col-12 col-lg-2 "><p>на 12 месяцев</p>
+               <p>***** руб</p> <button type="submit" class="btn bg-blue1 bg-hover1 color-button-text m-1">Подписаться</button>
+            </div>
+             <div class="col-12 col-lg-2"><p>на 24 месяца</p>
+               <p>***** руб</p> <button type="submit" class="btn bg-blue1 bg-hover1 color-button-text m-1">Подписаться</button>
+            </div>
+        </div>
+      
+      
+
+        
+</div>
+
+
+{% endblock %}
+

@@ -1,0 +1,52 @@
+<!-- base.html (или ваш основной шаблон) -->
+    <div id="cookie-banner" class="cookie-banner">
+        <div class="cookie-content">
+            <p>Мы используем файлы cookie для улучшения работы сайта. Продолжая использовать сайт, вы соглашаетесь с
+                нашей <a href="{% url 'policy' %}">политикой конфиденциальности</a>.</p>
+            <button onclick="acceptCookies()">Принять</button>
+        </div>
+    </div>
+
+    <style>
+        .cookie-banner {
+            position: fixed;
+            bottom: 0;
+            /* left: 2; */
+            right: 0;
+            margin: 2rem;
+            background: #0bc6d3;
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            /* display: none; */
+            /* Скрываем по умолчанию */
+            z-index: 1000;
+            width: 300px;
+            font-size: .7rem;
+            border:#0bc6d3;
+            border-radius: 1rem;
+        }
+
+        .cookie-content {
+            max-width: 300px;
+            margin: 0 auto;
+        }
+    </style>
+    <script>
+        // Проверяем наличие cookie при загрузке страницы
+        document.addEventListener('DOMContentLoaded', function () {
+            if (!document.cookie.includes('cookie_consent=true')) {
+                document.getElementById('cookie-banner').style.display = 'block';
+            }
+        });
+
+        function acceptCookies() {
+            // Устанавливаем cookie на 1 год
+            const date = new Date();
+            date.setTime(date.getTime() + (365 * 24 * 60 * 60 * 1000)); //(365 * 24 * 60 * 60 * 1000)
+            document.cookie = "cookie_consent=true; expires=" + date.toUTCString() + "; path=/";
+
+            // Скрываем баннер
+            document.getElementById('cookie-banner').style.display = 'none';
+        }
+    </script>

@@ -38,8 +38,9 @@ INSTALLED_APPS = [
     "customs.apps.CustomsConfig",
     "bank_clearing.apps.BankClearingConfig",
     "cost_comparison.apps.CostComparisonConfig",
-    "analytics.apps.AnalyticsConfig",
+    "analytic.apps.AnalyticConfig",
     "users.apps.UsersConfig",
+    "customer_account.apps.СustomerAccountConfig",
 ]
 
 MIDDLEWARE = [

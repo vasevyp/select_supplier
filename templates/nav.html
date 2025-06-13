@@ -20,52 +20,71 @@
                     <li class="nav-item">
                         <a class="nav-link active color-dark1" aria-current="page" href="{% url 'main' %}">Главная</a>
                     </li>
-                    <li class="nav-item">
+                    {% if request.user.is_superuser  %}
+                     <li class="nav-item">
                         <a class="nav-link active color-dark1" aria-current="page"
                             href="{% url 'supplier_selection' %}">Поиск
                             поставщика</a>
                     </li>
-                    <!-- <li class="nav-item">
-                        <a class="nav-link active color-dark1" aria-current="page" href="{% url 'login' %}">Логин</a>
-                    </li>
+
+                      {% elif  request.user.is_authenticated %}
+                    
+                    
+                    {% else %}
                     <li class="nav-item">
                         <a class="nav-link active color-dark1" aria-current="page"
-                            href="{% url 'register' %}">Регистрация</a>
+                            href="{% url 'search_primary' %}">Поиск
+                            поставщика</a>
                     </li>
-                   
-                    <li class="nav-item">
-                        <a class="nav-link active color-dark1" aria-current="page" href="{% url 'login_a' %}">Admin</a>
+                    {% endif %}
+                     <li class="nav-item">
+                        <a class="nav-link active color-dark1" aria-current="page"
+                            href="{% url 'tariffs_page' %}">Тарифы</a>
+                    </li>
+                     <!-- <li class="nav-item">
+                        <a class="nav-link active color-dark1" aria-current="page"
+                            href="{% url 'info_page' %}">Информация</a>
                     </li> -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle color-dark1" href="#" id="navbarDropdownMenuLink"
+                            role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                           Информация
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                            <li><a class="dropdown-item" href="{% url 'info_page' %}">О приложении</a></li>
+                            <li><a class="dropdown-item" href="{% url 'policy' %}" target="_blank">Политика конфиденциальности</a> </li>
+                            
+                        </ul>
+                    </li>
+                    
 
 
 
                     {% if request.user.is_authenticated %}
                     <li class="nav-item mx-6">
-                        <a class="nav-link " href="{% url 'profile' %}">Личный кабинет</a>
+                        <a class="nav-link color-dark1" href="{% url 'dashbord' %}">Личный кабинет</a>
                     </li>
-                    <li class="nav-item mx-6">
-                        <a class="nav-link " href="{% url 'start' %}">Расчеты</a>
-                    </li>
-                    {% else %}
-                    <li class="nav-item">
-                        <a class="nav-link active color-dark1" aria-current="page" href="{% url 'login' %}">Логин</a>
-                    </li>
-                    <li class="nav-item">
+                      
+                   
+                    {% else %}                                              
+                                        
+                     <li class="nav-item">
                         <a class="nav-link active color-dark1" aria-current="page"
-                            href="{% url 'register' %}">Регистрация</a>
+                            href="{% url 'register' %}">Зарегистрироваться</a>
                     </li>
-
-                    <li class="nav-item">
+                    
+                       <li class="nav-item">
                         <a class="nav-link active color-dark1" aria-current="page"
                             href="{% url 'login_a' %}">AdminLogin</a>
-                    </li>
+                    </li>                 
 
 
                     {% endif %}
+                    
                     {% if request.user.is_superuser %}
 
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle text-secondary " href="#" id="navbarDropdownMenuLink"
+                        <a class="nav-link dropdown-toggle color-dark1 " href="#" id="navbarDropdownMenuLink"
                             role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             Загрузки
                         </a>
@@ -85,7 +104,7 @@
                         </ul>
                     </li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle text-secondary" href="#" id="navbarDropdownMenuLink"
+                        <a class="nav-link dropdown-toggle color-dark1" href="#" id="navbarDropdownMenuLink"
                             role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             Списки
                         </a>
@@ -97,27 +116,46 @@
 
                         </ul>
                     </li>
-                    <li class="nav-item text-secondary"><a class="nav-link" target="_blank"
+                    <li class="nav-item color-dark1"><a class="nav-link" target="_blank"
                             href="{% url 'admin:index' %}">Admin</a></li>
-                    {% endif %}
-                    <li class="nav-item">
+                    {% else %} 
+                     <li class="nav-item">
                         <a class="nav-link active color-dark1" aria-current="page"
                             href="{% url 'contact' %}">Контакты</a>
-                    </li>
+                    </li>       
+                    {% endif %}
+                   
+                     
+                   
                 </ul>
+                
 
-                {% if user.is_authenticated %}
-                <div class="position-absolute end-0">
+               
+                
+                <div class="position-absolute end-0 color-dark1">
+                     {% if user.is_authenticated %}
+                    <img style="width: 20px;"
+                    src="{% static '/images/u.webp' %}" alt="username">
                     <span><b> {{ user.username }} </b></span>
                     <span>
-                        <a class="text-decoration-none color-second-text mx-2" href="{% url 'logout' %}">Logout</a>
+                        <a class="text-decoration-none color-second-text mx-2" type="submit"
+                        onclick="return confirm('Вы хотите выйти из аккаунта?')"  title="Выйти из аккаунта" href="{% url 'logout' %}">
+                            <img style="width: 24px;"
+                    src="{% static '/images/v.webp' %}" alt="exit"></a>
+                    </span>
+                    {% else %}
+                     
+                    
+                     <span class="nav-item">
+                        <a class="nav-link active color-dark1" title="Войти в аккаунт" aria-current="page" href="{% url 'login' %}"><img style="width: 24px;"
+                    src="{% static '/images/a.png' %}" alt="exit"></a>
                     </span>
 
-
+{% endif %}
                 </div>
 
                 <!-- <span class="position-absolute end-0 me-3"> Логин: <b> {{ user.username }} </b></span> -->
-                {% endif %}
+                
             </div>
         </div>
 

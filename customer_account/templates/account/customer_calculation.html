@@ -1,0 +1,523 @@
+
+{% extends 'profile_base.html' %}
+
+{% load static %}
+{% load django_bootstrap5 %}
+
+
+{% block title %}
+{{ block.super }}: запросы
+{% endblock %}
+
+
+{% block content %}
+
+            <div class="wrapper">
+            <div class="content">
+                                <div class="fixed-background"></div>
+
+                <div class="header">
+                    <div class="header-panel">
+                       
+                            <h3>Страница в разработке</h3>
+                        
+                        
+                                
+
+    <div>
+        <div class="info">
+            <span class="fa fa-calculator"></span><span>Калькулятор доставки сборных грузов</span>
+        </div>
+        <div class="b-homeCalc_form">
+                        <form class="form-style calc-delivery__form" method="post">
+                
+                <div class="b-direction row">
+                    <span class="b-direction_item col-xs-6">
+                        <span class="label-calc">
+							ГОРОД ОТПРАВЛЕНИЯ
+						</span>
+						<select name="city">
+                            <option value="">---</option>
+                                                            <option value="shanghai" >Шанхай</option>
+                                                            <option value="shenzhen" >Шэньчжэнь</option>
+                            						</select>
+					</span>
+                    <span class="b-direction_item col-xs-6">
+                        <span class="label-calc">
+							ГОРОД ПРИБЫТИЯ
+						</span>
+						<select name="city-arrival" disabled>
+                            <option value="">Москва</option>
+						</select>
+					</span>
+
+                </div>
+                <div class="b-direction row">
+                    <span class="b-direction_item col-xs-6">
+                        <span class="label-calc">
+							ВЕС В КГ
+						</span>
+						<input class="input" type="text" name="weight" id="calc-delivery__weight" placeholder="0" value="" required="" aria-required="true">
+					</span>
+                    <span class="b-direction_item col-xs-6">
+						<span class="label-calc">
+							НА ЧЕЙ КОНТРАКТ
+						</span>
+                        <select name="contract">
+                                                            <option value="straight" >Прямой контракт</option>
+                                                            <option value="avrora" >Контракт Авроры</option>
+                            						</select>
+                    </span>
+                </div>
+                <div class="b-direction row">
+                     <span class="b-direction_item col-xs-6">
+						<span class="label-calc">
+							ОБЪЁМ М³
+						</span>
+						<input class="input" type="text" name="volume" id="calc-delivery" placeholder="0" value="" required="" aria-required="true">
+					</span>
+                    <span class="b-direction_item col-xs-6">
+						<span class="label-calc">
+							КОЛИЧЕСТВО МЕСТ
+						</span>
+						<input class="input" type="text" name="countPlaces" id="calc-delivery__count-places" placeholder="0" value="" >
+                    </span>
+                </div>
+                <div class="b-direction row">
+                    <span class="b-direction_item col-xs-12">
+						<input type="hidden" name="sessid" id="sessid" value="0c152ae278593d40097138b514b82d9a" />                        <input type="submit" name="submit-calc-delivery" value="Рассчитать">
+					</span>
+                </div>
+            </form>
+
+                                </div>
+    </div>
+
+</div>
+<script>
+    var calcDeliveryTemplatePath = "/local/components/a.savin/calc.delivery.new/templates/.default";
+    </script>                </div>
+                <div class="calc-container__wrapper">
+                    <div class="b-homeCalc calc-container  ">
+    <div>
+        <div class="info">
+            <span class="fa fa-calculator"></span><span>Калькулятор доставки контейнера</span>
+        </div>
+
+        <div class="b-homeCalc_form">
+            <form class="form-style calc-container__form" method="post">
+                <input type="hidden" class="js-calc-date-currency" id="js-calc-date-currency" name="date-currency" value="">
+
+                <div class="b-direction row">
+                    <span class="b-direction_item col-xs-6">
+                        <span class="label-calc">
+							ПОРТ ОТПРАВЛЕНИЯ
+						</span>
+						<select name="port-of-departure">
+                            <option value="">---</option>
+                                                            <option value="31" >Китай, Shanghai / Шанхай</option>
+                                                            <option value="25" >Китай, Ningbo / Нингбо</option>
+                                                            <option value="26" >Китай, Qingdao / Циндао</option>
+                                                            <option value="41" >Китай, Xiamen / Сямынь</option>
+                                                            <option value="42" >Китай, Xingang (via Pusan) / Ксинганг (через Пусан)</option>
+                                                            <option value="45" >Китай, Yantian / Яньтянь</option>
+                                                            <option value="18" >Китай, Hong Kong (via Yantian) / Гонконг (через Яньтянь)</option>
+                                                            <option value="51" >Корея, Pusan / Пусан</option>
+                                                            <option value="32" >Китай, Shantou (via Xiamen) / Шантоу (через Сямынь)</option>
+                                                            <option value="1" >Въетнам, Haiphong (via Pusan) / Хайфон (через Пусан)</option>
+                                                            <option value="2" >Въетнам, Hochiminh (via Xiamen) / Хошимин (через Сямынь)</option>
+                                                            <option value="3" >Индия, Nhava Sheva (via Xiamen) / Нава Шева (через Сямынь)</option>
+                                                            <option value="4" >Индия, Pipavav (via Xiamen) / Пипавав (через Сямынь)</option>
+                                                            <option value="6" >Индонезия, Jakarta (via Shanghai) / Джакарта (через Шанхай)</option>
+                                                            <option value="7" >Индонезия, Semarang (via Shanghai) / Семаранг (через Шанхай)</option>
+                                                            <option value="8" >Индонезия, Surabaya (via Shanghai) / Сурабайя (через Шанхай)</option>
+                                                            <option value="9" >Китай, Changsha (via Shanghai) / Чанша (через Шанхай)</option>
+                                                            <option value="10" >Китай, Changshu (via Shanghai) / Чаншу (через Шанхай)</option>
+                                                            <option value="72" >Китай, Zhapu (via Ningbo) / Чжапу (через Нингбо)</option>
+                                                            <option value="71" >Китай, Zhanjiang (via Nansha) / Чжаньцзян (через Наньша)</option>
+                                                            <option value="70" >Китай, Yueyang (via Shanghai) / Юэян (через Шанхай)</option>
+                                                            <option value="73" >Тайвань, Kaohsiung (via Xiamen) / Каосюнг (через Сямынь)</option>
+                                                            <option value="69" >Китай, Taicang (via Shanghai) / Тайцан (через Шанхай)</option>
+                                                            <option value="68" >Китай, Zhuhai (via Nansha) / Чжухай (через Наньша)</option>
+                                                            <option value="67" >Китай, Jiujiang (via Shanghai) / Цзюцзян (через Шанхай)</option>
+                                                            <option value="74" >Япония, Japan (Hakata) / Япония (Хаката)</option>
+                                                            <option value="12" >Китай, Chongqing (via Shanghai) / Чунцин (через Шанхай)</option>
+                                                            <option value="13" >Китай, Dalian (via Pusan) / Далянь (через Пусан)</option>
+                                                            <option value="14" >Китай, Foshan (via Nansha) / Фошань (через Наньша)</option>
+                                                            <option value="15" >Китай, Fuzhou (via Xiamen) / Фучжоу (через Сямынь)</option>
+                                                            <option value="16" >Китай, Guangzhou (via Yantian)/ Гуанчжоу (через Яньтянь)</option>
+                                                            <option value="19" >Китай, Huangpu (via Nansha) / Хуанпу (через Наньша)</option>
+                                                            <option value="20" >Китай, Jiangmen (via Nansha) / Жангмень (через Наньша)</option>
+                                                            <option value="21" >Китай, Lianyungang (via Qingdao) / Ляньюньган (через Циндао)</option>
+                                                            <option value="22" >Китай, Nanjing (via Shanghai) / Наньцзин (через Шанхай)</option>
+                                                            <option value="23" >Китай, Nansha / Наньша</option>
+                                                            <option value="24" >Китай, Nantong (via Shanghai) / Наньтун (через Шанхай)</option>
+                                                            <option value="28" >Китай, Rizhao (via Qingdao) / Жичжао (через Циндао)</option>
+                                                            <option value="33" >Китай, Shenzhen (via Yantian)/ Шэньчжэнь (через Яньтянь)</option>
+                                                            <option value="34" >Китай, Shidao (via Qingdao) / Шидао (через Циндао)</option>
+                                                            <option value="35" >Китай, Shunde (via Nansha) / Шанде (через Наньша)</option>
+                                                            <option value="36" >Китай, Taizhou (via Shanghai) / Тайчжоу (через Шанхай)</option>
+                                                            <option value="37" >Китай, Weihai (via Qingdao) / Вэйхай (через Циндао)</option>
+                                                            <option value="38" >Китай, Wenzhou (via Ningbo) / Венчжоу (через Нингбо)</option>
+                                                            <option value="39" >Китай, Wuhan (via Shanghai) / Ухань (через Шанхай)</option>
+                                                            <option value="40" >Китай, Wuhu (via Shanghai) / Уху (через Шанхай)</option>
+                                                            <option value="43" >Китай, Yangzhou (via Shanghai) / Янчжоу (через Шанхай)</option>
+                                                            <option value="44" >Китай, Yantai (via Qingdao) / Яньтай (через Циндао)</option>
+                                                            <option value="46" >Китай, Zhangjiagang (via Shanghai) / Чжанцзяган (через Шанхай)</option>
+                                                            <option value="47" >Китай, Zhenjiang (via Shanghai) / Чжэньцзян (через Шанхай)</option>
+                                                            <option value="48" >Китай, Zhongshan (via Nansha) / Жонгшань (через Наньша)</option>
+                                                            <option value="50" >Корея, Inchon (via Pusan) / Инчон (через Пусан)</option>
+                                                            <option value="52" >Малайзия, Pasir Gudang (via Shanghai) / Пасир Гуданг (через Шанхай)</option>
+                                                            <option value="53" >Малайзия, Penang (via Shanghai) / Пенанг (через Шанхай)</option>
+                                                            <option value="54" >Малайзия, Port Klang (via Shanghai) / Порт Кланг (через Шанхай)</option>
+                                                            <option value="55" >Сингапур, Singapore (via Xiamen) / Сингапур (через Сямынь)</option>
+                                                            <option value="56" >Таиланд, Bangkok (via Hochiminh) / Бангкок (через Хошимин)</option>
+                                                            <option value="57" >Таиланд, Laem Chabang (via Hochimingh) / Лаем Чабанг (через Хошимин)</option>
+                                                            <option value="59" >Тайвань, Keelung (via Xiamen) / Килунг (через Сямынь)</option>
+                                                            <option value="60" >Тайвань, Taichung (via Xiamen) / Тайчунг (через Сямынь)</option>
+                                                            <option value="61" >Филиппины, Manila (via Shanghai) / Манила (через Шанхай)</option>
+                                                            <option value="62" >Япония, Japan (Kobe) / Япония (Кобе)</option>
+                                                            <option value="63" >Япония, Japan (Nagoya) / Япония (Нагойя)</option>
+                                                            <option value="64" >Япония, Japan (Shimizu) / Япония (Шимизу)</option>
+                                                            <option value="65" >Япония, Japan (Toyamashinko) / Япония (Тояма)</option>
+                                                            <option value="66" >Япония, Japan (Yokohama) / Япония (Йокогама)</option>
+                                                    </select>
+					</span>
+                    <span class="b-direction_item col-xs-6">
+                        <span class="label-calc">
+							ПОРТ ПЕРЕВАЛКИ
+						</span>
+						<select name="port-transfer">
+                            <option value="1" selected>порт Владивосток</option>
+						</select>
+					</span>
+                </div>
+                <div class="b-direction row">
+                    <span class="b-direction_item col-xs-6">
+                        <span class="label-calc">
+							ГОРОД ДОСТАВКИ
+						</span>
+						<select name="city-of-delivery">
+                            <option value="">---</option>
+                                                            <option value="16" >Москва (Силикатная / Белый Раст)</option>
+                                                            <option value="17" >Москва (Ховрино)</option>
+                                                            <option value="29" >Санкт-Петербург (Автово / Заневский Пост)</option>
+                                                            <option value="23" >Новосибирск (Восточный)</option>
+                                                            <option value="6" >Екатеринбург (Кольцово)</option>
+                                                            <option value="13" >Красноярск (Базаиха)</option>
+                                                            <option value="41" >Ростов-на-Дону (Ростов-Западный)</option>
+                                                            <option value="42" >Самара (Безымянка)</option>
+                                                            <option value="43" >Краснодар (Тимашевсая)</option>
+                                                            <option value="44" >Казань (Тихорецкая)</option>
+                                                            <option value="45" >Хабаровск (Красная речка)</option>
+                                                            <option value="46" >Челябинск (Формачево)</option>
+                                                            <option value="47" >Иркутск (Иркутск-Сортировочный)</option>
+                                                            <option value="24" >Новосибирск (Клещиха)</option>
+                                                            <option value="19" >Нижний Новгород (Костариха)</option>
+                                                            <option value="26" >Пермь (Блочная)</option>
+                                                            <option value="1" >Абакан</option>
+                                                            <option value="2" >Барнаул</option>
+                                                            <option value="3" >Благовещенск</option>
+                                                            <option value="4" >Волгоград (Волжский)</option>
+                                                            <option value="5" >Воронеж (Придача)</option>
+                                                            <option value="7" >Ижевск (Позимь)</option>
+                                                            <option value="10" >Кемерово-Сортировочное</option>
+                                                            <option value="11" >Комсомольск-на-Амуре</option>
+                                                            <option value="14" >Магнитогорск-Грузовой</option>
+                                                            <option value="18" >Нижнекамск</option>
+                                                            <option value="20" >Новокузнецк-Восточный</option>
+                                                            <option value="21" >Новомосковск (Сборная-Угольная)</option>
+                                                            <option value="22" >Новороссийск</option>
+                                                            <option value="25" >Омск-Восточный</option>
+                                                            <option value="30" >Саратов (Трофимовский 2)</option>
+                                                            <option value="31" >Сургут</option>
+                                                            <option value="32" >Сыктывкар</option>
+                                                            <option value="33" >Тольятти</option>
+                                                            <option value="34" >Томск-Грузовой</option>
+                                                            <option value="35" >Туймазы</option>
+                                                            <option value="36" >Тюмень (Войновка)</option>
+                                                            <option value="37" >Ульяновск</option>
+                                                            <option value="38" >Уфа (Черниковка)</option>
+                                                    </select>
+					</span>
+                    <span class="b-direction_item col-xs-6">
+                        <span class="label-calc">
+							Где растамаживаем
+						</span>
+						<select name="delivery-conditions">
+                                                            <option value="279" >Порт Владивосток</option>
+                                                            <option value="280" >Станция назначения</option>
+                            						</select>
+					</span>
+                </div>
+                <div class="b-direction row">
+                    <span class="b-direction_item col-xs-6">
+                        <span class="label-calc">
+							ТИП КОНТЕЙНЕРА
+						</span>
+						<select name="type-container">
+                            <option value="">---</option>
+                                                            <option value="3" >40’HC</option>
+                                                            <option value="1" >20’GP</option>
+                                                            <option value="2" >40’DV</option>
+                                                    </select>
+					</span>
+                    <span class="b-direction_item col-xs-6">
+						<span class="label-calc">
+							КУРС $
+						</span>
+						<input class="input" type="text" name="rate" id="calc-container__rate" placeholder="0" value="" >
+					    <span class="fa fa-calendar calc-icon-calendar js-calc-container-change-date-currency" title="Дата курса валют"></span>
+                    </span>
+                </div>
+                <div class="b-direction row">
+                    <span class="b-direction_item col-xs-6">
+                        <span class="label-calc">
+							ВЕС БРУТТО, В КГ
+						</span>
+						<input class="input" type="text" name="weight" placeholder="0" value="">
+					</span>
+                    <span class="b-direction_item col-xs-6"></span>
+                </div>
+                <div class="b-direction row">
+                    <div class="b-direction_item col-xs-12">
+                        <div class="checkbox-style calc-container__auto-shipping-wrapper">
+                            <input type="checkbox" name="auto-shipping" value="Y" id="calc-container__auto-shipping" >
+                            <label for="calc-container__auto-shipping">АВТОВЫВОЗ ОТ СТАНЦИИ ДО КОНЕЧНОГО АДРЕСА</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="b-direction row calc-container__auto-shipping-row ">
+                   <span class="b-direction_item col-xs-12">
+                        <span class="label-calc label-calc-wrap">
+                            РАССТОЯНИЕ ОТ СТАНЦИИ/ГОРОДА ДО КОНЕЧНОГО АДРЕСА, КМ
+						</span>
+						<input class="input" type="text" name="auto-shipping-distance" placeholder="0" value="">
+					</span>
+                </div>
+                <div class="b-direction row">
+                    <span class="b-direction_item col-xs-12">
+                        <input type="hidden" name="sessid" id="sessid_1" value="0c152ae278593d40097138b514b82d9a" />                        <input type="hidden" name="send-calc-container" value="Y">
+                        <input type="submit" name="submit-calc-container" value="Рассчитать">
+                    </span>
+                </div>
+            </form>
+            <div class="calc-container__result">
+                                            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    var calcContainerTemplatePath = "/local/components/a.savin/calc.container/templates/.default";
+</script>                </div>
+                <div class="calculator-custom__wrapper">
+                    <div class="b-homeCalc custom-calculator  ">
+    <div>
+        <div class="info">
+            <span class="fa fa-calculator"></span><span>Таможенный калькулятор</span>
+        </div>
+
+        <div class="b-homeCalc_form">
+            <div class="b-direction row custom-calculator__row">
+                <div class="b-direction_item col-xs-12">
+                    <div class="calc-currency-block">
+                        <span class="fa fa-calendar calc-icon-calendar js-calc-change-date-currency"
+                              title="Дата курса валют"></span>
+                        <span class="currency-info" data-code="EUR">
+                            € <span>90.0068</span>
+                        </span>
+                        &nbsp;
+                        <span class="currency-info" data-code="USD">
+                            $ <span>79.0028</span>
+                        </span>
+
+                        <span class="currency-info" data-code="CNY">
+                            ￥ <span>10.9317</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <form class="form-style customs-calculator" method="post">
+                <input type="hidden" class="js-calc-date-currency" id="js-calc-custom-date-currency"
+                       name="date-currency" value="">
+                                <div class="customs-calculator__rows">
+                    <div class="b-direction row custom-calculator__row">
+                        <div class="b-direction_item col-xs-12 search-tnved-input__container">
+                            <input class="input search-tnved-input" type="text" name="search-tnved-input"
+                                   placeholder="Поиск кода ТН ВЭД по названию">
+                        </div>
+                        <span class="b-direction_item col-xs-6">
+                            <span class="label-calc">
+                                Код ТН ВЭД<span class="required">*</span>
+                            </span>
+                            <input class="input" type="text" name="CODE" id="code" placeholder="1234567890"
+                                   value="" required>
+                        </span>
+                        <span class="b-direction_item col-xs-6">
+                            <span class="label-calc">
+                                Страна
+                            </span>
+                            <select name="CITY">
+                                                                    <option value="1">Китай</option>
+                                                                    <option value="3">Германия</option>
+                                                                    <option value="7">Франция</option>
+                                                                    <option value="8">Великобритания</option>
+                                                                    <option value="9">Испания</option>
+                                                                    <option value="10">Италия</option>
+                                                                    <option value="12">Турция</option>
+                                                                    <option value="13">Корея</option>
+                                                                    <option value="14">Китай</option>
+                                                                    <option value="15">Вьетнам</option>
+                                                                    <option value="16">Канада</option>
+                                                            </select>
+                        </span>
+                        <div class="clearfix"></div>
+                        <div class="col-xs-12 tnved-name"></div>
+                        <div class="clearfix"></div>
+
+                        <span class="b-direction_item col-xs-6">
+                            <span class="label-calc">
+                                Стоимость товара<span class="required">*</span>
+                            </span>
+                            <input class="input" type="text" name="PRICE" id="price" placeholder="0"
+                                   value="" required>
+                            <select class="calc-select-rates-in-input" name="PRICE_CURRENCY">
+                                                                    <option value="USD">$</option>
+                                                                    <option value="EUR">€</option>
+                                                                    <option value="CNY">￥</option>
+                                                            </select>
+                        </span>
+                        <span class="b-direction_item col-xs-6">
+                            <span class="label-calc calc-label-unit">кг</span>
+                            <input class="input" type="text" name="WEIGHT" id="weight" placeholder="0"
+                                   value="" required>
+                        </span>
+
+                        <div class="clearfix"></div>
+                        <span class="b-direction_item col-xs-6">
+                            <span class="label-calc">
+                                Общие Расходы до границы
+                            </span>
+                            <input class="input" type="text" name="COSTS_TO_BORDER" id="costs-to-the-border"
+                                   placeholder="0" value="">
+                            <select class="calc-select-rates-in-input" name="COSTS_TO_BORDER_CURRENCY">
+                                                                    <option value="USD">$</option>
+                                                                    <option value="EUR">€</option>
+                                                                    <option value="CNY">￥</option>
+                                                            </select>
+                        </span>
+                    </div>
+                </div>
+                <div class="b-direction row custom-calculator__row-submit">
+                    <span class="b-direction_item col-xs-6">
+						<input type="hidden" name="sessid" id="sessid_2" value="0c152ae278593d40097138b514b82d9a" />                        <input type="hidden" name="submit-calc-custom" value="Y">
+						<input type="submit" name="submit-calc" value="Рассчитать">
+					</span>
+                    <div class="custom-calculator__add-tnved-wrapper col-xs-6">
+                        <div class="button custom-calculator__add-tnved-button js-custom-calculator-add-tnved">
+                            Добавить код ТН ВЭД
+                            <span class="custom-calculator__add-tnved-button-icon fa fa-plus-circle"></span>
+                        </div>
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="customs-calculator__link-video-wrapper col-xs-12">
+                        <a href="https://youtu.be/YVHG7B6oajQ" target="_blank"
+                           class="customs-calculator__link-video"><img src="/images/icons/youtube-icon.png"> Проверяем
+                            расчеты таможенного калькулятора на примере выпущенной ДТ</a>
+                    </div>
+                </div>
+                            </form>
+
+            <div class="calc-result__wrapper">
+                
+                            </div>
+        </div>
+    </div>
+
+</div>
+<script>
+    let calcTemplatePath = "/local/components/a.savin/calc.cocket/templates/.default";
+    let calcCocketComponentPath = "/local/components/a.savin/calc.cocket";
+    window.customCalculatorFieldsConfig = [{'wrapper':{'attr':{'class':'b-direction_item col-xs-12 search-tnved-input__container'}},'input':{'attr':{'type':'text','class':'input search-tnved-input','name':'search-tnved-input','placeholder':'Поиск кода ТН ВЭД по названию'}}},{'wrapper':{'attr':{'class':'b-direction_item col-xs-6'}},'input':{'attr':{'type':'text','class':'input','name':'CODE','placeholder':'1234567890','required':true}},'label':{'name':'Код ТН ВЭД','required':true}},{'wrapper':{'attr':{'class':'b-direction_item col-xs-6'}},'select':{'attr':{'type':'text','name':'CITY'},'values':[{'value':'1','text':'Китай'},{'value':'3','text':'Германия'},{'value':'7','text':'Франция'},{'value':'8','text':'Великобритания'},{'value':'9','text':'Испания'},{'value':'10','text':'Италия'},{'value':'12','text':'Турция'},{'value':'13','text':'Корея'},{'value':'14','text':'Китай'},{'value':'15','text':'Вьетнам'},{'value':'16','text':'Канада'}]},'label':{'name':'Страна'}},{'wrapper':{'attr':{'class':'clearfix'}}},{'wrapper':{'attr':{'class':'col-xs-12 tnved-name'}}},{'wrapper':{'attr':{'class':'clearfix'}}},{'wrapper':{'attr':{'class':'b-direction_item col-xs-6'}},'input':{'attr':{'type':'text','class':'input','name':'PRICE','placeholder':'0','required':true}},'select':{'attr':{'class':'calc-select-rates-in-input','name':'PRICE_CURRENCY'},'values':[{'value':'USD','text':'$'},{'value':'EUR','text':'€'},{'value':'CNY','text':'￥'}]},'label':{'name':'Стоимость товара','required':true}},{'wrapper':{'attr':{'class':'b-direction_item col-xs-6'}},'input':{'attr':{'type':'text','class':'input','name':'WEIGHT','placeholder':'0'}},'label':{'name':'кг','class':'calc-label-unit'}},{'wrapper':{'attr':{'class':'clearfix'}}}];
+</script>                </div>
+                <div class="track-number__wrapper">
+                    <div class="track-number-block b-homeCalc">
+    <div class="info"><span class="fa fa-location-arrow"></span>Отследить груз</div>
+    <div class="b-homeCalc_form">
+        <form class="form-track-number">
+            <div class="b-direction row">
+                            <span class="b-direction_item col-xs-8">
+                                <label for="track-number">Трек номер</label>
+                            </span>
+                <span class="b-direction_item col-xs-4"> </span>
+                <div class="clearfix"></div>
+                <span class="b-direction_item col-xs-7">
+                                <input class="input" type="text" name="track-number" id="track-number" value=""
+                                       placeholder="Введите трекномер">
+                            </span>
+                <span class="b-direction_item col-xs-5">
+                                <input type="submit" class="btn btn-calc" value="Отследить">
+                   
+    <!-- <div class="div-content calculators-block">
+        <h3>Калькулятор расчета логистики и таможенного оформления</h3>
+
+        <div class="clearfix"></div>
+    </div>
+    <div class="servise-banners">
+        <div class="col-sm-4 col-xs-12 servise-banner" style="background-image: url('/images/servise/bg-service1.jpg');">
+            <div class="servise-banner__container">
+                <div class="servise-banner__image">
+                    <img src="/images/servise/1.svg">
+                </div>
+                <div class="servise-banner__title">
+                    Построение индивидуального<br>
+                    маршрута
+                </div>
+                <div class="servise-banner__text">
+                    Наше решение – это комбинация международного опыта наших зарубежных партнеров по доставке, наш многолетний опыт таможенного оформления и широкая география доставки в России.
+                </div>
+                <a href="" class="servise-banner__button">
+                    Узнать больше </a>
+            </div>
+        </div>
+        <div class="col-sm-4 col-xs-12 servise-banner" style="background-image: url('/images/servise/bg-service2.jpg');">
+            <div class="servise-banner__container">
+                <div class="servise-banner__image">
+                    <img src="/images/servise/2.svg">
+                </div>
+                <div class="servise-banner__title">
+                    Доставка сборных и генеральных<br>
+                    грузов на контракт клиента
+                </div>
+                <div class="servise-banner__text">
+                    Наше решение – это комбинация международного опыта наших зарубежных партнеров по доставке, наш многолетний опыт таможенного оформления и широкая география доставки в России.
+                </div>
+                <a href="" class="servise-banner__button">
+                    Узнать больше </a>
+            </div>
+        </div>
+        <div class="col-sm-4 col-xs-12 servise-banner" style="background-image: url('/images/servise/bg-service3.jpg');">
+            <div class="servise-banner__container">
+                <div class="servise-banner__image">
+                    <img src="/images/servise/4.svg">
+                </div>
+                <div class="servise-banner__title">
+                    Доставка сборных и генеральных<br>
+                    грузов на наш контракт
+                </div>
+                <div class="servise-banner__text">
+                    Наше решение – это комбинация международного опыта наших зарубежных партнеров по доставке, наш многолетний опыт таможенного оформления и широкая география доставки в России.
+                </div>
+                <a href="" class="servise-banner__button">
+                    Узнать больше </a>
+            </div>
+        </div>
+    </div>
+    <div class="clearfix">
+    </div> -->
+   
+
+
+{% endblock %}

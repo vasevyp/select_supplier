@@ -98,7 +98,7 @@ def login_view(request):
 
                 # Всё ок — авторизуем
                 login(request, user)
-                return redirect("profile")
+                return redirect("dashbord")
 
     else:
         form = LoginForm()
