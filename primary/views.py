@@ -74,4 +74,9 @@ def tariffs_page(request):
     return render(request, 'primary/tariffs_page.html')
 
 def info_page(request):
-    return render(request, 'primary/info_page.html')
+    context={
+        'supplier_list': Supplier.objects.all().count,
+        'country_list': Country.objects.all().count,
+        'category_list': Category.objects.all().count
+    }
+    return render(request, 'primary/info_page.html', context)

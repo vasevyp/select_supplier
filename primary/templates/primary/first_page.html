@@ -1,45 +1,82 @@
-{% extends 'simple.html' %}
 {% load static %}
 {% load django_bootstrap5 %}
 
-{% block title %}
-{{ block.super }}:
-{% endblock %}
+<!DOCTYPE html>
+<html lang="en">
 
 
-{% block content %}
-<div class="container col-12 mx-auto mb-3">
-    
-    <div class="text-center mt-3" ><a href="{% url 'main' %}"> <img src="{% static 'logo/logo.png' %}" alt="logo"  height="60"></a></div>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <meta http-equiv="refresh" content="11;url=http://127.0.0.1:8000/main" />
+    <meta name="description"
+        content="Приложение предоставляет пользователю возможность поиска производителей заданной продукции во всех странах мира, подбора оптимального логистического решения по доставке продукции, расчета стоимости таможенного оформления продукции для импорта в Россию. The application provides the user with a search for manufacturers of specified products in all countries of the world, selection of the optimal logistics solution for delivery of products, calculation of the cost of customs clearance of products for import into Russia.">
+    <link rel="shortcut icon" type="image/png" href="{% static 'logo/logo.png' %}" />
+
+    <title>VedInfo</title>
+
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+    {# Display django.contrib.messages as Bootstrap alerts #}
+    {% bootstrap_messages %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
+        rel="stylesheet">
+
+
+
+</head>
+<body >
+    <div id='box' class="container col-12 margin-mb100">
     <div class="vedinfo-logo">VEDINFO.ONLINE</div>
+    <!-- <div class="text-center color-second-text mb-1">Мир без границ — расчеты без ошибок</div> -->
+     <div id="loader">
+     <h2 id="loading-text" class="loading-text text-center my-1" >🔍 Загружаем актуальные данные...</h2>
+    <video autoplay muted loop class="w-100" width="1000" height="490">
+      <source src="{% static '/video/agl_banner_video.mp4' type='video/mp4' %}">
+    </video>
+    <!-- <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cGF0aCBkPSJNMjAgNTBINDBMNjAgODBMODAgMjBMMTAwIDUwIiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iOCIvPjwvc3ZnPg==" alt="Logo" width="100"> -->
    
-
-
-   
-
-    <h2 class="text-center my-5">Информационная система «Поиск поставщиков продукции»</h2>
-    <p class="fs-5 mt-4">Приложение <b>Информационная система «Поиск поставщиков продукции»</b> сейчас находится <b>в
-            разработке</b> и скоро будет доступно для
-        пользователей.
-    </p>
-    <p class="fs-5 mt-4">В Приложении будет большой перечень предприятий, с описанием производимой продукции.</p>
-    <p class="fs-5 mt-4"> С помощью Приложения пользователь по запросу сможет находить необходимого
-        производителя/поставщика заданного
-        продукта по всем странам, выполнять расчет таможенных платежей и логистики.</p>
-
-    {% if user.is_authenticated %}
-    <!-- <div class="text-center">
-        <a class="btn  btn-outline-secondary color-button-text bg-dark1 mt-3" href="{% url 'main' %}">На Главную</a>
+  </div>
     </div>
-    <div class="text-center">
-        <a class="btn  bg-blue1 color-button-text bg-hover1 mt-3" href="{% url 'logout' %}">Logout</a>
-    </div> -->
-    {% endif %}
 
+    
+</body>
+  <script>
+    // Динамический текст
+    const phrases = [
+      "🔍 Настраиваем базу поставщиков...",
+      "📊 Обновляем таможенные ставки...",
+      "🌍 Синхронизируем логистические маршруты...",
+      "✅ Готово! Перенаправляем..."
+    ];
+    let currentPhrase = 0;
+    const textElement = document.getElementById('loading-text');
+    
+    const interval = setInterval(() => {
+      currentPhrase++;
+      if (currentPhrase >= phrases.length) {
+        clearInterval(interval);
+        document.getElementById('loader').style.opacity = '0';
+        setTimeout(() => {
+          document.getElementById('loader').style.display = 'none';
+        }, 500);
+        return;
+      }
+      textElement.textContent = phrases[currentPhrase];
+    }, 3000);
 
+    setTimeout(() => {
+  const box = document.getElementById('box1');
 
+  // 👇️ removes element from DOM
+//   box.style.display = 'none';
 
-</div>
-
-
-{% endblock %}
+  // 👇️ hides element (still takes up space on page)
+  box.style.display = 'block';
+}, 10000); // 👈️ time in milliseconds
+  </script>
+</html>
