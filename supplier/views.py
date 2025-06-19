@@ -10,9 +10,11 @@ from django.views.generic import ListView, DetailView
 from django.db.models import Q
 from django.contrib.postgres.search import SearchVector, SearchQuery
 from django.contrib.auth.decorators import login_required  
+from django.contrib.auth.models import User
 
 from .forms import ImportForm, SupplierSearchForm, SupplierSearchForm2
 from .models import Supplier, Country, Category
+from customer_account.models import SearchResult
 
 
 class Category_list(ListView):
@@ -53,6 +55,8 @@ def supplier_detail(request, pk):
 # @login_required 
 def supplier_selection(request):
     """Выбор полных данных по поставщику за все периоды Полнотекстовый поиск"""
+    current_user = request.user
+    print('current_user.id=',current_user.id)
     form = SupplierSearchForm
     results = []
     language=''
@@ -90,6 +94,17 @@ def supplier_selection(request):
             Q(search=search_query) & Q(country=country)
         )    
         if results:
+            # print('Result-count== ',results.count())
+            for i in results:
+                SearchResult.objects.get_or_create(
+                    user_id = request.user.id,
+                    # supplier_name=i.name,
+                    supplier_name_id = i.id,
+                    supplier_email=i.email,
+                    product = query
+                )
+                print('NEW Res==', request.user.id, query, i.product, i.name, i.email)
+
             search_result=results
         else:
             select_except = "Вернитесь к форме выбора и повторите поиск."

@@ -173,7 +173,7 @@ def password_reset_confirm(request, token):
 
 def user_logout(request):
     logout(request)
-    return redirect("start")
+    return redirect("main")
 
 
 # ===================================

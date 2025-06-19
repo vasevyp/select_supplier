@@ -65,6 +65,13 @@ class Supplier(models.Model):
     search_vector_product = SearchVectorField('product', null=True, blank=True)
     search_vector_product_ru = SearchVectorField('product_ru', null=True, blank=True)
 
+    def get_full_website(self):
+        """Добавляет протокол http:// если отсутствует"""
+        website = self.website.strip()
+        if website and not website.startswith(('http://', 'https://')):
+            return 'http://' + website
+        return website
+
 
     class Meta:
         """Help Supplier data"""

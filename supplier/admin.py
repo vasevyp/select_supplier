@@ -27,7 +27,7 @@ class CategoryAdmin(ImportExportModelAdmin):
 @admin.register(Supplier)
 class SupplierAdmin(ImportExportModelAdmin):
     # readonly_fields = ('name','website')
-    list_display = ("name", "country", "category", "index", "created_date")
+    list_display = ("name", "country", "category", "index", "id","created_date")
     search_fields = ("name", "product", "product_ru")
     list_filter = ("country", "category")
     save_on_top = True

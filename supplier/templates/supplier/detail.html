@@ -10,11 +10,11 @@
 <div class="container mt-5">
     <div class="card shadow-lg">
         <!-- <div class="card-header bg-primary text-white"> -->
-            <div class="card-header bcolor-blue mcolor" style="background-color: #2980B9; color:#FFFFFF
+        <div class="card-header bcolor-blue mcolor" style="background-color: #2980B9; color:#FFFFFF
 ">
             <h2 class="mb-0">{{ supplier.name }}</h2>
         </div>
-        
+
         <div class="card-body">
             <div class="row mb-4">
                 <div class="col-md-6">
@@ -28,10 +28,16 @@
 
                         <dt class="col-sm-4">Веб-сайт:</dt>
                         <dd class="col-sm-8">
-                            <a href="{{ supplier.website }}" target="_blank" class="text-decoration-none">
-                                {{ supplier.website }}
-                            </a>
+                            {% if supplier.website %}
+                            <a href="{{ supplier.get_full_website }}" target="_blank">
+                                    {{ supplier.website }}
+                                </a>
+                            {% endif %}
+
                         </dd>
+                        <dt class="col-sm-4">Email:</dt>
+                        <dd class="col-sm-8">{{ supplier.email }}</dd>
+
                     </dl>
                 </div>
 
@@ -68,13 +74,13 @@
             </div>
 
             <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                <a href="{% url 'supplier_selection' %}" class="btn btn-outline-secondary">
+                <!-- <a href="{% url 'supplier_selection' %}" class="btn btn-outline-secondary">
                     <i class="bi bi-arrow-left"></i> Назад к поиску
                 </a>
-                <a href="{% url 'main' %}?supplier={{ supplier.name|urlencode }}&product={{ supplier.product_ru|urlencode }}" 
-                   class="btn btn-success">
+                <a href="{% url 'main' %}?supplier={{ supplier.name|urlencode }}&product={{ supplier.product_ru|urlencode }}"
+                    class="btn btn-success">
                     <i class="bi bi-cart-plus"></i> Оформить заказ
-                </a>
+                </a> -->
             </div>
         </div>
     </div>

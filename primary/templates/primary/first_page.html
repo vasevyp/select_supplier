@@ -6,26 +6,27 @@
 
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-     <meta http-equiv="refresh" content="11;url=/main" />
-    <meta name="description"
-        content="Приложение предоставляет пользователю возможность поиска производителей заданной продукции во всех странах мира, подбора оптимального логистического решения по доставке продукции, расчета стоимости таможенного оформления продукции для импорта в Россию. The application provides the user with a search for manufacturers of specified products in all countries of the world, selection of the optimal logistics solution for delivery of products, calculation of the cost of customs clearance of products for import into Russia.">
-    <link rel="shortcut icon" type="image/png" href="{% static 'logo/logo.png' %}" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="refresh" content="11;url=/main" />
+  <meta name="description"
+    content="{{ meta_description }}">
+  <meta name="keywords" content="{{ meta_keywords }}">
+  <link rel="shortcut icon" type="image/png" href="{% static 'logo/logo.png' %}" />
 
-    <title>VedInfo</title>
+  <title>VedInfo</title>
 
-    {% bootstrap_css %}
-    {% bootstrap_javascript %}
-    {# Display django.contrib.messages as Bootstrap alerts #}
-    {% bootstrap_messages %}
-    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
-        rel="stylesheet">
-<style>
+  {% bootstrap_css %}
+  {% bootstrap_javascript %}
+  {# Display django.contrib.messages as Bootstrap alerts #}
+  {% bootstrap_messages %}
+  <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
+    rel="stylesheet">
+  <style>
     #loader {
       position: fixed;
       top: 0;
@@ -41,16 +42,30 @@
       color: white;
       font-family: 'Inter', sans-serif;
     }
+
     .loading-text {
-      font-size: 1.5rem;
+      font-size: 2rem;
+      font-weight: 600;
       margin-top: 20px;
       animation: fade 1.5s infinite;
+      text-align: center;
+      padding: auto;
     }
+
     @keyframes fade {
-      0% { opacity: 0.5; }
-      50% { opacity: 1; }
-      100% { opacity: 0.5; }
+      0% {
+        opacity: 0.5;
+      }
+
+      50% {
+        opacity: 1;
+      }
+
+      100% {
+        opacity: 0.5;
+      }
     }
+
     video {
       position: absolute;
       width: 100%;
@@ -62,62 +77,47 @@
 
 
 </head>
-<body >
-     <div id="loader">
+
+<body>
+  <div id="loader">
     <video autoplay muted loop>
       <source src="{% static '/video/agl_banner_video.mp4' type='video/mp4' %}" type="video/mp4">
     </video>
     <h1 class="color-button-text">VEDINFO.ONLINE</h1>
-    <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cGF0aCBkPSJNMjAgNTBINDBMNjAgODBMODAgMjBMMTAwIDUwIiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iOCIvPjwvc3ZnPg==" alt="Logo" width="100">
-    <p id="loading-text" class="loading-text">🔍 Загружаем актуальные данные...</p>
+    <img
+      src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cGF0aCBkPSJNMjAgNTBINDBMNjAgODBMODAgMjBMMTAwIDUwIiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iOCIvPjwvc3ZnPg=="
+      alt="Logo" width="100">
+    <p id="loading-text" class="loading-text"> Загружаем актуальные данные...</p>
   </div>
-    <!-- <div id='box' class=" col-12 margin-mb100">
-    <div class="vedinfo-logo">VEDINFO.ONLINE</div> -->
-    <!-- <div class="text-center color-second-text mb-1">Мир без границ — расчеты без ошибок</div> -->
-     <!-- <div id="loader"> -->
-     <!-- <h2 id="loading-text" class="loading-text text-center" >🔍 Загружаем актуальные данные...</h2> -->
-    <!-- <video autoplay muted loop class="w-100">
-      <source src="{% static '/video/agl_banner_video.mp4' type='video/mp4' %}">
-    </video>
-    <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48cGF0aCBkPSJNMjAgNTBINDBMNjAgODBMODAgMjBMMTAwIDUwIiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iOCIvPjwvc3ZnPg==" alt="Logo" width="100">
-    <p id="loading-text" class="loading-text">🔍 Загружаем актуальные данные...</p>
-  </div>
-    </div> -->
 
-    
+
+
 </body>
-  <script>
-    // Динамический текст
-    const phrases = [
-      "🔍 Настраиваем базу поставщиков...",
-      "📊 Обновляем таможенные ставки...",
-      "🌍 Синхронизируем логистические маршруты...",
-      "✅ Готово! Перенаправляем..."
-    ];
-    let currentPhrase = 0;
-    const textElement = document.getElementById('loading-text');
-    
-    const interval = setInterval(() => {
-      currentPhrase++;
-      if (currentPhrase >= phrases.length) {
-        clearInterval(interval);
-        document.getElementById('loader').style.opacity = '0';
-        setTimeout(() => {
-          document.getElementById('loader').style.display = 'none';
-        }, 500);
-        return;
-      }
-      textElement.textContent = phrases[currentPhrase];
-    }, 3000);
+<script>
+  // Динамический текст
+  const phrases = [
+    " Настраиваем базу поставщиков...",
+    " Обновляем таможенные ставки...",
+    " Синхронизируем логистические маршруты...",
+    " Готово! Перенаправляем..."
+  ];
+  let currentPhrase = 0;
+  const textElement = document.getElementById('loading-text');
 
-    setTimeout(() => {
-  const box = document.getElementById('box1');
+  const interval = setInterval(() => {
+    currentPhrase++;
+    if (currentPhrase >= phrases.length) {
+      clearInterval(interval);
+      document.getElementById('loader').style.opacity = '0';
+      setTimeout(() => {
+        document.getElementById('loader').style.display = 'none';
+      }, 500);
+      return;
+    }
+    textElement.textContent = phrases[currentPhrase];
+  }, 3000);
 
-  // 👇️ removes element from DOM
-//   box.style.display = 'none';
+ 
+</script>
 
-  // 👇️ hides element (still takes up space on page)
-  box.style.display = 'block';
-}, 10000); // 👈️ time in milliseconds
-  </script>
 </html>
