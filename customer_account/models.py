@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.contrib.postgres.fields import ArrayField
 from supplier.models import Supplier
 
 
@@ -17,12 +18,48 @@ class SearchResult(models.Model):
         verbose_name_plural = 'Выборка поставщиков'
     def __str__(self):
         return self.product
+    
+class MailSendList(models.Model):
+    '''выборка таблицы адресов для рассылки email, временная таблица на одну рассылку'''
+    email = models.CharField(max_length=254) 
+    user = models.ForeignKey(User, on_delete=models.CASCADE)    
+    product = models.CharField(max_length=255)
+    name = models.CharField(max_length=254) 
 
-# class SupplierRequest(models.Model):
+    def __str__(self):
+        return self.email
+    
+class SendedEmailSave(models.Model):
+    '''хранение отправленных пользователем сообщений поставщику'''
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    email = models.EmailField(max_length=254)
+    product = models.CharField(max_length=255)
+    message = models.TextField()
+    sended_at =  models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user} - {self.email}" 
+# class SendedEmailSave(models.Model):
+#     '''хранение отправленных пользователю сообщений (для режима разработки)'''
+#     STATUS_CHOICES = [
+#         ('pending', 'В ожидании'),
+#         ('sent', 'Отправлено'),
+#         ('failed', 'Ошибка'),
+#     ]
+
 #     user = models.ForeignKey(User, on_delete=models.CASCADE)
-#     supplier = models.ManyToManyField(Supplier)
+#     email = models.EmailField()
 #     product = models.CharField(max_length=255)
-#     sent_at = models.DateTimeField(auto_now_add=True)
+#     sended_at = models.DateTimeField(auto_now_add=True)
+#     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
+#     error_message = models.TextField(blank=True, null=True)
+
+#     def __str__(self):
+#         return f"{self.email} - {self.product} ({self.status})"
+       
+   
+
+    
 
 # # order/models.py
 # class SupplierResponse(models.Model):

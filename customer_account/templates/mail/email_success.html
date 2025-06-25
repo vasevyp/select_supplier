@@ -1,0 +1,17 @@
+{% extends 'profile_base.html' %}
+
+{% load static %}
+{% load django_bootstrap5 %}
+
+
+{% block title %}
+{{ block.super }}: Dashbord
+{% endblock %}
+
+
+{% block content %}
+<div class="alert alert-success">
+    <h2>Письма успешно отправлены!</h2>
+    <p>Ваши сообщения поставлены в очередь на отправку поставщикам.</p>
+</div>
+{% endblock %}

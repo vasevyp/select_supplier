@@ -98,7 +98,6 @@ def supplier_selection(request):
             for i in results:
                 SearchResult.objects.get_or_create(
                     user_id = request.user.id,
-                    # supplier_name=i.name,
                     supplier_name_id = i.id,
                     supplier_email=i.email,
                     product = query

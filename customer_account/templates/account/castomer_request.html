@@ -38,6 +38,8 @@
 
     {% if results %}
     <h3>Результаты для запроса: {{ results.0.product }} ( всего позиций: {{results.count}} )</h3>
+    <a class="btn bg-blue1 text-decoration-none bg-hover1 color-button-text my-2" type="post"
+        href="{% url 'redirect_send_emails' %}" target=_blank>Сделать запрос поставщикам</a>
     <table class="table table-striped demotable ">
         <thead style="position: sticky;
 top: -1px;

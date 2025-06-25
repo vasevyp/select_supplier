@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/5.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
-
+import os
 from .prod_settings import *
 
 
@@ -30,6 +30,7 @@ INSTALLED_APPS = [
     "django_bootstrap5",
     "crispy_forms",
     "captcha",
+    "celery",
     
     # myapp
     "primary.apps.PrimaryConfig",
@@ -149,7 +150,53 @@ LOGGING = {
             "level": "ERROR",
             "propagate": True,
         },
+         
+        'django': {
+            'handlers': ['file'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
+    
     },
 }
 
 CAPTCHA_CHALLENGE_FUNCT = 'captcha.helpers.math_challenge'
+
+# Настройки Celery
+
+# set the celery broker url
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
+
+# set the celery result backend
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TASK_DEFAULT_QUEUE = 'emails'
+
+# set the celery timezone
+CELERY_TIMEZONE = 'UTC'
+
+# Дополнительные настройки
+
+# EMAIL_LOGS_DIR = os.path.join(BASE_DIR, 'email_logs')
+
+# CELERY_TASK_DEFAULT_QUEUE = 'default'
+CELERY_TASK_QUEUES = {
+    'default': {
+        'exchange': 'default',
+        'routing_key': 'default',
+    },
+    'emails': {
+        'exchange': 'emails',
+        'routing_key': 'emails',
+    },
+}
+CELERY_TASK_DEFAULT_EXCHANGE = 'default'
+CELERY_TASK_DEFAULT_EXCHANGE_TYPE = 'direct'
+CELERY_TASK_DEFAULT_ROUTING_KEY = 'default'
+
+# Для обработки очень больших рассылок (100k+ писем) добавьте:
+CELERY_WORKER_PREFETCH_MULTIPLIER = 1  # Забирать по 1 задаче за раз
+CELERY_WORKER_MAX_TASKS_PER_CHILD = 100  # Перезапуск воркера после 100 задач

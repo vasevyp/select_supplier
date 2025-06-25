@@ -1,0 +1,17 @@
+{% extends "profile_base.html" %}
+
+{% block content %}
+<h2>Edit Email to Suppliers</h2>
+<form method="post">
+    {% csrf_token %}
+    <div class="form-group">
+        <label for="id_product">Product Name:</label>
+        {{ form.product }}
+    </div>
+    <div class="form-group">
+        <label for="id_message">Email Content:</label>
+        {{ form.message }}
+    </div>
+    <button type="submit" class="btn btn-primary">Send to {{ suppliers_count }} suppliers</button>
+</form>
+{% endblock %}

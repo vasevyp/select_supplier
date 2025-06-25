@@ -1,7 +1,8 @@
 # forms.py
 from django import forms
-from .models import SearchResult
 from django.db.models import Min
+from .models import SearchResult
+
 
 class SearchResultForm(forms.Form):
     search_product = forms.ModelChoiceField(
@@ -20,3 +21,21 @@ class SearchResultForm(forms.Form):
         
         # Отображаем название продукта вместо стандартного __str__
         self.fields['search_product'].label_from_instance = lambda obj: obj.product
+
+class SupplierEmailForm(forms.Form):
+    product = forms.CharField(
+        max_length=255,
+        widget=forms.TextInput(attrs={'class': 'form-control'}),
+        label="Отредактируйте наименование продукта на англ. языке"
+    )
+    message = forms.CharField(
+        widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 10}),
+        label="Отредактируйте текс сообщения: наименование продукта и подпись на англ. языке"
+    )
+    
+    def __init__(self, *args, **kwargs):
+        initial_product = kwargs.pop('initial_product', '')
+        initial_message = kwargs.pop('initial_message', '')
+        super().__init__(*args, **kwargs)
+        self.fields['product'].initial = initial_product
+        self.fields['message'].initial = initial_message

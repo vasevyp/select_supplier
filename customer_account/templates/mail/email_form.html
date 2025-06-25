@@ -1,0 +1,30 @@
+{% extends 'profile_base.html' %}
+
+{% load static %}
+{% load django_bootstrap5 %}
+
+
+{% block title %}
+{{ block.super }}: Dashbord
+{% endblock %}
+
+
+{% block content %}
+<div>
+    <h3>Форма редактирования сообщения поставщику.</h3>
+    <form method="post">
+    {% csrf_token %}
+    <div class="form-group">
+       
+        <b>{{ form.product.label_tag }}</b>
+        {{ form.product }}
+    </div>
+    <div class="form-group">
+        <b>{{ form.message.label_tag }}</b>
+        {{ form.message }}
+    </div>
+    <button type="submit" class="btn bg-blue1 bg-hover1 color-button-text mt-3">Отправить запрос поставщикам</button>
+</form>
+</div>
+
+{% endblock %}
