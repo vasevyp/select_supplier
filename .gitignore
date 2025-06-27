@@ -152,7 +152,7 @@ prod_settings.py
 .mypy_cache/
 .dmypy.json
 dmypy.json
-SendenEmailSave.txt
+
 
 
 # Pyre type checker

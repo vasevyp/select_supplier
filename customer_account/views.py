@@ -10,8 +10,48 @@ from .tasks import send_supplier_email
 logger = logging.getLogger(__name__)
 
 
+def castomer_request(request):
+    '''показать запросы и результаты запросов текущего пользователя'''
+    user = request.user
+    results = None
+    select_product=''
+    # MailSendList.objects.filter(user=user).delete()
+
+    if request.method == 'POST':
+        # Сохраняем выбранных поставщиков в MailSendList
+        MailSendList.objects.filter(user=user).delete()
+        form = SearchResultForm(user, request.POST)
+        if form.is_valid():
+            select_product = form.cleaned_data.get('search_product')
+            results = SearchResult.objects.filter(
+                    user=user,
+                    product=select_product,
+                )
+            for item in results:
+                MailSendList.objects.create(
+                    email=item.supplier_email,
+                    user=item.user,
+                    product=item.product,
+                    name=item.supplier_name
+                )
+        
+    else:
+        form = SearchResultForm(user)
+    
+    user_requests=SearchResult.objects.filter(user_id=request.user.id)
+    context={
+        'form': form,
+        'results': results,
+        'count': user_requests.count,
+        'unique_request': user_requests.distinct('product').count,
+    
+    }
+    return render(request, 'account/castomer_request.html', context)
+
 @login_required
 def send_supplier_emails(request):
+    '''форма редактирования запроса поставщику, продукт и подпись сделать на английском, 
+    и отправка запроса поставщику'''
     suppliers = MailSendList.objects.filter(user=request.user)
 
     if not suppliers.exists():
@@ -70,12 +110,13 @@ def send_supplier_emails(request):
 
 @login_required
 def redirect_send_emails(request):
+    '''переход на форму '''
     # Проверяем, есть ли записи для текущего пользователя
     if MailSendList.objects.filter(user=request.user).exists():
         return redirect('send_supplier_emails')
     # else:
     messages.warning(request, "Сначала выберите поставщиков для рассылки")
-    return redirect('supplier_search')  # Главная страница выбора поставщиков
+    return redirect('supplier_selection')  # Главная страница выбора поставщиков
     
 
 
@@ -101,43 +142,6 @@ def subscribe(request):
     return render(request, 'account/subscribe.html')
 
 
-def castomer_request(request):
-    '''показать запросы и результаты запросов текущего пользователя'''
-    user = request.user
-    results = None
-    select_product=''
-    # MailSendList.objects.filter(user=user).delete()
-
-    if request.method == 'POST':
-        # Сохраняем выбранных поставщиков в MailSendList
-        MailSendList.objects.filter(user=user).delete()
-        form = SearchResultForm(user, request.POST)
-        if form.is_valid():
-            select_product = form.cleaned_data.get('search_product')
-            results = SearchResult.objects.filter(
-                    user=user,
-                    product=select_product,
-                )
-            for item in results:
-                MailSendList.objects.create(
-                    email=item.supplier_email,
-                    user=item.user,
-                    product=item.product,
-                    name=item.supplier_name
-                )
-        
-    else:
-        form = SearchResultForm(user)
-    
-    user_requests=SearchResult.objects.filter(user_id=request.user.id)
-    context={
-        'form': form,
-        'results': results,
-        'count': user_requests.count,
-        'unique_request': user_requests.distinct('product').count,
-    
-    }
-    return render(request, 'account/castomer_request.html', context)
 
 def customer_calculation(request):
     '''Страница расчетов в ЛК'''
@@ -151,9 +155,9 @@ def payment(request):
 
 
 def castomer_mail(request):
-    senden_mail= SendedEmailSave.objects.all()
+    senden_mail= SendedEmailSave.objects.filter(user=request.user).order_by('-sended_at')
     
     context={
          'results':senden_mail
         }
-    return render(request, 'account/castomer_mail.html', context)
+    return render(request, 'mail/castomer_mail.html', context)

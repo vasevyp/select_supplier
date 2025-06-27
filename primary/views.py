@@ -1,5 +1,7 @@
 '''Home screen and other text pages'''
 from django.shortcuts import render
+from django.contrib.postgres.search import SearchVector, SearchQuery
+from django.db.models import Q
 
 from supplier.models import Supplier, Category, Country
 from supplier.forms import SupplierSearchForm
@@ -37,45 +39,61 @@ def contact(request):
     return render(request, 'primary/contact.html')
 
 
-def supplier_selection_primary(request):
-    """ Имитация формы Выбора данных по поставщику """
+def supplier_search_primary(request):
+    """Поиск по наименованию, получение результата по количеству соответствующих поставщиков.  Полнотекстовый поиск"""
     form = SupplierSearchForm
-    items_list = ""
-    items = ""
-    product = ""
-    language = ""
-    select_except = 0
-    country = Country.objects.all()
+    results = []
+    language=''
+    search_result=''
+    select_except=0
+    product=''
     if request.method == "POST":
         country_id = request.POST.get("country")
         language = request.POST.get("language")
-        product = request.POST.get("product")
-              
-        items=False
-        
-        if items:
-            items_list = items
-        else:
-            select_except = "Поиск доступен только для зарегистрированных пользователей."
+        product = request.POST.get("product")        
+        print("REQuest=", country_id, language, product)
+        query = product.strip()
+        print("country_id ==", country_id)
 
-    
+        # Определяем, по какому полю искать
+        if language == "ru":
+            search_field = "product_ru"
+            search_query = SearchQuery(query)  # Создаем SearchQuery
+            
+        else:
+            search_field = "product"
+            search_query = SearchQuery(query)  # Создаем SearchQuery
+   
+
+        # Используем динамический SearchVector
+        if not country_id:
+            results = Supplier.objects.annotate(search=SearchVector(search_field)).filter(
+            Q(search=search_query)
+        )
+        else:
+            country=Country.objects.get(id=country_id)
+            results = Supplier.objects.annotate(search=SearchVector(search_field)).filter(
+            Q(search=search_query) & Q(country=country)
+        )    
+        if results:
+            search_result=results
+        else:
+            select_except = "Вернитесь к форме выбора и повторите поиск."
+
 
     count = Supplier.objects.all().count()
+    context={
+         "language": language,
+         "product": product,
+         "count": count,
+         "items": search_result,
+         "select_except": select_except,
+         "form": form,
+    }
+    return render(request, "primary/supplier_search_primary.html", context )
 
-    return render(
-        request,
-        "primary/search_primary.html",
-        {
-            # 'objects':objects,
-            # "page_obj": page_obj,
-            "language": language,
-            "product": product,
-            "count": count,
-            "items": items_list,
-            "select_except": select_except,
-            "form": form,
-        },
-    )
+
+
 
 def tariffs_page(request):
     return render(request, 'primary/tariffs_page.html')

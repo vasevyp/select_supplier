@@ -12,9 +12,10 @@ from django.contrib.postgres.search import SearchVector, SearchQuery
 from django.contrib.auth.decorators import login_required  
 from django.contrib.auth.models import User
 
+from customer_account.models import SearchResult
 from .forms import ImportForm, SupplierSearchForm, SupplierSearchForm2
 from .models import Supplier, Country, Category
-from customer_account.models import SearchResult
+
 
 
 class Category_list(ListView):

@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+
+{% block title %} {{block.super}}: Поиск поставщика{% endblock %}
+
+
+
+{% block content %}
+{% if select_except %}
+<div class='ms-5 mt-5'>
+    <h5 class='text-danger'>ВНИМАНИЕ! Наименование товара <span class="text-primary">"{{product}}"</span> не найдено в
+        базе данных.</h5>
+    <p>{{select_except}}</p>
+    <a href="{% url 'supplier_selection' %}">Вернуться к форме выбора</a>
+</div>
+{% else %}
+
+{% if items %}
+
+<div class="col-12 mx-auto margin-mb100">
+    <a href="{% url 'supplier_search_primary' %}">Вернуться к выбору</a>
+    <h3>По запросу продукта "{{product}}".</h3>
+    <h4>В базе найдено всего поставщиков: {{items.count|intcomma}}.</h4>
+
+    <i>Вывод списка поставщиков доступен только для зарегистрированных пользователей, оформивших подписку.
+        </i> 
+       <p> <a href="{% url 'register' %}">Перейти к регистрации</a></p>
+
+    <table class="table table-striped demotable ">
+        <thead style="position: sticky;
+top: -1px;
+z-index:1;background: #9d9e9e; font-size:14px">
+            <tr>
+                <th scope="col">Поставщик</th>
+
+                <th scope="col">Страна</th>
+                <th scope="col" class="d-none d-md-table-cell">Категория</th>
+                <th scope="col" class="d-none d-md-table-cell">Контакты</th>
+                {% if language == 'en' %}
+                <th scope="col" class="d-none d-lg-table-cell">Product</th>
+                {% else %}
+                <th scope="col" class="d-none d-lg-table-cell">Продукты</th>
+                {% endif %}
+               
+
+            </tr>
+        </thead>
+        <tbody style="font-size:12px">
+            <!-- {% for item in items%}
+            <tr>
+                <th> <a href="{% url 'supplier_detail' item.pk %}" target="_blank"> {{ item.name }}</a></th>
+
+                <td> {{item.country}} </td>
+                <td class="d-none d-md-table-cell">{{item.category}}</td>
+                <td class="d-none d-md-table-cell">{{item.contact|slice:":255"}}</td>
+                {% if language == 'en' %}
+                <td class='text-danger data_no d-none d-lg-table-cell'>{{item.product|slice:":255"}}</td>
+                {% else %}
+                <td class='text-danger data_no d-none d-lg-table-cell'>{{item.product_ru|slice:":255"}}</td>
+                {% endif %}
+               
+
+            </tr>
+            {% endfor %} -->
+        </tbody>
+    </table>
+
+</div>
+
+{% else %}
+<div class="row mt-2 margin-mb100">
+    <div class="col-lg-12">
+        <div class="card1">
+            <div class="card-body">
+                <!-- FORM -->
+                <div class="card-body ">
+                    <h4>Поиск поставщиков продукции</h4>
+                </div>
+                <div>
+                    <div class="card-body">
+                        <form action="#" method="post" novalidate="novalidate">
+                            {% csrf_token %}
+                            <div class="form-group">
+
+                                <p>
+                                    <label for="name" class="control-label mt-3 mb-2"> <b>Наименование товара</b> &nbsp
+                                    </label>
+                                    {{ form.product }}<br>
+                                    <label for="name" class="control-label mt-4"> <b>Страна производителя</b> </label>
+                                    {{ form.country }}<br>
+                                    <label for="name" class="control-label mt-3 mb-1"> <b>Выбрать язык поиска</b> &nbsp
+                                        &nbsp &nbsp
+                                        &nbsp</label>
+                                    {{ form.language }}
+                                </p>
+
+
+                              
+                                <button type="submit" class="btn btn bg-blue1 bg-hover1 color-button-text btn-block mb-4">
+                                    <span>Искать поставщика</span>
+                                </button>
+                               
+                               
+                                <hr>
+                                <p>Для информации:</p>
+                                <p>
+                                    <label for="name" class="control-label mb-1 color-blue1"> <b>Cтраны с благоприятным
+                                            режимом ВЭД</b> </label> <span>
+                                        {{ form.country_demo_a }}</в><br>
+                                        <label for="name" class="control-label mb-1 color-second-text"> <b>Cтраны с
+                                                особым
+                                                режимом ВЭД</b></label>&nbsp &nbsp &nbsp &nbsp &nbsp &nbsp &nbsp
+                                        &nbsp
+                                        <span>
+                                            {{ form.country_demo_b }}</span>
+                                </p>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <!-- /FORM -->
+        <div class="col-12 mb-5 mx-auto">
+            <h6>Всего поставщиков в базе данных: {{count|intcomma}}</h6>
+
+        </div>
+
+
+
+    </div>
+    <!--/.col-->
+</div>
+{% endif %}
+{% endif %}
+
+{% endblock content %}

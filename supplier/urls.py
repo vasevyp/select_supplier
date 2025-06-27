@@ -16,7 +16,7 @@ urlpatterns = [
     path('country_list', Country_list.as_view(), name='country_list'),
     path('supplier_list', Supplier_list.as_view(), name='supplier_list'),
     path('upload-suppliers/', upload_excel, name='upload_suppliers'),
-    path('search/', supplier_search, name='supplier_search'),
+    path('search/', supplier_search, name='supplier_search'), # поиск без регистрации
     path('export/', export_to_excel, name='export_to_excel'),
     path('delete/', supplier_delete, name='supplier_delete')
     

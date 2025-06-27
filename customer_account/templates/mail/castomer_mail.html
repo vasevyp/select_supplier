@@ -1,0 +1,63 @@
+{% extends 'profile_base.html' %}
+
+{% load static %}
+{% load django_bootstrap5 %}
+
+
+{% block title %}
+{{ block.super }}: почта
+{% endblock %}
+
+
+{% block content %}
+<div class="container col-12 margin-mb100">
+    <!-- <div class="vedinfo-logo">VEDINFO.ONLINE</div>
+    <div class="text-center color-second-text">Мир без границ — расчеты без ошибок</div> -->
+
+
+    <h3 class=" mt-5">Отправленные запросы поставщикам</h3>
+
+
+    <div class=" my-3 color-second-text">в стадии разработки {{select_result}}</div>
+
+   <table class="table table-striped demotable ">
+        <thead style="position: sticky;
+top: -1px;
+z-index:1;background: #9d9e9e; font-size:14px">
+            <tr>
+                <th scope="col">User</th>
+                <th scope="col" class="d-none d-md-table-cell">Email</th>
+                <th scope="col" class="d-none d-md-table-cell">Продукт</th>
+                <th scope="col" class="d-none d-md-table-cell">Сообщение</th>
+                <th scope="col" class="d-none d-md-table-cell">Отправлен</th>
+
+
+            </tr>
+        </thead>
+        <tbody style="font-size:12px">
+            {% for item in results %}
+            <tr>
+                
+
+
+                <td class="d-none d-md-table-cell">{{item.user}}</td>
+                <td class="d-none d-md-table-cell">{{item.email}}</td>
+                <td class="d-none d-md-table-cell">{{item.product}}</td>
+                <td class="d-none d-md-table-cell">{{item.message}}</td>
+                <td class="d-none d-md-table-cell">{{item.sended_at}}</td>
+
+
+
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+        
+      
+
+        
+</div>
+
+
+{% endblock %}
+

@@ -198,5 +198,10 @@ CELERY_TASK_DEFAULT_EXCHANGE_TYPE = 'direct'
 CELERY_TASK_DEFAULT_ROUTING_KEY = 'default'
 
 # Для обработки очень больших рассылок (100k+ писем) добавьте:
+# Оптимизация Celery
 CELERY_WORKER_PREFETCH_MULTIPLIER = 1  # Забирать по 1 задаче за раз
 CELERY_WORKER_MAX_TASKS_PER_CHILD = 100  # Перезапуск воркера после 100 задач
+CELERY_BROKER_POOL_LIMIT = None  # Без ограничения соединений
+CELERY_BROKER_CONNECTION_TIMEOUT = 30  # Таймаут соединения
+# Оптимизация Django
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 10000  # Для больших форм
