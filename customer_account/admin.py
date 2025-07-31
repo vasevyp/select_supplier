@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import SearchResult, MailSendList, SendedEmailSave
+from .models import SearchResult, MailSendList, SendedEmailSave, SupplierResponse
 
 @admin.register(SearchResult)
 class SearchResultAdmin(admin.ModelAdmin):
@@ -29,3 +29,10 @@ class SendedEmailSaveAdmin(admin.ModelAdmin):
     list_filter = ("user",  "product")
     save_on_top = True
     list_per_page = 20    
+
+
+@admin.register(SupplierResponse)
+class SupplierResponseAdmin(admin.ModelAdmin):
+    list_display = ('user', 'product', 'email', 'original_mail', 'date')
+    search_fields = ('product', 'email')
+    list_filter = ('date', 'user')

@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Состояние с запросами поставщикам</h2>
+
+    {% if response_data %}
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Продукт</th>
+                    <th>Email поставщика</th>
+                    <th>Дата запроса</th>
+                    <th>Дата ответа</th>
+                    <th>Ответ поставщика</th>
+                    <th>Email ответившего</th>
+                    <th>Email ID</th>
+                    <!-- <th>Вложение</th> -->
+                </tr>
+            </thead>
+            <tbody style="font-size: 12px;">
+                {% for item in response_data %}
+                <tr>
+
+                    <td>{{ item.sent_email.product }}</td>
+                    <td>{{ item.sent_email.email }}</td>
+                    <td>{{ item.sent_email.sended_at|date:"d.m.Y H:i" }}</td>
+
+                    {% if item.response %}
+                    <td>{{ item.response.received_at|date:"d.m.Y H:i" }}</td>
+                    <td>
+                        <a href="{% url 'supplier_response_detail' item.response.id %}">
+
+                            {{ item.response.message|striptags|truncatechars:50 }}
+                            <!--striptags убирает html tags из сообщения-->
+
+                        </a>
+                    </td>
+                    <td>{{ item.response.email }}</td>
+                    <td>{{ item.response.id }}</td>
+                    <!-- <td>
+                        {% if item.response.attachment %}
+                        <a href="{{ item.response.attachment.url }}" download class="btn btn-sm btn-outline-primary">
+                            <i class="fas fa-download"></i> Скачать
+                        </a>
+                        {% else %}
+                        -
+                        {% endif %}
+                    </td> -->
+                    {% else %}
+                    <td class="text-muted">-</td>
+                    <td class="text-center text-muted">Нет ответа</td>
+                    <td class="text-muted">-</td>
+                    <td>-</td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="alert alert-info">
+        <h4>Нет отправленных запросов</h4>
+        <p>Вы еще не отправляли запросы поставщикам.</p>
+        <a href="{% url 'supplier_selection' %}" class="btn btn-primary">Найти поставщиков</a>
+    </div>
+    {% endif %}
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function toggleFullText(cell) {
+        const truncated = cell.querySelector('.truncated-text');
+        const full = cell.querySelector('.full-text');
+
+        if (truncated.style.display === 'none') {
+            truncated.style.display = 'block';
+            full.style.display = 'none';
+        } else {
+            truncated.style.display = 'none';
+            full.style.display = 'block';
+        }
+    }
+</script>
+
+<style>
+    .response-cell {
+        cursor: pointer;
+        position: relative;
+    }
+
+    .response-cell:hover {
+        background-color: rgba(0, 123, 255, 0.05);
+    }
+
+    .truncated-text,
+    .full-text {
+        white-space: pre-wrap;
+        word-break: break-word;
+    }
+
+    .full-text {
+        background-color: #f8f9fa;
+        padding: 10px;
+        border-radius: 4px;
+    }
+</style>
+{% endblock %}

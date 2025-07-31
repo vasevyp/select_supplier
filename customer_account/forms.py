@@ -1,7 +1,7 @@
 # forms.py
 from django import forms
 from django.db.models import Min
-from .models import SearchResult
+from .models import SearchResult, SearchResultTechnology, SearchResultLogistic
 
 
 class SearchResultForm(forms.Form):
@@ -17,6 +17,42 @@ class SearchResultForm(forms.Form):
         # Фильтруем записи по пользователю и получаем по одной записи на каждый продукт
         subquery = SearchResult.objects.filter(user=user).values('product').annotate(min_id=Min('id'))
         queryset = SearchResult.objects.filter(id__in=subquery.values('min_id'))
+        self.fields['search_product'].queryset = queryset
+        
+        # Отображаем название продукта вместо стандартного __str__
+        self.fields['search_product'].label_from_instance = lambda obj: obj.product
+
+class SearchResultTechnologyForm(forms.Form):
+    search_product = forms.ModelChoiceField(
+        queryset=SearchResultTechnology.objects.none(),  # Изначально пустой
+        label='Технология',
+        empty_label='Выбрать технологию',
+        required=False
+    )
+    
+    def __init__(self, user, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Фильтруем записи по пользователю и получаем по одной записи на каждый продукт
+        subquery = SearchResultTechnology.objects.filter(user=user).values('product').annotate(min_id=Min('id'))
+        queryset = SearchResultTechnology.objects.filter(id__in=subquery.values('min_id'))
+        self.fields['search_product'].queryset = queryset
+        
+        # Отображаем название продукта вместо стандартного __str__
+        self.fields['search_product'].label_from_instance = lambda obj: obj.product
+
+class SearchResultLogisticForm(forms.Form):
+    search_product = forms.ModelChoiceField(
+        queryset=SearchResultLogistic.objects.none(),  # Изначально пустой
+        label='Логистическая услуга',
+        empty_label='Выбрать логистическую услугу',
+        required=False
+    )
+    
+    def __init__(self, user, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Фильтруем записи по пользователю и получаем по одной записи на каждый продукт
+        subquery = SearchResultLogistic.objects.filter(user=user).values('product').annotate(min_id=Min('id'))
+        queryset = SearchResultLogistic.objects.filter(id__in=subquery.values('min_id'))
         self.fields['search_product'].queryset = queryset
         
         # Отображаем название продукта вместо стандартного __str__

@@ -56,6 +56,7 @@ def register_view(request):
                 f"Ссылка действительна 24 часа."
             )
             send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user.email])
+           
 
             return redirect("verification_sent")
     else:

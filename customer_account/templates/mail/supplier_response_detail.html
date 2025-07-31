@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2 class="mb-0">Ответ поставщика</h2>
+                <a href="{% url 'supplier_responses' %}" class="btn btn-light btn-sm">
+                    <i class="fas fa-arrow-left"></i> Назад к списку
+                </a>
+            </div>
+        </div>
+        
+        <div class="card-body">
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="card mb-3">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">Детали запроса</h5>
+                        </div>
+                        <div class="card-body">
+                            <dl class="row">
+                                <dt class="col-sm-4">Продукт:</dt>
+                                <dd class="col-sm-8">{{ response.product }}</dd>
+                                
+                                <dt class="col-sm-4">Email поставщика:</dt>
+                                <dd class="col-sm-8">{{ response.original_mail }}</dd>
+                                
+                                <dt class="col-sm-4">Дата ответа:</dt>
+                                <dd class="col-sm-8">{{ response.received_at|date:"d.m.Y H:i" }}</dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="card mb-3">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">Информация об отправителе</h5>
+                        </div>
+                        <div class="card-body">
+                            <dl class="row">
+                                <dt class="col-sm-4">Email:</dt>
+                                <dd class="col-sm-8">{{ response.email }}</dd>
+                                
+                                <dt class="col-sm-4">Тема письма:</dt>
+                                <dd class="col-sm-8">{{ response.subject }}</dd>
+                                
+                                <dt class="col-sm-4">Дата письма:</dt>
+                                <dd class="col-sm-8">{{ response.date|date:"d.m.Y H:i" }}</dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Текст ответа</h5>
+                </div>
+                <div class="card-body">
+                    {% autoescape off %}                   
+                    <pre class="response-text">{{ response.message }}</pre>
+                      {% endautoescape %}
+                </div>
+            </div>
+            
+            <div class="d-flex justify-content-between">
+                {% if response.attachment %}
+                <div>
+                    <h5>Вложение:</h5>
+                    <a href="{{ response.attachment.url }}" download class="btn btn-primary">
+                        <i class="fas fa-download"></i> Скачать вложение
+                    </a>
+                </div>
+                {% endif %}
+                
+                <div>
+                    <h5>Скачать ответ:</h5>
+                    <a href="{% url 'download_supplier_response' response.id %}" class="btn btn-success">
+                        <i class="fas fa-file-download"></i> Скачать полный ответ
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .response-text {
+        white-space: pre-wrap;
+        word-break: break-word;
+        background-color: #f8f9fa;
+        padding: 20px;
+        border-radius: 5px;
+        font-size: 1rem;
+        line-height: 1.6;
+    }
+    
+    .card-header {
+        font-weight: 600;
+    }
+    
+    dt {
+        font-weight: 500;
+    }
+</style>
+{% endblock %}

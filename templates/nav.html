@@ -1,5 +1,5 @@
 {% load static %}
-<div class="nav-widht container bg-light1 border-bottom sticky-top">
+<div class="nav-widht container bg-second1 border-bottom sticky-top">
 
 
     <nav class="navbar navbar-expand-lg navbar-light   my-2">
@@ -30,34 +30,128 @@
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
 
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item">
-                        <a class="nav-link active color-dark1" aria-current="page" href="{% url 'main' %}">Главная</a>
+                    {% if user.is_authenticated %}
+                       <li class="nav-item mx-6">
+                        <a class="nav-link text-dark" href="{% url 'dashbord' %}">Личный кабинет</a>
                     </li>
-                    {% if request.user.is_superuser %}
+
                     <li class="nav-item">
                         <a class="nav-link active color-dark1" aria-current="page"
-                            href="{% url 'supplier_selection' %}">Поиск
-                            поставщика</a>
+                            href="{% url 'supplier_selection' %}">Поставщики</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active color-dark1" aria-current="page"
+                            href="{% url 'technology_selection' %}">Технологии</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active color-dark1" aria-current="page"
+                            href="{% url 'logistic_selection' %}">Логистика</a>
+                    </li>
+                     <li class="nav-item mx-6">
+                        <a class="nav-link text-dark" href="{% url 'subscribe' %}">Подписка</a>
+                    </li>
+                      <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle text-dark" href="#" id="navbarDropdownMenuLink"
+                            role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Мои Запросы
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                            <li><a class="dropdown-item" href="{% url 'customer_request' %}">Запросы по товарам</a></li>
+                            <li><a class="dropdown-item" href="{% url 'technology_request' %}">Запросы по технологии</a></li>
+                            <li><a class="dropdown-item" href="{% url 'logistic_request' %}">Запросы по логистике</a></li>
+                            <hr>
+                            <li><a class="dropdown-item" href="{% url 'customer_mail' %}">Отправленные поставщику</a></li>
+                            <li><a class="dropdown-item" href="{% url 'supplier_responses' %}">Ответы на запросы</a></li>
+
+
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle text-dark" href="#" id="navbarDropdownMenuLink"
+                            role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Услуги
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                            <li><a class="dropdown-item" href="#">Трансграничные платежи и клиринг</a></li>
+                            <li><a class="dropdown-item" href="#">Таможня</a></li>
+                             <li><a class="dropdown-item" href="#">Аналитика</a></li>
+                            <!-- <li><a class="dropdown-item" href="#">Расчеты</a></li>                          -->
+                        </ul>
+                    </li>
+                       <li class="nav-item mx-6">
+                        <a class="nav-link text-dark" href="{% url 'contact' %}">Обратная связь</a>
                     </li>
 
-                    {% elif request.user.is_authenticated %}
+                    {% if request.user.is_superuser %}
 
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle color-dark1 " href="#" id="navbarDropdownMenuLink"
+                            role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Для Admin
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                             <li class="nav-item color-dark1"><a class="nav-link" target="_blank"
+                            href="{% url 'admin:index' %}">Перейти в Admin </a></li>
+                            Загрузки
+                            <li><a class="dropdown-item color-dark1" href="{% url 'upload_suppliers' %}">Загрузить
+                                    Поставщиков</a></li>
+                            <li><a class="dropdown-item color-dark1"
+                                    href="/adminrav25/supplier/category/import/">Загрузить Категории (в
+                                    admin)</a></li>
+                            <li><a class="dropdown-item color-dark1"
+                                    href="/adminrav25/supplier/country/import/">Загрузить Страны (в
+                                    admin)</a></li>
+                                     Списки
+                            <li><a class="dropdown-item" href="{% url 'supplier_list' %}">Список Поставщиков</a></li>
+                            <li><a class="dropdown-item" href="{% url 'country_list' %}">Список Стран</a></li>
+                            <li><a class="dropdown-item" href="{% url 'category_list' %}">Список Категорий</a></li>
+
+                            <!-- <li><a class="dropdown-item" href="{% url 'export_to_excel' %}">Export to Excel</a></li>
+                        <li><a class="dropdown-item" href="{% url 'supplier_delete' %}">Supplier_delete</a></li> -->
+
+
+                        </ul>
+                      
+                    </li>
+                    <!-- <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle color-dark1" href="#" id="navbarDropdownMenuLink"
+                            role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Списки
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                            <li><a class="dropdown-item" href="{% url 'supplier_list' %}">Список Поставщиков</a></li>
+                            <li><a class="dropdown-item" href="{% url 'country_list' %}">Список Стран</a></li>
+                            <li><a class="dropdown-item" href="{% url 'category_list' %}">Список Категорий</a></li>
+
+
+                        </ul>
+                    </li> -->
+                    <!-- <li class="nav-item color-dark1"><a class="nav-link" target="_blank"
+                            href="{% url 'admin:index' %}">Admin</a></li> -->
+                  
+                  
+                    {% endif %}
 
                     {% else %}
+                     <li class="nav-item">
+                        <a class="nav-link active color-dark1" aria-current="page" href="{% url 'main' %}">Главная</a>
+                    </li>
                     <li class="nav-item">
                         <a class="nav-link active color-dark1" aria-current="page"
-                            href="{% url 'supplier_search_primary' %}">Поиск
-                            поставщика</a>
+                            href="{% url 'supplier_search_demo' %}">Поставщики</a>
                     </li>
-                    {% endif %}
                     <li class="nav-item">
                         <a class="nav-link active color-dark1" aria-current="page"
-                            href="{% url 'tariffs_page' %}">Тарифы</a>
+                            href="{% url 'technology_search_demo' %}">Технологии</a>
                     </li>
-                    <!-- <li class="nav-item">
+                    <li class="nav-item">
                         <a class="nav-link active color-dark1" aria-current="page"
-                            href="{% url 'info_page' %}">Информация</a>
-                    </li> -->
+                            href="{% url 'logistic_search_demo' %}">Логистика</a>
+                    </li>
+                     <li class="nav-item">
+                        <a class="nav-link active color-dark1" aria-current="page"
+                            href="{% url 'tariffs_page' %}">Подписка</a>
+                    </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle text-dark" href="#" id="navbarDropdownMenuLink" role="button"
                             data-bs-toggle="dropdown" aria-expanded="false">
@@ -70,77 +164,23 @@
 
                         </ul>
                     </li>
-
-
-
-
-                    {% if request.user.is_authenticated %}
-                    <li class="nav-item mx-6">
-                        <a class="nav-link text-dark" href="{% url 'dashbord' %}">Личный кабинет</a>
-                    </li>
-
-
-                    {% else %}
-
-                    <li class="nav-item">
+                     <li class="nav-item">
                         <a class="nav-link active color-dark1" aria-current="page"
                             href="{% url 'register' %}">Зарегистрироваться</a>
                     </li>
 
                     <li class="nav-item">
                         <a class="nav-link active color-dark1" aria-current="page"
-                            href="{% url 'login_a' %}">AdminLogin</a>
+                            href="{% url 'login' %}">Войти в аккаунт</a>
                     </li>
-
-
-                    {% endif %}
-
-                    {% if request.user.is_superuser %}
-
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle color-dark1 " href="#" id="navbarDropdownMenuLink"
-                            role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Загрузки
-                        </a>
-                        <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                            <li><a class="dropdown-item color-dark1" href="{% url 'upload_suppliers' %}">Загрузить
-                                    Поставщиков</a></li>
-                            <li><a class="dropdown-item color-dark1"
-                                    href="/adminrav25/supplier/category/import/">Загрузить Категории (в
-                                    admin)</a></li>
-                            <li><a class="dropdown-item color-dark1"
-                                    href="/adminrav25/supplier/country/import/">Загрузить Страны (в
-                                    admin)</a></li>
-                            <!-- <li><a class="dropdown-item" href="{% url 'export_to_excel' %}">Export to Excel</a></li>
-                        <li><a class="dropdown-item" href="{% url 'supplier_delete' %}">Supplier_delete</a></li> -->
-
-
-                        </ul>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle color-dark1" href="#" id="navbarDropdownMenuLink"
-                            role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            Списки
-                        </a>
-                        <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                            <li><a class="dropdown-item" href="{% url 'supplier_list' %}">Список Поставщиков</a></li>
-                            <li><a class="dropdown-item" href="{% url 'country_list' %}">Список Стран</a></li>
-                            <li><a class="dropdown-item" href="{% url 'category_list' %}">Список Категорий</a></li>
-
-
-                        </ul>
-                    </li>
-                    <li class="nav-item color-dark1"><a class="nav-link" target="_blank"
-                            href="{% url 'admin:index' %}">Admin</a></li>
-                    {% else %}
-                    <li class="nav-item">
+                      <li class="nav-item">
                         <a class="nav-link active color-dark1" aria-current="page"
                             href="{% url 'contact' %}">Контакты</a>
                     </li>
+
+
                     {% endif %}
-
-
-
+                   
                 </ul>
 
 
@@ -156,19 +196,12 @@
                             href="{% url 'logout' %}">
                             <img style="width: 24px;" src="{% static '/images/v.webp' %}" alt="exit"></a>
                     </span>
-                    {% else %}
-
-                    <!-- <span>Логин</span> -->
-                    <span class="nav-item">
-                        <a class="nav-link active color-dark1" title="Войти в аккаунт" aria-current="page"
-                            href="{% url 'login' %}">Логин <img style="width: 26px;" src="{% static '/images/a.png' %}"
-                                alt="exit"></a>
-                    </span>
+                   
 
                     {% endif %}
                 </div>
 
-                <!-- <span class="position-absolute end-0 me-3"> Логин: <b> {{ user.username }} </b></span> -->
+               
 
             </div>
         </div>

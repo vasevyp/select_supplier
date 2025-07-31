@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     "crispy_forms",
     "captcha",
     "celery",
+    "django_celery_beat",
     
     # myapp
     "primary.apps.PrimaryConfig",
@@ -123,46 +124,16 @@ MEDIA_URL = "media/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
-CSRF_TRUSTED_ORIGINS = [
-    "https://data-y-sr.ru",
-    "http://data-y-sr.ru",
-]
+
 
 CRISPY_TEMPLATE_PACK = "bootstrap5"  # или 'bootstrap5', в зависимости от вашей версии
 
-LOGGING = {
-    "version": 1,
-    "disable_existing_loggers": False,
-    "handlers": {
-        "file": {
-            "level": "ERROR",
-            "class": "logging.FileHandler",
-            "filename": "supplier_upload_errors.log",
-        },
-        "console": {
-            "level": "ERROR",
-            "class": "logging.StreamHandler",
-        },
-    },
-    "loggers": {
-        __name__: {
-            "handlers": ["file", "console"],
-            "level": "ERROR",
-            "propagate": True,
-        },
-         
-        'django': {
-            'handlers': ['file'],
-            'level': 'ERROR',
-            'propagate': True,
-        },
-    
-    },
-}
+
 
 CAPTCHA_CHALLENGE_FUNCT = 'captcha.helpers.math_challenge'
 
 # Настройки Celery
+CELERY_IMPORTS = ('customer_account.tasks',)
 
 # set the celery broker url
 CELERY_BROKER_URL = 'redis://localhost:6379/0'

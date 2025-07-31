@@ -91,3 +91,35 @@ body {
 .margin-mb100{
     margin-bottom: 100px !important;
 }
+
+/*customer_account/templates/mail/supplier_response.html*/
+ /* .table th {
+        background-color: #343a40;
+        color: white;
+        font-weight: 500;
+    }
+    
+    .table-hover tbody tr:hover {
+        background-color: rgba(0, 123, 255, 0.05);
+    }
+    
+    .toggle-details {
+        text-decoration: none;
+    }
+    
+    .toggle-details:hover {
+        text-decoration: underline;
+    }
+    
+    .card-header {
+        background-color: #f8f9fa;
+        font-weight: 500;
+    }
+    
+    pre {
+        white-space: pre-wrap;
+        word-break: break-word;
+        background-color: #f8f9fa;
+        padding: 15px;
+        border-radius: 4px;
+    } */

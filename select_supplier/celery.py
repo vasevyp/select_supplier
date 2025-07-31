@@ -1,10 +1,15 @@
 # myproject/celery.py
+# $ redis-cli ping
+# $ celery -A select_supplier worker --beat --loglevel=info -Q emails
+
 # $ celery -A select_supplier worker --loglevel=info -Q emails
+# $ celery -A select_supplier beat --loglevel=info
+
 
 # from __future__ import absolute_import, unicode_literals
 import os
 from celery import Celery
-from django.conf import settings
+# from django.conf import settings
 
 # Установите модуль настроек Django по умолчанию
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'select_supplier.settings')
