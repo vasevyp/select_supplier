@@ -8,18 +8,36 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.utils.text import slugify
 from django.db.models import Subquery, OuterRef, F, Prefetch
+
+
 from users.models import Profile
-from .models import SearchResult, MailSendList, SendedEmailSave, SupplierResponse, SearchResultTechnology, SearchResultLogistic
-from .forms import SearchResultForm, SupplierEmailForm, SearchResultTechnologyForm, SearchResultLogisticForm
+from .models import (
+    SearchResult,
+    MailSendList,
+    SendedEmailSave,
+    SupplierResponse,
+    SearchResultTechnology,
+    SearchResultLogistic,
+    UserSearchCount,
+    UserSearchCountHistory
+    )
+from .forms import (
+    SearchResultForm,
+    SupplierEmailForm,
+    SearchResultTechnologyForm,
+    SearchResultLogisticForm,
+)
 from .tasks import send_supplier_email
 
 # from django.utils.html import strip_tags
 
 logger = logging.getLogger(__name__)
 
-
+# Поиск поставщиков
 def customer_request(request):
-    """показать запросы и результаты запросов текущего пользователя по товарам"""
+    """Отображает и обрабатывает запросы клиентов на продукты для текущего пользователя.
+    Выбирает поставщиков для выбранного продукта и подготавливает контекст для отображения страницы запроса клиента.
+    """
     user = request.user
     results = None
     select_product = ""
@@ -33,14 +51,17 @@ def customer_request(request):
             results = SearchResult.objects.filter(
                 user=user,
                 product=select_product,
-            )
+            )          
+            # Создаем список для отправки запросов
             for item in results:
                 MailSendList.objects.create(
-                    email=item.supplier_email,
-                    user=item.user,
-                    product=item.product,
-                    name=item.supplier_name,
-                )
+                        email=item.supplier_email,
+                        user=item.user,
+                        product=item.product,
+                        name=item.supplier_name,
+                        section="Товары",
+                    )
+
 
     else:
         form = SearchResultForm(user)
@@ -54,8 +75,11 @@ def customer_request(request):
     }
     return render(request, "account/customer_request.html", context)
 
+
 def technology_request(request):
-    """показать запросы и результаты запросов текущего пользователя по технологиям"""
+    """'Отображает и обрабатывает запросы клиентов с использованием технологий для конкретного пользователя.
+    Выбирает источники для выбранной технологии и подготавливает контекст для отображения страниц запроса клиента.
+    """
     user = request.user
     results = None
     select_product = ""
@@ -70,13 +94,16 @@ def technology_request(request):
                 user=user,
                 product=select_product,
             )
+            
+            # Создаем список для отправки запросов
             for item in results:
                 MailSendList.objects.create(
-                    email=item.supplier_email,
-                    user=item.user,
-                    product=item.product,
-                    name=item.supplier_name,
-                )
+                        email=item.supplier_email,
+                        user=item.user,
+                        product=item.product,
+                        name=item.supplier_name,
+                        section="Технологии",
+                    )
 
     else:
         form = SearchResultTechnologyForm(user)
@@ -92,7 +119,9 @@ def technology_request(request):
 
 
 def logistic_request(request):
-    """показать запросы и результаты запросов текущего пользователя по логистике"""
+    """''Отображает и обрабатывает запросы клиентов по логистике для обычного пользователя.
+    Выбирает поставщиков для выбранной логистической услуги и подготавливает контекст для отображения страниц запроса клиента
+    """
     user = request.user
     results = None
     select_product = ""
@@ -107,13 +136,16 @@ def logistic_request(request):
                 user=user,
                 product=select_product,
             )
+            
+            # Создаем список для отправки запросов
             for item in results:
                 MailSendList.objects.create(
-                    email=item.supplier_email,
-                    user=item.user,
-                    product=item.product,
-                    name=item.supplier_name,
-                )
+                        email=item.supplier_email,
+                        user=item.user,
+                        product=item.product,
+                        name=item.supplier_name,
+                        section="Логистика",
+                    )
 
     else:
         form = SearchResultLogisticForm(user)
@@ -128,7 +160,7 @@ def logistic_request(request):
     return render(request, "account/logistic_request.html", context)
 
 
-
+# Отправка запроса поставщикам, получение ответов от поставщиков
 @login_required
 def send_supplier_emails(request):
     """форма редактирования запроса поставщику, продукт и подпись сделать на английском,
@@ -173,6 +205,16 @@ def send_supplier_emails(request):
                     message=message,
                     name=supplier.name,
                 )
+                print("==", supplier.section, "--", supplier.product)
+
+                SendedEmailSave.objects.create(
+                    user=request.user,
+                    email=supplier.email,
+                    product=product,
+                    message=message,
+                    section=supplier.section,
+                )
+                print("OK!")
 
             suppliers.delete()  # Очищаем временную таблицу
             return render(request, "mail/email_success.html")  # mail/email_sent.html
@@ -188,7 +230,9 @@ def send_supplier_emails(request):
 
 @login_required
 def redirect_send_emails(request):
-    """переход на форму"""
+    '''Перенаправляет пользователя в форму сообщения письма поставщикам, если выбраны поставщики. 
+Если поставщики не выбраны, отображается предупреждение и перенаправляется на страницу выбора поставщиков.'''
+   
     # Проверяем, есть ли записи для текущего пользователя
     if MailSendList.objects.filter(user=request.user).exists():
         return redirect("send_supplier_emails")
@@ -198,10 +242,11 @@ def redirect_send_emails(request):
 
 
 def email_success(request):
+    '''Отображает страницу успеха, оставляющую письма. 
+Показывает подтверждение успеха сообщения поставщику.'''
     return render(request, "mail/success.html")
 
 
-# ----------------------------------------------
 @login_required
 def supplier_responses_view(request):
     """Отображает список отправленных электронных писем и последних ответов поставщиков для текущего пользователя.
@@ -275,16 +320,26 @@ def download_supplier_response(request, response_id):
     return http_response
 
 
-# ------------------------------------------
+def customer_mail(request):
+    '''Отображает список отправленных пользователями писем. 
+Указывает все письма, отправленные текущим пользователем, отсортированные по дате отправки.'''
+    SendedEmailSave.objects.filter(section="").delete()
+    senden_mail = SendedEmailSave.objects.filter(user=request.user).order_by(
+        "-sended_at"
+    )
 
+    context = {"results": senden_mail}
+    return render(request, "mail/customer_mail.html", context)
+
+
+# отображение данных в Личном Кабинете
 
 def dashbord(request):
     """Главная страница Личного кабинета"""
-    phone = ""
+    user_subscribe=UserSearchCount.objects.get(user=request.user).available_count
+    user_unique_request= UserSearchCount.objects.get(user=request.user).reduce_count
     user_request = SearchResult.objects.filter(user_id=request.user.id)
-    user_phone = Profile.objects.filter(user_id=request.user.id)
-    for i in user_phone:
-        phone = i.phone
+    phone = Profile.objects.get(user_id=request.user.id).phone
     # Отображаем список отправленных электронных писем и последних ответов поставщиков для текущего пользователя.
     latest_responses = SupplierResponse.objects.filter(
         user=request.user,
@@ -313,34 +368,59 @@ def dashbord(request):
     context = {
         "user_request": user_request,
         "count": user_request.count,
-        "unique_request": user_request.distinct("product").count,
+        # "unique_request": user_request.distinct("product").count,
+        'unique_request': user_unique_request,
         "user_phone": phone,
         "response_data": response_data,
+        'user_subscribe': user_subscribe,
     }
-    # MailSendList
-    # SearchResult
+    
     return render(request, "account/dashbord.html", context)
 
 
-def subscribe(request):
-    """Страница подписок в ЛК"""
+
+# Подписка
+
+
+
+@login_required
+def subscribe_view(request):
+    '''Обрабатывает подписку пользователя на дополнительные поисковые запросы.
+    Позволяет пользователю увеличить лимит поиска, обновляя счетчик и историю операций.'''
+    if request.method == 'POST':
+        amounts = [1, 3, 10, 30, 100, 200]
+        amount = int(request.POST.get('amount', 0))
+        
+        if amount in amounts:
+            # Обновляем или создаем счетчик пользователя
+            counter, created = UserSearchCount.objects.get_or_create(user=request.user)
+            counter.add_count += amount
+            counter.save()
+            
+            # Записываем историю операции
+            UserSearchCountHistory.objects.create(
+                user=request.user,
+                add_count=amount,
+                reduce_count=0,
+                section=None
+            )
+    
     return render(request, "account/subscribe.html")
 
 
+
+
+
+# В РАЗРАБОТКЕ
 def customer_calculation(request):
-    """Страница расчетов в ЛК"""
+    """Страница в разработке ???"""
     return render(request, "account/customer_calculation.html")
 
 
 def payment(request):
-    """Страница для формы оплаты ??? в ЛК"""
+    """Страница для формы оплаты, в разработке ???"""
     return render(request, "account/payment.html")
 
 
-def customer_mail(request):
-    senden_mail = SendedEmailSave.objects.filter(user=request.user).order_by(
-        "-sended_at"
-    )
 
-    context = {"results": senden_mail}
-    return render(request, "mail/customer_mail.html", context)
+

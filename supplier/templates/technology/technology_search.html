@@ -12,14 +12,14 @@
     <h5 class='text-danger'>ВНИМАНИЕ! Наименование технологии <span class="text-primary">"{{product}}"</span> не найдено в
         базе данных.</h5>
     <p>{{select_except}}</p>
-    <a href="{% url 'supplier_selection' %}">Вернуться к форме выбора</a>
+    <a href="{% url 'technology_selection' %}">Вернуться к форме выбора</a>
 </div>
 {% else %}
 
 {% if items %}
 
 <div class="col-12 mx-auto margin-mb100">
-    <a href="{% url 'supplier_selection' %}">Вернуться к выбору</a>
+    <a href="{% url 'technology_selection' %}">Вернуться к выбору</a>
     <h3>Поставщики по запросу технологии "{{product}}" .</h3><span><b>Всего поставщиков: {{items.count|intcomma}}.</b>
     </span>
     <i>Для получения подробной информации о поставщике кликните на наименование поставщика.</i>
@@ -78,6 +78,11 @@ z-index:1;background: #9d9e9e; font-size:14px">
                 <!-- FORM -->
                 <div class="card-body ">
                     <h4>Поиск поставщиков технологий</h4>
+                     {% if available_message %}
+                    <div class="text-danger"> {{available_message}} <a class=" fw-bold" href="{% url 'subscribe' %}">Оформите подписку</a></div>
+                    {% else %}
+                    Доступно поисков: {{available_count}}
+                    {% endif %}
                 </div>
                 <div>
                     <div class="card-body">

@@ -22,10 +22,12 @@
         <div> Телефон: {{user_phone}}</div>
 
     </div>
+    <p>Содержание страницы будет определено позднее.</p>
     <div class="d-flex my-3">
-        <label class="mr-3">Сделано уникальных запросов: {{unique_request}} </label>
-        <label class=" mx-3">Найдено поставщиков: {{count}}</label>
-        <div class="mx-3">Доступно запросов: <b>21</b> </div>
+     
+        <!-- <label class="mr-3">Сделано уникальных запросов: {{unique_request}} </label>
+        <label class=" mx-3">Найдено поставщиков: {{count}}</label> -->
+        <div class="mx-3">Доступно запросов: <b>{{user_subscribe}}</b> </div>
         <div>
             <a class=" text-decoration-none bg-hover1 border mx-3" href="{% url 'subscribe' %}">Пополнить подписку</a>
         </div>

@@ -43,12 +43,12 @@ def send_supplier_email(user_id, email, product, message, name):
             fail_silently=False,
         )
     # Сохраняем в базу
-    SendedEmailSave.objects.create(
-            user=user,
-            email=email,
-            product=product,
-            message=message
-        )
+    # SendedEmailSave.objects.create(
+    #         user=user,
+    #         email=email,
+    #         product=product,
+    #         message=message
+    #     )
 
 
 @shared_task

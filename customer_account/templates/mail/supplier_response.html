@@ -10,6 +10,7 @@
         <table class="table table-bordered table-hover">
             <thead class="thead-dark">
                 <tr>
+                    <th>Раздел</th>
                     <th>Продукт</th>
                     <th>Email поставщика</th>
                     <th>Дата запроса</th>
@@ -24,7 +25,8 @@
                 {% for item in response_data %}
                 <tr>
 
-                    <td>{{ item.sent_email.product }}</td>
+                    <td>{{ item.sent_email.section }}</td>
+                     <td>{{ item.sent_email.product }}</td>
                     <td>{{ item.sent_email.email }}</td>
                     <td>{{ item.sent_email.sended_at|date:"d.m.Y H:i" }}</td>
 

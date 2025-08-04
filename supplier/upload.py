@@ -7,15 +7,16 @@ from django.contrib import messages
 from django.db import transaction
 from django.http import HttpResponse
 
-from .models import Supplier, Category, Country
+from .models import Supplier, Technology, Logistic
 from .forms import UploadExcelForm
 
 # Инициализация логгера для текущего модуля
 logger = logging.getLogger(__name__)
 
 
-def upload_excel(request):
-    """upload data to supplier postgresql"""
+def upload_suppliers(request):
+    '''Обрабатывает загрузку данных о поставщиках из файла Excel и сохраняет их в базе данных. \
+        Проверяет загруженный файл, обрабатывает каждую строку и создает объекты Supplier в пакетном режиме.'''
     if request.method == "POST":
         form = UploadExcelForm(request.POST, request.FILES)
         if form.is_valid():
@@ -45,44 +46,21 @@ def upload_excel(request):
                     "price_date",
                     "created_date",
                     "updated_date",
+                    "search_vector_product",
+                    "search_vector_product_ru",
                 ]
                 if headers != required_headers:
                     messages.error(request, "Неверные заголовки в файле Excel")
-                    return render(request, "upload_excel.html", {"form": form})
+                    return render(request, "upload_suppliers.html", {"form": form})
 
                 # Обрабатываем строки
-                suppliers_to_create = []
+                items_to_create = []
                
                 for row_num, row in enumerate(
                     ws.iter_rows(min_row=2), start=2
                 ):  # start=2 — номер первой строки данных
                     row_data = [cell.value for cell in row]
-                    # for row_num, row in ws.iter_rows(min_row=2):
-                    #     row_data = [cell.value for cell in row]
-
-                    # Проверка длины поля product
-                    # product_value = str(row_data[7]) if row_data[7] else ""
-                    # if len(product_value.encode("utf-8")) > 2704:
-                    #     logger.error(
-                    #         f"Ошибка в строке {row_num}: значение поля 'product' слишком длинное"
-                    #     )
-                    #     messages.error(
-                    #         request,
-                    #         f"Ошибка в строке {row_num}: значение поля 'product' слишком длинное",
-                    #     )
-                    #     continue  # Пропускаем эту строку
-
-                    # # Проверка длины поля product_ru
-                    # product_value = str(row_data[10]) if row_data[10] else ""
-                    # if len(product_value.encode("utf-8")) > 2704:
-                    #     logger.error(
-                    #         f"Ошибка в строке {row_num}: значение поля 'product_ru' слишком длинное"
-                    #     )
-                    #     messages.error(
-                    #         request,
-                    #         f"Ошибка в строке {row_num}: значение поля 'product_ru' слишком длинное",
-                    #     )
-                    #     continue  # Пропускаем эту строку
+                    
 
                     # Проверка поля на отсутствие данных
                     product_value = str(row_data[1]) if row_data[1] else ""
@@ -225,14 +203,14 @@ def upload_excel(request):
                         created_date=parse_date(row_data[15]),
                         updated_date=parse_date(row_data[16]),
                     )
-                    suppliers_to_create.append(supplier)
+                    items_to_create.append(supplier)
 
                 # Массовое добавление
                 with transaction.atomic():
-                    Supplier.objects.bulk_create(suppliers_to_create)
-                # Supplier.objects.bulk_create(suppliers_to_create)
+                    Supplier.objects.bulk_create(items_to_create)
+                # Supplier.objects.bulk_create(items_to_create)
                 messages.success(
-                    request, f"Успешно загружено {len(suppliers_to_create)} записей"
+                    request, f"Успешно загружено {len(items_to_create)} записей"
                 )
                 return redirect("upload_suppliers")
 
@@ -244,7 +222,430 @@ def upload_excel(request):
     else:
         form = UploadExcelForm()
 
-    return render(request, "upload/upload_excel.html", {"form": form})
+    return render(request, "upload/upload_suppliers.html", {"form": form})
+
+
+def upload_technology(request):
+    '''Обрабатывает загрузку данных о технологиях из файла Excel и сохраняет их в базе данных.
+Проверяет загруженный файл, обрабатывает каждую строку и создает объекты Technology в пакетном режиме.'''
+    if request.method == "POST":
+        form = UploadExcelForm(request.POST, request.FILES)
+        if form.is_valid():
+            try:
+                # Открываем XLSX файл
+                excel_file = request.FILES["excel_file"]
+                wb = openpyxl.load_workbook(excel_file)
+                ws = wb.active
+
+                # Проверяем заголовки
+                headers = [cell.value for cell in ws[1]]
+                required_headers = [
+                    "id",
+                    "index",
+                    "country",
+                    "category",
+                    "name",
+                    "website",
+                    "description",
+                    "product",
+                    "contact",
+                    "description_ru",
+                    "product_ru",
+                    "email",
+                    "tn_ved",
+                    "price",
+                    "price_date",
+                    "created_date",
+                    "updated_date",
+                    "search_vector_product",
+                    "search_vector_product_ru",
+                ]
+                if headers != required_headers:
+                    messages.error(request, "Неверные заголовки в файле Excel")
+                    return render(request, "upload_technology.html", {"form": form})
+
+                # Обрабатываем строки
+                items_to_create = []
+               
+                for row_num, row in enumerate(
+                    ws.iter_rows(min_row=2), start=2
+                ):  # start=2 — номер первой строки данных
+                    row_data = [cell.value for cell in row]
+                    
+
+                    # Проверка поля на отсутствие данных
+                    product_value = str(row_data[1]) if row_data[1] else ""
+                    if not product_value:
+                        logger.error(
+                                f"Ошибка в строке {row_num}: пустое поле 'index'"
+                        )
+                        messages.error(
+                            request,
+                            f"Ошибка в строке {row_num}: пустое поле 'index'",
+                        )
+                        continue  # Пропускаем эту строку
+
+                    product_value = str(row_data[2]) if row_data[2] else ""
+                    if not product_value:
+                        logger.error(
+                                f"Ошибка в строке {row_num}: пустое поле 'country'"
+                        )
+                        messages.error(
+                            request,
+                            f"Ошибка в строке {row_num}: пустое поле 'country'",
+                        )
+                        continue  # Пропускаем эту строку
+                    product_value = str(row_data[3]) if row_data[3] else ""
+                    if not product_value:
+                        logger.error(
+                                f"Ошибка в строке {row_num}: пустое поле 'category'"
+                        )
+                        messages.error(
+                            request,
+                            f"Ошибка в строке {row_num}: пустое поле 'category'",
+                        )
+                        continue  # Пропускаем эту строку
+                    product_value = str(row_data[4]) if row_data[4] else ""
+                    if not product_value:
+                        logger.error(
+                                f"Ошибка в строке {row_num}: пустое поле 'name'"
+                        )
+                        messages.error(
+                            request,
+                            f"Ошибка в строке {row_num}: пустое поле 'name'",
+                        )
+                        continue  # Пропускаем эту строку
+                    product_value = str(row_data[5]) if row_data[5] else ""
+                    if not product_value:
+                        logger.error(
+                                f"Ошибка в строке {row_num}: пустое поле 'website'"
+                        )
+                        messages.error(
+                            request,
+                            f"Ошибка в строке {row_num}: пустое поле 'website'",
+                        )
+                        continue  # Пропускаем эту строку
+                    product_value = str(row_data[6]) if row_data[6] else ""
+                    if not product_value:
+                        logger.error(
+                                f"Ошибка в строке {row_num}: пустое поле 'description'"
+                        )
+                        messages.error(
+                            request,
+                            f"Ошибка в строке {row_num}: пустое поле 'description'",
+                        )
+                        continue  # Пропускаем эту строку
+                    product_value = str(row_data[7]) if row_data[7] else ""
+                    if not product_value:
+                        logger.error(
+                                f"Ошибка в строке {row_num}: пустое поле 'product'"
+                        )
+                        messages.error(
+                            request,
+                            f"Ошибка в строке {row_num}: пустое поле 'product'",
+                        )
+                        continue  # Пропускаем эту строку
+                    product_value = str(row_data[8]) if row_data[8] else ""
+                    if not product_value:
+                        logger.error(
+                                f"Ошибка в строке {row_num}: пустое поле 'contact'"
+                        )
+                        messages.error(
+                            request,
+                            f"Ошибка в строке {row_num}: пустое поле 'contact'",
+                        )
+                        continue  # Пропускаем эту строку
+                    product_value = str(row_data[9]) if row_data[9] else ""
+                    if not product_value:
+                        logger.error(
+                                f"Ошибка в строке {row_num}: пустое поле 'description_ru'"
+                        )
+                        messages.error(
+                            request,
+                            f"Ошибка в строке {row_num}: пустое поле 'description_ru'",
+                        )
+                        continue  # Пропускаем эту строку
+                    product_value = str(row_data[10]) if row_data[10] else ""
+                    if not product_value:
+                        logger.error(
+                                f"Ошибка в строке {row_num}: пустое поле 'product_ru'"
+                        )
+                        messages.error(
+                            request,
+                            f"Ошибка в строке {row_num}: пустое поле 'product_ru'",
+                        )
+                        continue  # Пропускаем эту строку
+                    product_value = str(row_data[11]) if row_data[11] else ""
+                    if not product_value:
+                        logger.error(
+                                f"Ошибка в строке {row_num}: пустое поле 'email'"
+                        )
+                        messages.error(
+                            request,
+                            f"Ошибка в строке {row_num}: пустое поле 'email'",
+                        )
+                        continue  # Пропускаем эту строку
+                    
+
+                    # Преобразование дат
+                    def parse_date(date_str):
+                        if date_str and isinstance(date_str, str):
+                            try:
+                                return datetime.strptime(date_str, "%Y-%m-%d").date()
+                            except ValueError:
+                                return None
+                        return date_str if isinstance(date_str, datetime) else None
+
+                    technology = Technology(
+                        index=int(row_data[1]) if row_data[1] is not None else None,
+                        country=str(row_data[2]) if row_data[2] else "",
+                        category=str(row_data[3]) if row_data[3] else "",
+                        name=str(row_data[4]) if row_data[4] else "",
+                        website=str(row_data[5]) if row_data[5] else "",
+                        description=str(row_data[6]) if row_data[6] else "",
+                        product=str(row_data[7]) if row_data[7] else "",
+                        contact=str(row_data[8]) if row_data[8] else "",
+                        description_ru=str(row_data[9]) if row_data[9] else "",
+                        product_ru=str(row_data[10]) if row_data[10] else "",
+                        email=str(row_data[11]) if row_data[11] else None,
+                        tn_ved=str(row_data[12]) if row_data[12] else None,
+                        price=float(row_data[13]) if row_data[13] is not None else 10.0,
+                        price_date=parse_date(row_data[14]),
+                        created_date=parse_date(row_data[15]),
+                        updated_date=parse_date(row_data[16]),
+                    )
+                    items_to_create.append(technology)
+
+                # Массовое добавление
+                with transaction.atomic():
+                    Technology.objects.bulk_create(items_to_create)
+                # Supplier.objects.bulk_create(items_to_create)
+                messages.success(
+                    request, f"Успешно загружено {len(items_to_create)} записей"
+                )
+                return redirect("upload_technology")
+
+            except Exception as e:
+                # Логируем ошибку
+                logger.error(f"Ошибка загрузки файла: {str(e)}")
+                # Отображаем сообщение пользователю
+                messages.error(request, f"Ошибка при обработке файла: {str(e)}")
+    else:
+        form = UploadExcelForm()
+
+    return render(request, "upload/upload_technology.html", {"form": form})
+
+
+def upload_logistic(request):
+    '''Обрабатывает загрузку данных о логистике из файла Excel и сохраняет их в базе данных.
+Проверяет загруженный файл, обрабатывает каждую строку и создает объекты Logistic в пакетном режиме.'''
+    if request.method == "POST":
+        form = UploadExcelForm(request.POST, request.FILES)
+        if form.is_valid():
+            try:
+                # Открываем XLSX файл
+                excel_file = request.FILES["excel_file"]
+                wb = openpyxl.load_workbook(excel_file)
+                ws = wb.active
+
+                # Проверяем заголовки
+                headers = [cell.value for cell in ws[1]]
+                required_headers = [
+                    "id",
+                    "index",
+                    "country",
+                    "category",
+                    "name",
+                    "website",
+                    "description",
+                    "product",
+                    "contact",
+                    "description_ru",
+                    "product_ru",
+                    "email",
+                    "tn_ved",
+                    "price",
+                    "price_date",
+                    "created_date",
+                    "updated_date",
+                    "search_vector_product",
+                    "search_vector_product_ru",
+                ]
+                if headers != required_headers:
+                    messages.error(request, "Неверные заголовки в файле Excel")
+                    return render(request, "upload_technology.html", {"form": form})
+
+                # Обрабатываем строки
+                items_to_create = []
+               
+                for row_num, row in enumerate(
+                    ws.iter_rows(min_row=2), start=2
+                ):  # start=2 — номер первой строки данных
+                    row_data = [cell.value for cell in row]
+                    
+
+                    # Проверка поля на отсутствие данных
+                    product_value = str(row_data[1]) if row_data[1] else ""
+                    if not product_value:
+                        logger.error(
+                                f"Ошибка в строке {row_num}: пустое поле 'index'"
+                        )
+                        messages.error(
+                            request,
+                            f"Ошибка в строке {row_num}: пустое поле 'index'",
+                        )
+                        continue  # Пропускаем эту строку
+
+                    product_value = str(row_data[2]) if row_data[2] else ""
+                    if not product_value:
+                        logger.error(
+                                f"Ошибка в строке {row_num}: пустое поле 'country'"
+                        )
+                        messages.error(
+                            request,
+                            f"Ошибка в строке {row_num}: пустое поле 'country'",
+                        )
+                        continue  # Пропускаем эту строку
+                    product_value = str(row_data[3]) if row_data[3] else ""
+                    if not product_value:
+                        logger.error(
+                                f"Ошибка в строке {row_num}: пустое поле 'category'"
+                        )
+                        messages.error(
+                            request,
+                            f"Ошибка в строке {row_num}: пустое поле 'category'",
+                        )
+                        continue  # Пропускаем эту строку
+                    product_value = str(row_data[4]) if row_data[4] else ""
+                    if not product_value:
+                        logger.error(
+                                f"Ошибка в строке {row_num}: пустое поле 'name'"
+                        )
+                        messages.error(
+                            request,
+                            f"Ошибка в строке {row_num}: пустое поле 'name'",
+                        )
+                        continue  # Пропускаем эту строку
+                    product_value = str(row_data[5]) if row_data[5] else ""
+                    if not product_value:
+                        logger.error(
+                                f"Ошибка в строке {row_num}: пустое поле 'website'"
+                        )
+                        messages.error(
+                            request,
+                            f"Ошибка в строке {row_num}: пустое поле 'website'",
+                        )
+                        continue  # Пропускаем эту строку
+                    product_value = str(row_data[6]) if row_data[6] else ""
+                    if not product_value:
+                        logger.error(
+                                f"Ошибка в строке {row_num}: пустое поле 'description'"
+                        )
+                        messages.error(
+                            request,
+                            f"Ошибка в строке {row_num}: пустое поле 'description'",
+                        )
+                        continue  # Пропускаем эту строку
+                    product_value = str(row_data[7]) if row_data[7] else ""
+                    if not product_value:
+                        logger.error(
+                                f"Ошибка в строке {row_num}: пустое поле 'product'"
+                        )
+                        messages.error(
+                            request,
+                            f"Ошибка в строке {row_num}: пустое поле 'product'",
+                        )
+                        continue  # Пропускаем эту строку
+                    product_value = str(row_data[8]) if row_data[8] else ""
+                    if not product_value:
+                        logger.error(
+                                f"Ошибка в строке {row_num}: пустое поле 'contact'"
+                        )
+                        messages.error(
+                            request,
+                            f"Ошибка в строке {row_num}: пустое поле 'contact'",
+                        )
+                        continue  # Пропускаем эту строку
+                    product_value = str(row_data[9]) if row_data[9] else ""
+                    if not product_value:
+                        logger.error(
+                                f"Ошибка в строке {row_num}: пустое поле 'description_ru'"
+                        )
+                        messages.error(
+                            request,
+                            f"Ошибка в строке {row_num}: пустое поле 'description_ru'",
+                        )
+                        continue  # Пропускаем эту строку
+                    product_value = str(row_data[10]) if row_data[10] else ""
+                    if not product_value:
+                        logger.error(
+                                f"Ошибка в строке {row_num}: пустое поле 'product_ru'"
+                        )
+                        messages.error(
+                            request,
+                            f"Ошибка в строке {row_num}: пустое поле 'product_ru'",
+                        )
+                        continue  # Пропускаем эту строку
+                    product_value = str(row_data[11]) if row_data[11] else ""
+                    if not product_value:
+                        logger.error(
+                                f"Ошибка в строке {row_num}: пустое поле 'email'"
+                        )
+                        messages.error(
+                            request,
+                            f"Ошибка в строке {row_num}: пустое поле 'email'",
+                        )
+                        continue  # Пропускаем эту строку
+                    
+
+                    # Преобразование дат
+                    def parse_date(date_str):
+                        if date_str and isinstance(date_str, str):
+                            try:
+                                return datetime.strptime(date_str, "%Y-%m-%d").date()
+                            except ValueError:
+                                return None
+                        return date_str if isinstance(date_str, datetime) else None
+
+                    logistic = Logistic(
+                        index=int(row_data[1]) if row_data[1] is not None else None,
+                        country=str(row_data[2]) if row_data[2] else "",
+                        category=str(row_data[3]) if row_data[3] else "",
+                        name=str(row_data[4]) if row_data[4] else "",
+                        website=str(row_data[5]) if row_data[5] else "",
+                        description=str(row_data[6]) if row_data[6] else "",
+                        product=str(row_data[7]) if row_data[7] else "",
+                        contact=str(row_data[8]) if row_data[8] else "",
+                        description_ru=str(row_data[9]) if row_data[9] else "",
+                        product_ru=str(row_data[10]) if row_data[10] else "",
+                        email=str(row_data[11]) if row_data[11] else None,
+                        tn_ved=str(row_data[12]) if row_data[12] else None,
+                        price=float(row_data[13]) if row_data[13] is not None else 10.0,
+                        price_date=parse_date(row_data[14]),
+                        created_date=parse_date(row_data[15]),
+                        updated_date=parse_date(row_data[16]),
+                    )
+                    items_to_create.append(logistic)
+
+                # Массовое добавление
+                with transaction.atomic():
+                    Logistic.objects.bulk_create(items_to_create)
+                
+                messages.success(
+                    request, f"Успешно загружено {len(items_to_create)} записей"
+                )
+                return redirect("upload_logistic")
+
+            except Exception as e:
+                # Логируем ошибку
+                logger.error(f"Ошибка загрузки файла: {str(e)}")
+                # Отображаем сообщение пользователю
+                messages.error(request, f"Ошибка при обработке файла: {str(e)}")
+    else:
+        form = UploadExcelForm()
+
+    return render(request, "upload/upload_logistic.html", {"form": form})
+
 
 
 def export_to_excel(request): 

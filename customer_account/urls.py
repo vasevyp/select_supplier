@@ -1,7 +1,7 @@
 from django.urls import path
 
 from .views import (
-    subscribe,
+    subscribe_view,
     dashbord,
     payment,
     customer_request,
@@ -18,7 +18,7 @@ from .views import (
 )
 
 urlpatterns = [
-    path("subscribe/", subscribe, name="subscribe"),
+    path("subscribe/", subscribe_view, name="subscribe"),
     path("", dashbord, name="dashbord"),
     path("payment/", payment, name="payment"),
     path("customer-request/", customer_request, name="customer_request"),
