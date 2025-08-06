@@ -88,13 +88,13 @@ def supplier_selection(request):
     product=''
     message404=''
     available_message=''
-    print('Start Supplier')
+    # print('Start Supplier')
     n_user=UserSearchCount.objects.get(user=request.user)
     if not n_user:
         UserSearchCount.objects.create(user=request.user, add_count=0, reduce_count=0)
 
     if UserSearchCount.objects.get(user=request.user).available_count >= 1:
-        print('OK available_count', UserSearchCount.objects.get(user=request.user).available_count)
+        # print('OK available_count', UserSearchCount.objects.get(user=request.user).available_count)
         if request.method == "POST":
             category_id = request.POST.get("category")
             country_id = request.POST.get("country")
@@ -124,32 +124,32 @@ def supplier_selection(request):
                 results = Supplier.objects.annotate(search=SearchVector(search_field)).filter(
                 Q(country=country) & Q(category=category) & Q(search=search_query)
             ).order_by('-id')     
-            if results:
-                # print('Result-count== ',results.count())
-                for i in results:
-                    SearchResult.objects.get_or_create(
-                        user_id = request.user.id,
-                        supplier_name_id = i.id,
-                        supplier_email=i.email,
-                        product = query
-                    )
-                    # print('NEW Res==', request.user.id, query, i.product, i.name, i.email)
+                if results:
+                    # print('Result-count== ',results.count())
+                    for i in results:
+                        SearchResult.objects.get_or_create(
+                            user_id = request.user.id,
+                            supplier_name_id = i.id,
+                            supplier_email=i.email,
+                            product = query
+                        )
+                        # print('NEW Res==', request.user.id, query, i.product, i.name, i.email)
 
-                # Если поиск успешен (request не пустой)         
-                # Обновляем счетчик Подписки
-                counter, created = UserSearchCount.objects.get_or_create(user=request.user)
-                counter.reduce_count += 1
-                counter.save()
-                    
-                # Записываем историю Подписки
-                UserSearchCountHistory.objects.create(
-                        user=request.user,
-                        add_count=0,
-                        reduce_count=1,
-                        section="goods"
-                    )
-            else:
-                select_except = "Вернитесь к форме выбора и повторите поиск."
+                    # Если поиск успешен (request не пустой)         
+                    # Обновляем счетчик Подписки
+                    counter, created = UserSearchCount.objects.get_or_create(user=request.user)
+                    counter.reduce_count += 1
+                    counter.save()
+                        
+                    # Записываем историю Подписки
+                    UserSearchCountHistory.objects.create(
+                            user=request.user,
+                            add_count=0,
+                            reduce_count=1,
+                            section="goods"
+                        )
+                else:
+                    select_except = "Вернитесь к форме выбора и повторите поиск."
     else:
         available_message='Ваш остаток по подписке равен 0. Поиск недоступен.'        
 
@@ -197,7 +197,7 @@ def technology_selection(request):
     message404=''
     available_message=''
     if UserSearchCount.objects.get(user=request.user).available_count >= 1:
-        print('OK available_count', UserSearchCount.objects.get(user=request.user).available_count)
+        # print('OK available_count', UserSearchCount.objects.get(user=request.user).available_count)
         if request.method == "POST":
             category_id = request.POST.get("category_technology")
             country_id = request.POST.get("country")
@@ -289,7 +289,7 @@ def logistic_selection(request):
     message404=''
     available_message=''
     if UserSearchCount.objects.get(user=request.user).available_count >= 1:
-        print('OK available_count', UserSearchCount.objects.get(user=request.user).available_count)
+        # print('OK available_count', UserSearchCount.objects.get(user=request.user).available_count)
         if request.method == "POST":
             category_id = request.POST.get("category_logistic")
             country_id = request.POST.get("country")
@@ -320,7 +320,7 @@ def logistic_selection(request):
                 Q(country=country) & Q(category=category) & Q(search=search_query)
             ).order_by('-id')    
                 if results:
-                    print('results OK', category, country)
+                    # print('results OK', category, country)
                     for i in results:
                         SearchResultLogistic.objects.get_or_create(
                             user_id = request.user.id,
