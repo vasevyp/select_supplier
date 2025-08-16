@@ -18,8 +18,6 @@ from .models import (
     SupplierResponse,
     SearchResultTechnology,
     SearchResultLogistic,
-    UserSearchCount,
-    UserSearchCountHistory
     )
 from .forms import (
     SearchResultForm,
@@ -28,6 +26,7 @@ from .forms import (
     SearchResultLogisticForm,
 )
 from .tasks import send_supplier_email
+from bank_clearing.models import UserSearchCount, UserSearchCountHistory
 
 # from django.utils.html import strip_tags
 
@@ -387,11 +386,13 @@ def dashbord(request):
 def subscribe_view(request):
     '''Обрабатывает подписку пользователя на дополнительные поисковые запросы.
     Позволяет пользователю увеличить лимит поиска, обновляя счетчик и историю операций.'''
-    if request.method == 'POST':
-        amounts = [1, 3, 10, 30, 100, 200]
-        amount = int(request.POST.get('amount', 0))
+    # if request.method == 'POST':
+    if True:
+        # amounts = [1, 3, 10, 30, 100, 200]
+        # amount = int(request.POST.get('amount', 0))
+        amount=1
         
-        if amount in amounts:
+        if amount:
             # Обновляем или создаем счетчик пользователя
             counter, created = UserSearchCount.objects.get_or_create(user=request.user)
             counter.add_count += amount
@@ -405,7 +406,7 @@ def subscribe_view(request):
                 section=None
             )
     
-    return render(request, "account/subscribe.html")
+    return render(request, "bank_clearing/subscription_list.html")
 
 
 

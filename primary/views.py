@@ -8,7 +8,7 @@ from django.views.generic import DetailView
 from supplier.models import Supplier, Category, Country
 from supplier.forms import SupplierSearchForm
 
-from .models import SupplierDemo, TechnologyDemo, LogisticDemo
+from .models import SupplierDemo, TechnologyDemo, LogisticDemo, MainPage
 
 
 
@@ -28,17 +28,17 @@ def primary(request):
     supplier_list=Supplier.objects.all().count()  
     country_list=Country.objects.all().count
     category_list=Category.objects.all().count()
+    blocks = MainPage.objects.all().order_by('id')
     return render(request, 'primary/primary.html', {
         'supplier_list':supplier_list,
         'country_list': country_list,
         'category_list': category_list,
+        'blocks':blocks,
     })
 
 def privacy_policy(request):
     return render(request, 'primary/privacy_policy.html')
 
-def contact(request):
-    return render(request, 'primary/contact.html')
 
 
 def supplier_search_primary(request):

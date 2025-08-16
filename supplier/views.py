@@ -14,7 +14,8 @@ from django.contrib.auth.models import User
 
 from django.views.decorators.http import require_POST
 
-from customer_account.models import SearchResult, SearchResultTechnology, SearchResultLogistic, UserSearchCount, UserSearchCountHistory
+from customer_account.models import SearchResult, SearchResultTechnology, SearchResultLogistic
+from bank_clearing.models import UserSearchCount, UserSearchCountHistory
 from .forms import ImportForm, SupplierSearchForm, SupplierSearchForm2
 from .models import Supplier, Country, Category, CategoryTechnology, CategoryLogistic, Technology, Logistic
 
@@ -94,7 +95,7 @@ def supplier_selection(request):
         UserSearchCount.objects.create(user=request.user, add_count=0, reduce_count=0)
 
     if UserSearchCount.objects.get(user=request.user).available_count >= 1:
-        # print('OK available_count', UserSearchCount.objects.get(user=request.user).available_count)
+           # print('OK available_count', UserSearchCount.objects.get(user=request.user).available_count)
         if request.method == "POST":
             category_id = request.POST.get("category")
             country_id = request.POST.get("country")
@@ -125,7 +126,7 @@ def supplier_selection(request):
                 Q(country=country) & Q(category=category) & Q(search=search_query)
             ).order_by('-id')     
                 if results:
-                    # print('Result-count== ',results.count())
+                    print('Resultcount== ',results.count())
                     for i in results:
                         SearchResult.objects.get_or_create(
                             user_id = request.user.id,
@@ -347,7 +348,7 @@ def logistic_selection(request):
     else:
         available_message='Ваш остаток по подписке равен 0. Поиск недоступен.'  
 
-    count = Logistic.objects.all().count()
+    count = Logistic.objects.all().count()  
     available_count = UserSearchCount.objects.get(user=request.user).available_count
     # paginator = Paginator(results, 20)  # Show 25 contacts per page
     # page_number = request.GET.get("page")

@@ -53,84 +53,84 @@ class SearchResultLogistic(models.Model):
 
 
 
-SECTION_CHOICES = (
-    ('goods', 'Товары'),
-    ('technology', 'Технологии'),
-    ('logistics', 'Логистика'),
-)
+# SECTION_CHOICES = (
+#     ('goods', 'Товары'),
+#     ('technology', 'Технологии'),
+#     ('logistics', 'Логистика'),
+# )
 
-class UserSearchCount(models.Model):
-    '''Модель для хранения количества поисковых запросов пользователя. 
-Отслеживает добавленные, использованные и доступные поисковые запросы для каждого пользователя.'''
-    user = models.OneToOneField(
-        User, 
-        on_delete=models.CASCADE,
-        related_name='search_count'
-    )
-    add_count = models.PositiveIntegerField(
-        default=0,
-        verbose_name="Добавленные запросы"
-    )
-    reduce_count = models.PositiveIntegerField(
-        default=0,
-        verbose_name="Использованные запросы"
-    )
-    available_count = models.PositiveIntegerField(
-        default=0,
-        verbose_name="Доступные запросы"
-    )
-    modified_at = models.DateTimeField(
-        auto_now=True,
-        verbose_name="Дата обновления"
-    )
+# class UserSearchCount(models.Model):
+#     '''Модель для хранения количества поисковых запросов пользователя. 
+# Отслеживает добавленные, использованные и доступные поисковые запросы для каждого пользователя.'''
+#     user = models.OneToOneField(
+#         User, 
+#         on_delete=models.CASCADE,
+#         related_name='search_count'
+#     )
+#     add_count = models.PositiveIntegerField(
+#         default=0,
+#         verbose_name="Добавленные запросы"
+#     )
+#     reduce_count = models.PositiveIntegerField(
+#         default=0,
+#         verbose_name="Использованные запросы"
+#     )
+#     available_count = models.PositiveIntegerField(
+#         default=0,
+#         verbose_name="Доступные запросы"
+#     )
+#     modified_at = models.DateTimeField(
+#         auto_now=True,
+#         verbose_name="Дата обновления"
+#     )
 
-    class Meta:
-        """Help Supplier data"""
-        verbose_name = 'запись Подписки'
-        verbose_name_plural = 'Подписка, состояние'
+#     class Meta:
+#         """Help Supplier data"""
+#         verbose_name = 'запись Подписки'
+#         verbose_name_plural = 'Подписка, состояние'
 
-    def save(self, *args, **kwargs):
-        self.available_count = self.add_count - self.reduce_count
-        super().save(*args, **kwargs)
+#     def save(self, *args, **kwargs):
+#         self.available_count = self.add_count - self.reduce_count
+#         super().save(*args, **kwargs)
 
-    def __str__(self):
-        return f"{self.user.email} | Доступно: {self.available_count}"
+#     def __str__(self):
+#         return f"{self.user.email} | Доступно: {self.available_count}"
 
-class UserSearchCountHistory(models.Model):
-    '''Модель для хранения истории изменения количества поисковых запросов пользователя. 
-Сохраняет информацию о добавленных и использованных запросах, а также о разделе и времени операции.'''
-    user = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        related_name='search_history'
-    )
-    add_count = models.PositiveIntegerField(
-        default=0,
-        verbose_name="Добавленные запросы"
-    )
-    reduce_count = models.PositiveIntegerField(
-        default=0,
-        verbose_name="Использованные запросы"
-    )
-    section = models.CharField(
-        max_length=20,
-        choices=SECTION_CHOICES,
-        blank=True,
-        null=True,
-        verbose_name="Раздел"
-    )
-    created_at = models.DateTimeField(
-        auto_now_add=True,
-        verbose_name="Дата операции"
-    )
+# class UserSearchCountHistory(models.Model):
+#     '''Модель для хранения истории изменения количества поисковых запросов пользователя. 
+# Сохраняет информацию о добавленных и использованных запросах, а также о разделе и времени операции.'''
+#     user = models.ForeignKey(
+#         User,
+#         on_delete=models.CASCADE,
+#         related_name='search_history'
+#     )
+#     add_count = models.PositiveIntegerField(
+#         default=0,
+#         verbose_name="Добавленные запросы"
+#     )
+#     reduce_count = models.PositiveIntegerField(
+#         default=0,
+#         verbose_name="Использованные запросы"
+#     )
+#     section = models.CharField(
+#         max_length=20,
+#         choices=SECTION_CHOICES,
+#         blank=True,
+#         null=True,
+#         verbose_name="Раздел"
+#     )
+#     created_at = models.DateTimeField(
+#         auto_now_add=True,
+#         verbose_name="Дата операции"
+#     )
 
-    class Meta:
-        """Help Supplier data"""
-        verbose_name = 'запись истории Подписки'
-        verbose_name_plural = 'Подписка, история'
+#     class Meta:
+#         """Help Supplier data"""
+#         verbose_name = 'запись истории Подписки'
+#         verbose_name_plural = 'Подписка, история'
 
-    def __str__(self):
-        return f"{self.user.email} | {self.created_at}"         
+#     def __str__(self):
+#         return f"{self.user.email} | {self.created_at}"         
     
 class MailSendList(models.Model):
     '''выборка таблицы адресов для рассылки email, временная таблица на одну рассылку'''

@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="mb-4">Тарифные планы подписки</h1>
+    <!-- <form method="post" action="{% url 'subscribe' %}">
+            {% csrf_token %}
+            <button type="submit" name="amount" value="1"
+               class="btn bg-blue1 bg-hover1 color-button-text m-1">Demo: Подписаться на 1</button>
+         </form> -->
+    {% if subscriptions %}
+    <div class="row">
+        {% for subscription in subscriptions %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">{{ subscription.name }}</h5>
+                    <p class="card-text">
+                        <strong>Поисков: {{ subscription.search_count }} </strong><br>
+                        Стоимость: <span class="h4">{{ subscription.price }} ₽</span>
+                    </p>
+                    <form method="post" action="{% url 'bank_clearing:subscription_list' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="subscription_id" value="{{ subscription.id }}">
+                        <button type="submit" class="btn btn-primary btn-block">
+                            Выбрать тариф
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p>Нет доступных подписок.</p>
+{% endif %}
+</div>
+{% endblock %}

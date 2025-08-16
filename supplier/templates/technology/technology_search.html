@@ -79,7 +79,7 @@ z-index:1;background: #9d9e9e; font-size:14px">
                 <div class="card-body ">
                     <h4>Поиск поставщиков технологий</h4>
                      {% if available_message %}
-                    <div class="text-danger"> {{available_message}} <a class=" fw-bold" href="{% url 'subscribe' %}">Оформите подписку</a></div>
+                    <div class="text-danger"> {{available_message}} <a class=" fw-bold" href="{% url 'bank_cleaning:subscription_list' %}">Оформите подписку</a></div>
                     {% else %}
                     Доступно поисков: {{available_count}}
                     {% endif %}

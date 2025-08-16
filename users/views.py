@@ -24,7 +24,7 @@ from .utils import (
     verify_password_reset_token,
 )
 from .models import Profile
-from customer_account.models import UserSearchCount
+from bank_clearing.models import UserSearchCount
 
 
 def register_view(request):

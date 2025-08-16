@@ -28,12 +28,13 @@ urlpatterns = [
     path('supplier/', include('supplier.urls')),
     # path('delivery/', include('delivery.urls')),
     # path('customs/', include('customs.urls')),
-    # path('bank/', include('bank_clearing.urls')),
+    path('payments/', include('bank_clearing.urls', namespace='bank_cleaning')),
     # path('cost/', include('cost_comparison.urls')),
     # path('analytics/', include('analytics.urls')),
     path('users/', include('users.urls')),
     path('captcha/', include('captcha.urls')),
     path('account/', include('customer_account.urls')),
+    path('contact', include('contact.urls')),
 
 ]
 

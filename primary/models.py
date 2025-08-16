@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.postgres.search import SearchVectorField
 from django.contrib.postgres.indexes import GinIndex
+from tinymce.models import HTMLField
 
 
 class SupplierDemo(models.Model):
@@ -134,3 +135,24 @@ class LogisticDemo(models.Model):
 
     def __str__(self):
         return self.name        
+    
+
+    
+class MainPage(models.Model):
+    name= models.CharField(max_length=20, verbose_name = 'Блок')
+    text = HTMLField(verbose_name='Текст блока')
+    htmltag = models.TextField(null=True, blank=True)
+    created_date = models.DateField(
+        auto_now_add=True, verbose_name='Создан', null=True)
+    updated_date = models.DateField(
+        auto_now=True,  verbose_name='Изменен', null=True)
+
+
+    class Meta:
+        """Help main text data"""
+        verbose_name = 'Главная страница'
+        verbose_name_plural = 'Главная страница'
+       
+
+    def __str__(self):
+        return self.name

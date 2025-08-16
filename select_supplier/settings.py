@@ -32,6 +32,8 @@ INSTALLED_APPS = [
     "captcha",
     "celery",
     "django_celery_beat",
+    "rest_framework",
+    'tinymce',
     
     # myapp
     "primary.apps.PrimaryConfig",
@@ -43,6 +45,7 @@ INSTALLED_APPS = [
     "analytic.apps.AnalyticConfig",
     "users.apps.UsersConfig",
     "customer_account.apps.СustomerAccountConfig",
+    "contact.apps.ContactConfig",
 ]
 
 MIDDLEWARE = [

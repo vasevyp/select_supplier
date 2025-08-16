@@ -1,7 +1,6 @@
 from django.contrib import admin
 
-from .models import SearchResult, MailSendList, SendedEmailSave, SupplierResponse, \
-    UserSearchCount, UserSearchCountHistory, SearchResultTechnology, SearchResultLogistic
+from .models import SearchResult, MailSendList, SendedEmailSave, SupplierResponse, SearchResultTechnology, SearchResultLogistic
 
 @admin.register(SearchResult)
 class SearchResultAdmin(admin.ModelAdmin):
@@ -56,13 +55,13 @@ class SupplierResponseAdmin(admin.ModelAdmin):
     search_fields = ('product', 'email')
     list_filter = ('date', 'user')
 
-@admin.register(UserSearchCount)
-class UserSearchCountAdmin(admin.ModelAdmin):
-    list_display = ('user', 'add_count', 'reduce_count', 'available_count', 'modified_at')
-    list_filter = ('user', 'available_count')
+# @admin.register(UserSearchCount)
+# class UserSearchCountAdmin(admin.ModelAdmin):
+#     list_display = ('user', 'add_count', 'reduce_count', 'available_count', 'modified_at')
+#     list_filter = ('user', 'available_count')
 
 
-@admin.register(UserSearchCountHistory)
-class UserSearchCountHistoryAdmin(admin.ModelAdmin):
-    list_display = ('user', 'add_count', 'reduce_count', 'section', 'created_at')
-    list_filter = ('user', 'section')
+# @admin.register(UserSearchCountHistory)
+# class UserSearchCountHistoryAdmin(admin.ModelAdmin):
+#     list_display = ('user', 'add_count', 'reduce_count', 'section', 'created_at')
+#     list_filter = ('user', 'section')

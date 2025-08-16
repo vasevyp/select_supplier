@@ -1,6 +1,6 @@
 from django.contrib import admin
 from import_export.admin import ImportExportModelAdmin
-from .models import SupplierDemo, TechnologyDemo, LogisticDemo
+from .models import SupplierDemo, TechnologyDemo, LogisticDemo, MainPage
 
 
 @admin.register(SupplierDemo)
@@ -32,3 +32,7 @@ class LogisticDemoAdmin(ImportExportModelAdmin):
     save_on_top = True
     list_per_page = 50
 
+@admin.register(MainPage)
+class MainPageAdmin(admin.ModelAdmin):
+    list_display = ("name", "created_date", "updated_date")
+    save_on_top = True
