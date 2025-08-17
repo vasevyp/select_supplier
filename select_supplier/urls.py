@@ -35,6 +35,7 @@ urlpatterns = [
     path('captcha/', include('captcha.urls')),
     path('account/', include('customer_account.urls')),
     path('contact', include('contact.urls')),
+    path('tinymce/', include('tinymce.urls')),
 
 ]
 

@@ -9,6 +9,7 @@ from supplier.models import Supplier, Category, Country
 from supplier.forms import SupplierSearchForm
 
 from .models import SupplierDemo, TechnologyDemo, LogisticDemo, MainPage
+from bank_clearing.models import SubscriptionRates
 
 
 
@@ -98,7 +99,8 @@ def supplier_search_primary(request):
 
 
 def tariffs_page(request):
-    return render(request, 'primary/tariffs_page.html')
+    subscriptions= SubscriptionRates.objects.all()
+    return render(request, 'primary/tariffs_page.html', {'subscriptions': subscriptions})
 
 def info_page(request):
     context={
