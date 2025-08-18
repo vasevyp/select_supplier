@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+
+{% block title %}Оплата успешна{% endblock %}
+
+{% block content %}
+<h1>Оплата прошла успешно!</h1>
+<p>Спасибо за вашу подписку. Ваш счёт был пополнен.</p>
+<a href="{% url 'bank_clearing:subscription_list' %}">Вернуться к подпискам</a>
+{% endblock %}
