@@ -35,6 +35,11 @@
       {{ form.email }}
       {{ form.email.errors }}
     </div>
+     <div>
+      {{ form.phone.label_tag }}
+      {{ form.phone }}
+      {{ form.phone.errors }}
+    </div>
 
     <div>
       {{ form.password1.label_tag }}
@@ -47,38 +52,34 @@
       {{ form.password2 }}
       {{ form.password2.errors }}
     </div>
-    <hr>
+    <!-- <hr> -->
 
-    <h4>Данные компании</h4>
-    <div>
+    <!-- <h4>Данные компании</h4> -->
+    <!-- <div>
       {{ form.company.label_tag }}
       {{ form.company }}
       {{ form.company.errors }}
-    </div>
+    </div> -->
 
-    <div>
+    <!-- <div>
       {{ form.inn.label_tag }}
       {{ form.inn }}
       {{ form.inn.errors }}
-    </div>
+    </div> -->
 
-    <div>
+    <!-- <div>
       {{ form.ogrn.label_tag }}
       {{ form.ogrn }}
       {{ form.ogrn.errors }}
-    </div>
+    </div> -->
 
-    <div>
+    <!-- <div>
       {{ form.address.label_tag }}
       {{ form.address }}
       {{ form.address.errors }}
-    </div>
+    </div> -->
 
-    <div>
-      {{ form.phone.label_tag }}
-      {{ form.phone }}
-      {{ form.phone.errors }}
-    </div>
+   
      <div class="my-3">{{form.captcha}}</div>
 
     <p>Регистрируясь на сайте, пользователь соглашается с настоящей <a href="{% url 'policy' %}" target="_blank">Политикой конфиденциальности</a> и принимает на себя

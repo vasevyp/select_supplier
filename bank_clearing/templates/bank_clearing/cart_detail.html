@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block title %}Корзина{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="mb-4">Ваша корзина</h1>
+    
+    {% if cart %}
+    <div class="card">
+        <div class="card-body">
+            <div class="card-title fw-bold"><span class="fs-5">Тариф:</span> <span class="fs-4">{{ cart.subscription.name }}</span></div>
+            <p class="card-text">
+                <strong>Поисковых запросов:</strong> {{ cart.subscription.search_count }}<br>
+                <strong>Стоимость:</strong> {{ cart.subscription.price }} ₽
+            </p>
+            
+            <form method="post" action="{% url 'bank_clearing:initiate_payment' %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-success btn-lg">
+                    Перейти к оплате
+                </button>
+            </form>
+            <div class="mt-2"><a class="fw-bold text-decoration-none" href="{% url 'bank_clearing:subscription_list' %}">Изменить выбор</a></div>
+            
+        </div>
+    </div>
+    {% else %}
+    <div class="alert alert-info">
+        Ваша корзина пуста.
+    </div>
+    <a href="{% url 'bank_clearing:subscription_list' %}" class="btn btn-primary">
+        Выбрать подписку
+    </a>
+    {% endif %}
+</div>
+
+
+
+{% endblock %}

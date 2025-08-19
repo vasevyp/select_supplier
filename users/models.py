@@ -9,10 +9,6 @@ from django.dispatch import receiver
 class Profile(models.Model):
     '''профиль пользователя'''
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    company=models.CharField('Компания',max_length=250)
-    inn = models.CharField('ИНН', max_length=12, null=True, blank=True)
-    ogrn = models.CharField('ОГРН', max_length=15, null=True, blank=True)
-    address = models.TextField('Адрес')
     phone = models.CharField('Телефон', max_length=20)
     is_email_verified = models.BooleanField('Email подтвержден', default=False)
     subscription_end = models.DateTimeField('Окончание подписки', null=True, blank=True)

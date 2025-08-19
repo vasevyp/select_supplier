@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% load django_bootstrap5 %}
+
+
+{% block title %}
+{{ block.super }}: запросы товаров
+{% endblock %}
+
+
+{% block content %}
+<div class="container col-12 margin-mb100">
+    <!-- <div class="vedinfo-logo">VEDINFO.ONLINE</div>
+    <div class="text-center color-second-text">Мир без границ — расчеты без ошибок</div> -->
+
+
+    <h2 class=" mt-1">История подбора поставщиков товаров </h2>
+
+    Всего запрошен поиск уникальных товаров: {{unique_request}}. Подобрано позиций поставщиков: {{count}}
+
+
+    <!-- template.html -->
+    <form method="post">
+        <div class="d-flex flex-md-row">
+            <div class=" mt-1 me-2 ">
+                {% csrf_token %}
+                {{ form.as_p }}
+            </div>
+            <div class="ms-2"><button type="submit"
+                    class="btn btn-sm bg-blue1 bg-hover1 color-button-text btn-block">Показать результаты</button></div>
+
+        </div>
+
+
+
+    </form>
+
+    {% if results %}
+    <h4>Список для запроса по наименованию: {{ results.0.product }} ( всего позиций: {{results.count}} )</h4>
+    <a class="btn bg-blue1 text-decoration-none bg-hover1 color-button-text my-2" type="post"
+        href="{% url 'redirect_send_emails' %}" target=_blank>Сделать запрос поставщикам</a>
+    <table class="table table-striped demotable ">
+        <thead style="position: sticky;
+top: -1px;
+z-index:1;background: #9d9e9e; font-size:14px">
+            <tr>
+                <th scope="col">Поставщик</th>
+
+
+                <th scope="col" class="d-none d-md-table-cell">Email</th>
+                <th scope="col" class="d-none d-md-table-cell">Дата запроса</th>
+
+
+            </tr>
+        </thead>
+        <tbody style="font-size:12px">
+            {% for item in results %}
+            <tr>
+                <th>
+                    <a href="{% url 'supplier_detail' item.supplier_name_id %}" target="_blank">
+                        
+                        {{ item.supplier_name}}
+                    </a>
+                </th>
+
+
+                <td class="d-none d-md-table-cell">{{item.supplier_email}}</td>
+                <td class="d-none d-md-table-cell">{{item.created_at}}</td>
+
+
+
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% endif %}
+
+
+
+
+
+</div>
+
+
+{% endblock %}

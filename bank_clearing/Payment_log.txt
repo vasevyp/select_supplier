@@ -1,0 +1,200 @@
+[2025-08-18 08:17:35] Init Request: {"TerminalKey": "1754725169593DEMO", "Amount": 500, "OrderId": "1450d040-e89b-4bb2-a3aa-edc18dad6e97", "Description": "\u041f\u043e\u0434\u043f\u0438\u0441\u043a\u0430: \u041d\u0430\u0447\u0430\u043b\u044c\u043d\u044b\u0439", "Language": "ru", "Recurrent": "N", "CustomerKey": "1", "RedirectDueDate": "2025-08-19T08:17:35.551005+00:00", "SuccessURL": "https://vedinfo.online/payments/payment/success/", "FailURL": "https://vedinfo.online/payments/payment/fail/", "NotificationURL": "https://vedinfo.online/payments/tbank/callback/", "Token": "d68658e44ed0b7860bd01e7874308ad429869424cb95072639e53ead6c91c1a3"}
+Init Response: <html>
+<head><title>403 Forbidden</title></head>
+<body>
+<center><h1>403 Forbidden</h1></center>
+<hr><center>nginx</center>
+</body>
+</html>
+
+[2025-08-18 08:17:35] Ошибка сети при инициализации платежа: 403 Client Error: Forbidden for url: https://rest-api-test.tinkoff.ru/v2/Init
+[2025-08-18 08:22:58] Init Request: {"TerminalKey": "1754725169593DEMO", "Amount": 200, "OrderId": "a37f67d7-ab90-42d5-9ad6-1e07cfe64a1f", "Description": "\u041f\u043e\u0434\u043f\u0438\u0441\u043a\u0430: testing", "Language": "ru", "Recurrent": "N", "CustomerKey": "1", "RedirectDueDate": "2025-08-19T08:22:58.207278+00:00", "SuccessURL": "https://vedinfo.online/payments/payment/success/", "FailURL": "https://vedinfo.online/payments/payment/fail/", "NotificationURL": "https://vedinfo.online/payments/tbank/callback/", "Token": "eb506605bea1ba3454b82b6f15b35906f803ca4dfabb4778f3216ebbdf822f0f"}
+Init Response: <html>
+<head><title>403 Forbidden</title></head>
+<body>
+<center><h1>403 Forbidden</h1></center>
+<hr><center>nginx</center>
+</body>
+</html>
+
+[2025-08-18 08:22:58] Ошибка сети при инициализации платежа: 403 Client Error: Forbidden for url: https://rest-api-test.tinkoff.ru/v2/Init
+[2025-08-18 08:25:34] Init Request: {"TerminalKey": "1754725169593DEMO", "Amount": 1000, "OrderId": "45105171-a55b-4926-aba1-21b16c1bb3d4", "Description": "\u041f\u043e\u0434\u043f\u0438\u0441\u043a\u0430: \u0420\u0430\u0431\u043e\u0447\u0438\u0439", "Language": "ru", "Recurrent": "N", "CustomerKey": "1", "RedirectDueDate": "2025-08-19T08:25:34.029851+00:00", "SuccessURL": "https://vedinfo.online/payments/payment/success/", "FailURL": "https://vedinfo.online/payments/payment/fail/", "NotificationURL": "https://vedinfo.online/payments/tbank/callback/", "Token": "21b81bbc626442b238c564fd7395b1dd08b8e02acf052767753a8573e5b8d989"}
+Init Response: {"Success":false,"ErrorCode":"204","Message":"Неверные параметры.","Details":"Неверный токен. Проверьте пару TerminalKey/SecretKey."}
+[2025-08-18 08:25:34] Ошибка Init: Ошибка инициализации платежа: 204 - Неверные параметры.. Детали: Неверный токен. Проверьте пару TerminalKey/SecretKey.
+[2025-08-18 08:29:39] Init Request: {"TerminalKey": "1754725169593DEMO", "Amount": 200, "OrderId": "93b2d3f7-009e-4585-8585-a429717c9ca4", "Description": "\u041f\u043e\u0434\u043f\u0438\u0441\u043a\u0430: testing", "Language": "ru", "Recurrent": "N", "CustomerKey": "1", "RedirectDueDate": "2025-08-19T08:29:39.812281+00:00", "SuccessURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/", "FailURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/", "NotificationURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/", "Token": "1b3852310a26d33d04daeac8650a3f9d0ea07f2bd7163a8f6f32e3ef0c2bbe91"}
+Init Response: {"Success":false,"ErrorCode":"204","Message":"Неверные параметры.","Details":"Неверный токен. Проверьте пару TerminalKey/SecretKey."}
+[2025-08-18 08:29:39] Ошибка Init: Ошибка инициализации платежа: 204 - Неверные параметры.. Детали: Неверный токен. Проверьте пару TerminalKey/SecretKey.
+[2025-08-18 09:03:32] Init Request: {"TerminalKey": "1754725169593DEMO", "Amount": 500, "OrderId": "41345d8d-e527-4c49-afaa-622d9d078a5c", "Description": "\u041f\u043e\u0434\u043f\u0438\u0441\u043a\u0430: \u041d\u0430\u0447\u0430\u043b\u044c\u043d\u044b\u0439", "Language": "ru", "Recurrent": "N", "CustomerKey": "1", "RedirectDueDate": "2025-08-19T09:03:32.487203+00:00", "SuccessURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/", "FailURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/", "NotificationURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/", "Token": "4aadee102d83991f95c9bd07ad82fa0c1dc21d3b1a63dd68bfb335a917792879"}
+Init Response: {"Success":false,"ErrorCode":"204","Message":"Неверные параметры.","Details":"Неверный токен. Проверьте пару TerminalKey/SecretKey."}
+[2025-08-18 09:03:32] Ошибка Init: Ошибка инициализации платежа: 204 - Неверные параметры.. Детали: Неверный токен. Проверьте пару TerminalKey/SecretKey.
+[2025-08-18 09:04:06] Init Request: {"TerminalKey": "1754725169593DEMO", "Amount": 500, "OrderId": "fe4986a4-6d2a-455d-ac33-4de631cf49b2", "Description": "\u041f\u043e\u0434\u043f\u0438\u0441\u043a\u0430: \u041d\u0430\u0447\u0430\u043b\u044c\u043d\u044b\u0439", "Language": "ru", "Recurrent": "N", "CustomerKey": "1", "RedirectDueDate": "2025-08-19T09:04:06.335072+00:00", "SuccessURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/", "FailURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/", "NotificationURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/", "Token": "18d4da9ff6edeb13fddefd31888122385862a5e5cb6eda33ac5e4674942ae068"}
+Init Response: {"Success":false,"ErrorCode":"204","Message":"Неверные параметры.","Details":"Неверный токен. Проверьте пару TerminalKey/SecretKey."}
+[2025-08-18 09:04:06] Ошибка Init: Ошибка инициализации платежа: 204 - Неверные параметры.. Детали: Неверный токен. Проверьте пару TerminalKey/SecretKey.
+[2025-08-18 09:13:09] Init Request: {"TerminalKey": "1754725169593DEMO", "Amount": 1000, "OrderId": "29ee4621-7e6e-4bc4-a8e1-7dffdaa6d81e", "Description": "\u041f\u043e\u0434\u043f\u0438\u0441\u043a\u0430: \u0420\u0430\u0431\u043e\u0447\u0438\u0439", "Language": "ru", "Recurrent": "N", "CustomerKey": "4", "RedirectDueDate": "2025-08-19T09:13:09.174517+00:00", "SuccessURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/", "FailURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/", "NotificationURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/", "Token": "e25b5e046a7efe3373a4d2dc124993fcb8cb0697a1252be5cd8e81c4e32ba5d3"}
+Init Response: {"Success":false,"ErrorCode":"204","Message":"Неверные параметры.","Details":"Неверный токен. Проверьте пару TerminalKey/SecretKey."}
+[2025-08-18 09:13:09] Ошибка Init: Ошибка инициализации платежа: 204 - Неверные параметры.. Детали: Неверный токен. Проверьте пару TerminalKey/SecretKey.
+[2025-08-18 09:21:26] Init Request: {"TerminalKey": "1754725169593DEMO", "Amount": 500, "OrderId": "e9b5e87a-2784-4f7d-b47c-e043fb97c305", "Description": "\u041f\u043e\u0434\u043f\u0438\u0441\u043a\u0430: \u041d\u0430\u0447\u0430\u043b\u044c\u043d\u044b\u0439", "Language": "ru", "Recurrent": "N", "CustomerKey": "1", "RedirectDueDate": "2025-08-19T09:21:26.394192+00:00", "SuccessURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/", "FailURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/", "NotificationURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/", "Token": "8d3e6364fd725a1ca4dcb0be43322c92f60e2bb5284987c084cafc0dfc8c70d5"}
+Init Response: <html>
+<head><title>403 Forbidden</title></head>
+<body>
+<center><h1>403 Forbidden</h1></center>
+<hr><center>nginx</center>
+</body>
+</html>
+
+[2025-08-18 09:21:26] Ошибка сети при инициализации платежа: 403 Client Error: Forbidden for url: https://rest-api-test.tinkoff.ru/v2/Init
+[2025-08-18 09:41:16] Init Request: {"TerminalKey": "1754725169593DEMO", "Amount": 500, "OrderId": "89b3f4fe-0703-4446-b9fc-fae73cdee7fa", "Description": "\u041f\u043e\u0434\u043f\u0438\u0441\u043a\u0430: \u041d\u0430\u0447\u0430\u043b\u044c\u043d\u044b\u0439", "Language": "ru", "Recurrent": "N", "CustomerKey": "1", "RedirectDueDate": "2025-08-19T09:41:16.561406+00:00", "SuccessURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/", "FailURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/", "NotificationURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/", "Token": "0176df0b542e7ad2fbb4e9e5e355dc571e192751f4f688a6bbb9f8ed92daa3de"}
+Init Response: <html>
+<head><title>403 Forbidden</title></head>
+<body>
+<center><h1>403 Forbidden</h1></center>
+<hr><center>nginx</center>
+</body>
+</html>
+
+[2025-08-18 09:41:16] Ошибка сети при инициализации платежа: 403 Client Error: Forbidden for url: https://rest-api-test.tinkoff.ru/v2/Init
+[2025-08-18 09:42:31] Init Request: {"TerminalKey": "1754725169593DEMO", "Amount": 1000, "OrderId": "361680bb-7792-46be-993a-0e28e197cecb", "Description": "\u041f\u043e\u0434\u043f\u0438\u0441\u043a\u0430: \u0420\u0430\u0431\u043e\u0447\u0438\u0439", "Language": "ru", "Recurrent": "N", "CustomerKey": "1", "RedirectDueDate": "2025-08-19T09:42:31.527393+00:00", "SuccessURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/", "FailURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/", "NotificationURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/", "Token": "a09b83ad3276dfb5497256cd1ecd2dace04c67fbb89a07be12d7738d6c9ec528"}
+Init Response: <html>
+<head><title>403 Forbidden</title></head>
+<body>
+<center><h1>403 Forbidden</h1></center>
+<hr><center>nginx</center>
+</body>
+</html>
+
+[2025-08-18 09:42:31] Ошибка сети при инициализации платежа: 403 Client Error: Forbidden for url: https://rest-api-test.tinkoff.ru/v2/Init
+[2025-08-18 09:43:34] Init Request: {"TerminalKey": "1754725169593DEMO", "Amount": 500, "OrderId": "90f8335f-34ae-4145-a4b9-d0df308c8d40", "Description": "\u041f\u043e\u0434\u043f\u0438\u0441\u043a\u0430: \u041d\u0430\u0447\u0430\u043b\u044c\u043d\u044b\u0439", "Language": "ru", "Recurrent": "N", "CustomerKey": "1", "RedirectDueDate": "2025-08-19T09:43:34.610706+00:00", "SuccessURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/", "FailURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/", "NotificationURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/", "Token": "145f82d8cc12a1f73c7dd49d5f7e462a8cd6c467ad30fe222259115fda719bd2"}
+Init Response: {"Success":false,"ErrorCode":"204","Message":"Неверные параметры.","Details":"Неверный токен. Проверьте пару TerminalKey/SecretKey."}
+[2025-08-18 09:43:34] Ошибка Init: Ошибка инициализации платежа: 204 - Неверные параметры.. Детали: Неверный токен. Проверьте пару TerminalKey/SecretKey.
+[2025-08-18 09:45:07] Init Request: {"TerminalKey": "1754725169593DEMO", "Amount": 1000, "OrderId": "c4f0c1ea-a01a-4293-851a-61b0d46e4f52", "Description": "\u041f\u043e\u0434\u043f\u0438\u0441\u043a\u0430: \u0420\u0430\u0431\u043e\u0447\u0438\u0439", "Language": "ru", "Recurrent": "N", "CustomerKey": "1", "RedirectDueDate": "2025-08-19T09:45:07.306404+00:00", "SuccessURL": "https://vedinfo.online/payments/payment/success/", "FailURL": "https://vedinfo.online/payments/payment/fail/", "NotificationURL": "https://vedinfo.online/payments/tbank/callback/", "Token": "cebcd15aa601c5e2387d76239044bdec803cfb316bf1a5e719b1c70898117bc5"}
+Init Response: <html>
+<head><title>403 Forbidden</title></head>
+<body>
+<center><h1>403 Forbidden</h1></center>
+<hr><center>nginx</center>
+</body>
+</html>
+
+[2025-08-18 09:45:07] Ошибка сети при инициализации платежа: 403 Client Error: Forbidden for url: https://rest-api-test.tinkoff.ru/v2/Init
+[2025-08-18 09:45:17] Init Request: {"TerminalKey": "1754725169593DEMO", "Amount": 1000, "OrderId": "8a9d31c7-b32a-4260-832e-ac760d597233", "Description": "\u041f\u043e\u0434\u043f\u0438\u0441\u043a\u0430: \u0420\u0430\u0431\u043e\u0447\u0438\u0439", "Language": "ru", "Recurrent": "N", "CustomerKey": "1", "RedirectDueDate": "2025-08-19T09:45:17.565451+00:00", "SuccessURL": "https://vedinfo.online/payments/payment/success/", "FailURL": "https://vedinfo.online/payments/payment/fail/", "NotificationURL": "https://vedinfo.online/payments/tbank/callback/", "Token": "ce138ea932d2904027bae8d1a74a7612df9091e78b8b71ad724e006b3fd35010"}
+Init Response: <html>
+<head><title>403 Forbidden</title></head>
+<body>
+<center><h1>403 Forbidden</h1></center>
+<hr><center>nginx</center>
+</body>
+</html>
+
+[2025-08-18 09:45:17] Ошибка сети при инициализации платежа: 403 Client Error: Forbidden for url: https://rest-api-test.tinkoff.ru/v2/Init
+[2025-08-18 09:49:57] Init Request: {"TerminalKey": "1754725169593DEMO", "Amount": 1000, "OrderId": "a7742436-fb9c-4849-bd5c-2e6996aa1f97", "Description": "\u041f\u043e\u0434\u043f\u0438\u0441\u043a\u0430: \u0420\u0430\u0431\u043e\u0447\u0438\u0439", "Language": "ru", "Recurrent": "N", "CustomerKey": "1", "RedirectDueDate": "2025-08-19T09:49:57.699946+00:00", "SuccessURL": "https://vedinfo.online/payments/payment/success/", "FailURL": "https://vedinfo.online/payments/payment/fail/", "NotificationURL": "https://vedinfo.online/payments/tbank/callback/", "Token": "99d05025d3d784b613e3883c4e9d00d24ad67b0cb4cf15b583dc4dd4597495a1"}
+Init Response: <html>
+<head><title>403 Forbidden</title></head>
+<body>
+<center><h1>403 Forbidden</h1></center>
+<hr><center>nginx</center>
+</body>
+</html>
+
+[2025-08-18 09:49:57] Ошибка сети при инициализации платежа: 403 Client Error: Forbidden for url: https://rest-api-test.tinkoff.ru/v2/Init
+[2025-08-18 09:53:00] Init Request: {"TerminalKey": "1754725169593DEMO", "Amount": 200, "OrderId": "a657ea25-cca4-471f-9eb9-aecd460bb83f", "Description": "\u041f\u043e\u0434\u043f\u0438\u0441\u043a\u0430: testing", "Language": "ru", "Recurrent": "N", "CustomerKey": "1", "RedirectDueDate": "2025-08-19T09:53:00.597804+00:00", "SuccessURL": "https://vedinfo.online/payments/payment/success/", "FailURL": "https://vedinfo.online/payments/payment/fail/", "NotificationURL": "https://vedinfo.online/payments/tbank/callback/", "Token": "7667c5f39187d160009b42a0008f901bc40e7994e9d57d2e6c7fa2720557584f"}
+Init Response: <html>
+<head><title>403 Forbidden</title></head>
+<body>
+<center><h1>403 Forbidden</h1></center>
+<hr><center>nginx</center>
+</body>
+</html>
+
+[2025-08-18 09:53:00] Ошибка сети при инициализации платежа: 403 Client Error: Forbidden for url: https://rest-api-test.tinkoff.ru/v2/Init
+[2025-08-18 09:55:29] Init Request: {"TerminalKey": "1754725169593DEMO", "Amount": 500, "OrderId": "6010de0f-e23f-45b5-9879-4ed0e8447e4c", "Description": "\u041f\u043e\u0434\u043f\u0438\u0441\u043a\u0430: \u041d\u0430\u0447\u0430\u043b\u044c\u043d\u044b\u0439", "Language": "ru", "Recurrent": "N", "CustomerKey": "1", "RedirectDueDate": "2025-08-19T09:55:29.074618+00:00", "SuccessURL": "https://vedinfo.online/payments/payment/success/", "FailURL": "https://vedinfo.online/payments/payment/fail/", "NotificationURL": "https://vedinfo.online/payments/tbank/callback/", "Token": "31e82ab3e9a1494ea74841f6127b6d030d0e32558459c03010f049db4e9dd659"}
+Init Response: <html>
+<head><title>403 Forbidden</title></head>
+<body>
+<center><h1>403 Forbidden</h1></center>
+<hr><center>nginx</center>
+</body>
+</html>
+
+[2025-08-18 09:55:29] Ошибка сети при инициализации платежа: 403 Client Error: Forbidden for url: https://rest-api-test.tinkoff.ru/v2/Init
+[2025-08-18 09:56:44] Init Request: {"TerminalKey": "1754725169593DEMO", "Amount": 1000, "OrderId": "0bdfbaca-83be-401e-a77f-2788c60bbad8", "Description": "\u041f\u043e\u0434\u043f\u0438\u0441\u043a\u0430: \u0420\u0430\u0431\u043e\u0447\u0438\u0439", "Language": "ru", "Recurrent": "N", "CustomerKey": "1", "RedirectDueDate": "2025-08-19T09:56:44.134293+00:00", "SuccessURL": "https://vedinfo.online/payments/payment/success/", "FailURL": "https://vedinfo.online/payments/payment/fail/", "NotificationURL": "https://vedinfo.online/payments/tbank/callback/", "Token": "e828ad6c4c607802bd6937b7944850df4533fa464238d8c291f5a2d1ae51746b"}
+Init Response: <html>
+<head><title>403 Forbidden</title></head>
+<body>
+<center><h1>403 Forbidden</h1></center>
+<hr><center>nginx</center>
+</body>
+</html>
+
+[2025-08-18 09:56:44] Ошибка сети при инициализации платежа: 403 Client Error: Forbidden for url: https://rest-api-test.tinkoff.ru/v2/Init
+[2025-08-18 09:58:59] Init Request: {"TerminalKey": "1754725169593DEMO", "Amount": 200, "OrderId": "512c4f4b-17ac-46ea-a8a3-730a5a72c3b8", "Description": "\u041f\u043e\u0434\u043f\u0438\u0441\u043a\u0430: testing", "Language": "ru", "Recurrent": "N", "CustomerKey": "1", "RedirectDueDate": "2025-08-19T09:58:59.878182+00:00", "SuccessURL": "https://vedinfo.online/payments/payment/success/", "FailURL": "https://vedinfo.online/payments/payment/fail/", "NotificationURL": "https://vedinfo.online/payments/tbank/callback/", "Token": "8f2f6d114ffceabe51c5686103584e8b900687269d200a320ff940d0cd7be9b2"}
+Init Response: <html>
+<head><title>403 Forbidden</title></head>
+<body>
+<center><h1>403 Forbidden</h1></center>
+<hr><center>nginx</center>
+</body>
+</html>
+
+[2025-08-18 09:58:59] Ошибка сети при инициализации платежа: 403 Client Error: Forbidden for url: https://rest-api-test.tinkoff.ru/v2/Init
+[2025-08-18 09:59:42] Init Request: {"TerminalKey": "1754725169593DEMO", "Amount": 500, "OrderId": "6f36e14e-c315-48c4-9b4a-6084aa3e6c65", "Description": "\u041f\u043e\u0434\u043f\u0438\u0441\u043a\u0430: \u041d\u0430\u0447\u0430\u043b\u044c\u043d\u044b\u0439", "Language": "ru", "Recurrent": "N", "CustomerKey": "1", "RedirectDueDate": "2025-08-19T09:59:42.897689+00:00", "SuccessURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/", "FailURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/", "NotificationURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/", "Token": "93cb28f6b8643139f157344f2714dc1080f91e74525418d9b03a70bf6baa4f44"}
+Init Response: <html>
+<head><title>403 Forbidden</title></head>
+<body>
+<center><h1>403 Forbidden</h1></center>
+<hr><center>nginx</center>
+</body>
+</html>
+
+[2025-08-18 09:59:42] Ошибка сети при инициализации платежа: 403 Client Error: Forbidden for url: https://rest-api-test.tinkoff.ru/v2/Init
+[2025-08-18 10:00:33] Init Request: {"TerminalKey": "1754725169593DEMO", "Amount": 500, "OrderId": "0cbda7ca-3edf-4ddb-9d8c-c877a72e6295", "Description": "\u041f\u043e\u0434\u043f\u0438\u0441\u043a\u0430: \u041d\u0430\u0447\u0430\u043b\u044c\u043d\u044b\u0439", "Language": "ru", "Recurrent": "N", "CustomerKey": "1", "RedirectDueDate": "2025-08-19T10:00:33.208863+00:00", "SuccessURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/", "FailURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/", "NotificationURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/", "Token": "d0507d85fea3e33c3f8ec1840e0dc2f6ee34114210e7fc7760402020759d972f"}
+Init Response: <html>
+<head><title>403 Forbidden</title></head>
+<body>
+<center><h1>403 Forbidden</h1></center>
+<hr><center>nginx</center>
+</body>
+</html>
+
+[2025-08-18 10:00:33] Ошибка сети при инициализации платежа: 403 Client Error: Forbidden for url: https://rest-api-test.tinkoff.ru/v2/Init
+[2025-08-18 10:03:10] Init Request: {"TerminalKey": "1754725169593DEMO", "Amount": 1000, "OrderId": "e392a0a4-11b9-450e-8f78-aef7c3027fb0", "Description": "\u041f\u043e\u0434\u043f\u0438\u0441\u043a\u0430: \u0420\u0430\u0431\u043e\u0447\u0438\u0439", "Language": "ru", "Recurrent": "N", "CustomerKey": "1", "RedirectDueDate": "2025-08-19T10:03:10.721525+00:00", "SuccessURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/", "FailURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/", "NotificationURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/", "Token": "f526e1b660a3ee3d203d0ebdcd01e657b30f5e77f527ddc86c8a14f759143bd2"}
+Init Response: <html>
+<head><title>403 Forbidden</title></head>
+<body>
+<center><h1>403 Forbidden</h1></center>
+<hr><center>nginx</center>
+</body>
+</html>
+
+[2025-08-18 10:03:10] Ошибка сети при инициализации платежа: 403 Client Error: Forbidden for url: https://rest-api-test.tinkoff.ru/v2/Init
+[2025-08-18 12:16:41] Init Request: {"TerminalKey": "1754725169593DEMO", "Amount": 1000, "OrderId": "669d99f4-b3ef-4668-9957-f1f71f68d35c", "Description": "\u041f\u043e\u0434\u043f\u0438\u0441\u043a\u0430: \u0420\u0430\u0431\u043e\u0447\u0438\u0439", "Language": "ru", "Recurrent": "N", "CustomerKey": "1", "RedirectDueDate": "2025-08-19T12:16:41.402572+00:00", "SuccessURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/", "FailURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/", "NotificationURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/", "Token": "537372fe0aa7583774730e5ed31ea197715166c172d9af7a8432d70418cf4955"}
+Init Response: <html>
+<head><title>403 Forbidden</title></head>
+<body>
+<center><h1>403 Forbidden</h1></center>
+<hr><center>nginx</center>
+</body>
+</html>
+
+[2025-08-18 12:16:41] Ошибка сети при инициализации платежа: 403 Client Error: Forbidden for url: https://rest-api-test.tinkoff.ru/v2/Init
+[2025-08-18 12:22:30] Init Request: {"TerminalKey": "1754725169593DEMO", "Amount": 200, "OrderId": "dbfbf227-9395-45de-b2bd-13796472611c", "Description": "\u041f\u043e\u0434\u043f\u0438\u0441\u043a\u0430: testing", "Language": "ru", "Recurrent": "N", "CustomerKey": "1", "RedirectDueDate": "2025-08-19T12:22:30.240856+00:00", "SuccessURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/", "FailURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/", "NotificationURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/", "Token": "4735c501773196f88a5de9c578cd7e39c27cf4113f824aa3d060f0b7d8ed3997"}
+Init Response: <html>
+<head><title>403 Forbidden</title></head>
+<body>
+<center><h1>403 Forbidden</h1></center>
+<hr><center>nginx</center>
+</body>
+</html>
+
+[2025-08-18 12:22:30] Ошибка сети при инициализации платежа: 403 Client Error: Forbidden for url: https://rest-api-test.tinkoff.ru/v2/Init
+[2025-08-18 12:24:08] Init Request: {"TerminalKey": "1754725169593DEMO", "Amount": 500, "OrderId": "69236e7a-f719-4ac6-b644-af7ef16a701b", "Description": "\u041f\u043e\u0434\u043f\u0438\u0441\u043a\u0430: \u041d\u0430\u0447\u0430\u043b\u044c\u043d\u044b\u0439", "Language": "ru", "Recurrent": "N", "CustomerKey": "1", "RedirectDueDate": "2025-08-19T12:24:07.972978+00:00", "SuccessURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/", "FailURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/", "NotificationURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/", "Token": "a674e02bbc26e549cc2ef98543bbd8fcafc6cec327cd5aa993065233dfd7358a"}
+Init Response: {"Success":false,"ErrorCode":"204","Message":"Неверные параметры.","Details":"Неверный токен. Проверьте пару TerminalKey/SecretKey."}
+[2025-08-18 12:24:08] Ошибка Init: Ошибка инициализации платежа: 204 - Неверные параметры.. Детали: Неверный токен. Проверьте пару TerminalKey/SecretKey.
+[2025-08-18 12:27:43] Init Request: {"TerminalKey": "1754725169593DEMO", "Amount": 1000, "OrderId": "8161020e-6da2-4c64-9db0-30d61ea779e1", "Description": "\u041f\u043e\u0434\u043f\u0438\u0441\u043a\u0430: \u0420\u0430\u0431\u043e\u0447\u0438\u0439", "Language": "ru", "Recurrent": "N", "CustomerKey": "1", "RedirectDueDate": "2025-08-19T12:27:43.153025+00:00", "SuccessURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/", "FailURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/", "NotificationURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/", "Token": "f3f95b1e95e9a3a040dce4956ddc8e47a0050dbfd8c0ab386c5c3201672b80ca"}
+Init Response: {"Success":false,"ErrorCode":"204","Message":"Неверные параметры.","Details":"Неверный токен. Проверьте пару TerminalKey/SecretKey."}
+[2025-08-18 12:27:43] Ошибка Init: Ошибка инициализации платежа: 204 - Неверные параметры.. Детали: Неверный токен. Проверьте пару TerminalKey/SecretKey.
+[2025-08-18 12:35:18] Init Request: {"TerminalKey": "1754725169593DEMO", "Amount": 500, "OrderId": "e0fecebf-36ee-4459-81e1-c58a330064c5", "Description": "\u041f\u043e\u0434\u043f\u0438\u0441\u043a\u0430: \u041d\u0430\u0447\u0430\u043b\u044c\u043d\u044b\u0439", "Language": "ru", "Recurrent": "N", "CustomerKey": "1", "RedirectDueDate": "2025-08-19T12:35:18.925850+00:00", "SuccessURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/", "FailURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/", "NotificationURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/", "Token": "95bc9b980ca83dd196b65828ff964be317abef9afff06b1d5bb76c43395c5465"}
+Init Response: 
+[2025-08-18 12:35:19] Ошибка сети при инициализации платежа: 405 Client Error: Method Not Allowed for url: https://securepay.tinkoff.ru/v2/Init
+[2025-08-18 12:39:11] Init Request: {"TerminalKey": "1754725169593DEMO", "Amount": 500, "OrderId": "2f942e6f-72bb-4c8d-bbcb-9923091ac692", "Description": "\u041f\u043e\u0434\u043f\u0438\u0441\u043a\u0430: \u041d\u0430\u0447\u0430\u043b\u044c\u043d\u044b\u0439", "Language": "ru", "Recurrent": "N", "CustomerKey": "1", "RedirectDueDate": "2025-08-19T12:39:10.917396+00:00", "SuccessURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/", "FailURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/", "NotificationURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/", "Token": "d51cbba7976af519903c1768bc07f989ad6976d9318bd709b1a273b7ca8e227a"}
+Init Response: {"Success":false,"ErrorCode":"204","Message":"Неверные параметры.","Details":"Неверный токен. Проверьте пару TerminalKey/SecretKey."}
+[2025-08-18 12:39:11] Ошибка Init: Ошибка инициализации платежа: 204 - Неверные параметры.. Детали: Неверный токен. Проверьте пару TerminalKey/SecretKey.

@@ -1,7 +1,7 @@
 from django import forms
 from django.core.exceptions import ValidationError
 
-from .models import Country
+from .models import Country, Category, CategoryLogistic, CategoryTechnology
 
 class SupplierSearchForm(forms.Form):
     country_demo_a = forms.ModelChoiceField(
@@ -16,13 +16,34 @@ class SupplierSearchForm(forms.Form):
         # label='Страна',
         empty_label='только для просмотра'
     )
+
+    category =forms.ModelChoiceField(
+        queryset=Category.objects.all(),
+        required=False,
+        label='Категория',
+        empty_label='выбрать категорию',
+    )
+
+    category_technology =forms.ModelChoiceField(
+        queryset=CategoryTechnology.objects.all(),
+        required=False,
+        label='Категория',
+        empty_label='выбрать категорию',
+    )
+
+    category_logistic =forms.ModelChoiceField(
+        queryset=CategoryLogistic.objects.all(),
+        required=False,
+        label='Категория',
+        empty_label='выбрать категорию',
+    )
   
     # country  = forms.CharField(label='Страна')
     country= forms.ModelChoiceField(
         queryset=Country.objects.all(),
         required=False,
         label='Страна',
-        empty_label='выбрать страну-экспортера ',
+        empty_label='выбрать страну-экспортера',
         # widget=forms.SelectMultiple(attrs={'size': '1', 'height': '30'})  # Задаем длину 100 и высоту 50 для поля `my_field`
     )
 

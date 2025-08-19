@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block title %}Оплата не удалась{% endblock %}
+
+{% block content %}
+<h1>Оплата не удалась</h1>
+{% if error_code %}
+    <p>Код ошибки: {{ error_code }}</p>
+{% endif %}
+{% if error_message %}
+    <p>Сообщение: {{ error_message }}</p>
+{% endif %}
+<p>Пожалуйста, попробуйте снова.</p>
+<a href="{% url 'bank_clearing:cart_detail' %}">Вернуться в корзину</a>
+{% endblock %}

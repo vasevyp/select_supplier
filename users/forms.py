@@ -43,26 +43,7 @@ class RegisterForm(UserCreationForm):
             attrs={"class": "form-control", "autocomplete": "off"}
         ),
     )
-    company = forms.CharField(
-        max_length=250,
-        label="Название компании",
-        widget=forms.TextInput(attrs={"class": "form-control", "autocomplete": "off"}),
-    )
-    inn = forms.CharField(
-        max_length=12,
-        label="ИНН",
-        widget=forms.TextInput(attrs={"class": "form-control", "autocomplete": "off"}),
-    )
-    ogrn = forms.CharField(
-        max_length=15,
-        label="ОГРН",
-        required=False,
-        widget=forms.TextInput(attrs={"class": "form-control", "autocomplete": "off"}),
-    )
-    address = forms.CharField(
-        label="Адрес ",
-        widget=forms.TextInput(attrs={"class": "form-control", "autocomplete": "off"}),
-    )
+   
     phone = forms.CharField(
         label="Телефон",
         max_length=20,
@@ -77,12 +58,12 @@ class RegisterForm(UserCreationForm):
         fields = ["username", "first_name",
             "last_name", "email", "password1", "password2"]
 
-    def clean_inn(self):
-        '''проверка ИНН'''
-        inn = self.cleaned_data["inn"]
-        if Profile.objects.filter(inn=inn).exists():
-            raise ValidationError("Профиль с таким ИНН уже существует.")
-        return inn
+    # def clean_inn(self):
+    #     '''проверка ИНН'''
+    #     inn = self.cleaned_data["inn"]
+    #     if Profile.objects.filter(inn=inn).exists():
+    #         raise ValidationError("Профиль с таким ИНН уже существует.")
+    #     return inn
     
     def clean_email(self):
         '''проверка Email'''
@@ -100,10 +81,6 @@ class RegisterForm(UserCreationForm):
         if commit:
             user.save()
             profile = user.profile
-            profile.company = self.cleaned_data["company"]
-            profile.inn = self.cleaned_data["inn"]
-            profile.ogrn = self.cleaned_data["ogrn"]
-            profile.address = self.cleaned_data["address"]
             profile.phone = self.cleaned_data["phone"]
             profile.save()
         return user

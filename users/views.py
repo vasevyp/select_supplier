@@ -24,6 +24,7 @@ from .utils import (
     verify_password_reset_token,
 )
 from .models import Profile
+from bank_clearing.models import UserSearchCount
 
 
 def register_view(request):
@@ -56,6 +57,8 @@ def register_view(request):
                 f"Ссылка действительна 24 часа."
             )
             send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user.email])
+
+            UserSearchCount.objects.create(user=user, add_count=0, reduce_count=0)           
 
             return redirect("verification_sent")
     else:

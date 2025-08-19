@@ -1,4 +1,4 @@
-{% extends 'profile_base.html' %}
+{% extends 'base.html' %}
 
 {% load static %}
 {% load django_bootstrap5 %}
@@ -10,8 +10,11 @@
 
 
 {% block content %}
-<div class="alert alert-success">
+<div class="alert alert-success mt-2">
     <h2>Письма успешно отправлены!</h2>
     <p>Ваши сообщения поставлены в очередь на отправку поставщикам.</p>
+</div>
+<div>
+    <a href="{% url 'customer_mail' %}">Перейти на страницу отправленных запросов</a>
 </div>
 {% endblock %}
