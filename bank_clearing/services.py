@@ -16,26 +16,57 @@ from .models import TBankPayment, Cart, log_payment
 logger = logging.getLogger(__name__)
 
 TBANK_API_URL = getattr(settings, 'TBANK_API_URL', 'https://rest-api-test.tinkoff.ru/v2/')
-TBANK_TERMINAL_KEY = getattr(settings, 'TBANK_TERMINAL_KEY', '')
-TBANK_SECRET_KEY = getattr(settings, 'TBANK_SECRET_KEY', '')
+TBANK_TERMINAL_KEY = getattr(settings, 'TBANK_TERMINAL_KEY', '').strip()
+TBANK_SECRET_KEY = getattr(settings, 'TBANK_SECRET_KEY', '').strip()
 TBANK_SUCCESS_URL = getattr(settings, 'TBANK_SUCCESS_URL', '')
 TBANK_FAIL_URL = getattr(settings, 'TBANK_FAIL_URL', '')
 TBANK_NOTIFICATION_URL = getattr(settings, 'TBANK_NOTIFICATION_URL', '')
 
 def generate_token(data: dict) -> str:
-    """Генерирует токен для подписи запроса к Т-Банку."""
+    """Генерирует токен для подписи запроса к Т-Банку.
+    Согласно документации: значения параметров конкатенируются в алфавитном 
+    порядке ключей, и SecretKey добавляется в КОНЦЕ
+    """
+    # 1. Исключаем Token и Description из данных для хеширования
+    #    Description может содержать Unicode, которое может привести к ошибкам
+    #    при конкатенации, если не обрабатывать кодировку одинаково.
+    #    Для простоты исключаем Description, как указано в некоторых примерах,
+    #    хотя в других местах оно используется. Лучше проверить документацию.
+    #    См. также: https://qna.habr.com/q/1331914?ysclid=meilg7utqj803630336
+    #    "Поле Description не используется при формировании токена"
+    data_for_token = {k: v for k, v in data.items() if k not in ['Token', 'Description'] and v is not None}
+    
+
     # 1. Сортируем ключи
-    sorted_data = dict(sorted(data.items()))
+    # sorted_data = dict(sorted(data.items()))
+     # 2. Сортируем ключи
+    sorted_keys = sorted(data_for_token.keys())
     
     # 2. Добавляем пароль
-    sorted_data['Password'] = TBANK_SECRET_KEY
-    
-    # 3. Конкатенируем значения
-    values = [str(v) for v in sorted_data.values() if v is not None]
+    # sorted_data['Password'] = TBANK_SECRET_KEY
+    # 3. Конкатенируем значения в порядке отсортированных ключей
+    values = [str(data_for_token[key]) for key in sorted_keys]
     concatenated = ''.join(values)
     
+    # 3. Конкатенируем значения
+    # values = [str(v) for v in sorted_data.values() if v is not None]
+    # concatenated = ''.join(values)
+    # 4. Добавляем SecretKey в КОНЦЕ
+    concatenated_with_secret = concatenated + TBANK_SECRET_KEY
+
+     # --- ВРЕМЕННО ДЛЯ ОТЛАДКИ ---
+    log_payment(f"DEBUG TOKEN GEN: Sorted Keys: {sorted_keys}")
+    log_payment(f"DEBUG TOKEN GEN: Values: {values}")
+    log_payment(f"DEBUG TOKEN GEN: Concatenated: '{concatenated}'")
+    log_payment(f"DEBUG TOKEN GEN: With Secret: '{concatenated_with_secret}'")
+    # ----------------------------
+    
     # 4. Хешируем SHA-256 и возвращаем в hex
-    token = hashlib.sha256(concatenated.encode('utf-8')).hexdigest()
+    # token = hashlib.sha256(concatenated.encode('utf-8')).hexdigest()
+    # return token
+     # 5. Хешируем SHA-256 и возвращаем в hex
+    token = hashlib.sha256(concatenated_with_secret.encode('utf-8')).hexdigest()
+    log_payment(f"DEBUG TOKEN GEN: Generated Token: {token}")
     return token
 
 def create_payment(user, cart: Cart) -> dict:
@@ -52,6 +83,13 @@ def create_payment(user, cart: Cart) -> dict:
         amount = int(cart.subscription.price * 100) # Сумма в копейках
         print('services order_id==', order_id) #+
 
+        from django.utils.timezone import localtime
+        redirect_due_date = localtime(timezone.now() + timezone.timedelta(hours=24))
+        # Формат без микросекунд и с 'Z' или правильным смещением
+        formatted_date = redirect_due_date.strftime('%Y-%m-%dT%H:%M:%S%z') 
+        # Или, если Т-Банк принимает UTC:
+        # formatted_date = redirect_due_date.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')
+
         init_data = {
             "TerminalKey": TBANK_TERMINAL_KEY,
             "Amount": amount,
@@ -60,10 +98,11 @@ def create_payment(user, cart: Cart) -> dict:
             "Language": "ru",
             "Recurrent": "N",
             "CustomerKey": str(user.id), # Или используйте более уникальный идентификатор клиента
-            "RedirectDueDate": (timezone.now() + timezone.timedelta(hours=24)).isoformat(),
-            "SuccessURL": TBANK_SUCCESS_URL,
-            "FailURL": TBANK_FAIL_URL,
-            "NotificationURL": TBANK_NOTIFICATION_URL,
+            # "RedirectDueDate": (timezone.now() + timezone.timedelta(hours=24)).isoformat(),
+            "RedirectDueDate": formatted_date,
+            "SuccessURL": TBANK_SUCCESS_URL.rstrip(),
+            "FailURL": TBANK_FAIL_URL.rstrip(),
+            "NotificationURL": TBANK_NOTIFICATION_URL.rstrip(),
             # "Receipt": { ... } # Если нужен чек, добавьте здесь данные
         }
         print('services init_data ==', init_data) #+
