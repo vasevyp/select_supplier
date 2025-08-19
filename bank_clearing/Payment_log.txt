@@ -206,3 +206,48 @@ Init Response: {"Success":false,"ErrorCode":"204","Message":"Неверные п
 [2025-08-19 14:25:20] Init Request: {"TerminalKey": "1754725169593DEMO", "Amount": 200, "OrderId": "a7506022-d177-4b7a-84f4-5d80cf866118", "Description": "\u041f\u043e\u0434\u043f\u0438\u0441\u043a\u0430: testing", "Language": "ru", "Recurrent": "N", "CustomerKey": "1", "RedirectDueDate": "2025-08-20T17:25:19+0300", "SuccessURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/", "FailURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/", "NotificationURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/", "Token": "fbc6c0c1a14d275e1b96a52aa45ecad998807c1c6303aea7e4b8f4bfa0f7d11f"}
 Init Response: {"Success":false,"ErrorCode":"204","Message":"Неверные параметры.","Details":"Неверный токен. Проверьте пару TerminalKey/SecretKey."}
 [2025-08-19 14:25:20] Ошибка Init: Ошибка инициализации платежа: 204 - Неверные параметры.. Детали: Неверный токен. Проверьте пару TerminalKey/SecretKey.
+[2025-08-19 15:12:53] DEBUG TOKEN GEN: Sorted Keys: ['Amount', 'CustomerKey', 'FailURL', 'Language', 'NotificationURL', 'OrderId', 'Recurrent', 'RedirectDueDate', 'SuccessURL', 'TerminalKey']
+[2025-08-19 15:12:53] DEBUG TOKEN GEN: Values: ['100', '1', 'https://vedinfo.online/payments/payment/fail/', 'ru', 'https://vedinfo.online/payments/tbank/callback/', '37dc2a30-f929-4567-a2ed-ccc67a4c89c3', 'N', '2025-08-20T18:12:53+0300', 'https://vedinfo.online/payments/payment/success/', '1754725169593DEMO']
+[2025-08-19 15:12:53] DEBUG TOKEN GEN: Concatenated: '1001https://vedinfo.online/payments/payment/fail/ruhttps://vedinfo.online/payments/tbank/callback/37dc2a30-f929-4567-a2ed-ccc67a4c89c3N2025-08-20T18:12:53+0300https://vedinfo.online/payments/payment/success/1754725169593DEMO'
+[2025-08-19 15:12:53] DEBUG TOKEN GEN: With Secret: '1001https://vedinfo.online/payments/payment/fail/ruhttps://vedinfo.online/payments/tbank/callback/37dc2a30-f929-4567-a2ed-ccc67a4c89c3N2025-08-20T18:12:53+0300https://vedinfo.online/payments/payment/success/1754725169593DEMOOPJ2Ky4AVVRMnPFH'
+[2025-08-19 15:12:53] DEBUG TOKEN GEN: Generated Token: 45ddf050f7fb5a53a9e594a829c24646a34fd7243252e41c7b5017427d13365d
+[2025-08-19 15:12:53] Init Request: {"TerminalKey": "1754725169593DEMO", "Amount": 100, "OrderId": "37dc2a30-f929-4567-a2ed-ccc67a4c89c3", "Description": "\u041f\u043e\u0434\u043f\u0438\u0441\u043a\u0430: \u0422\u0435\u0441\u0442\u043e\u0432\u044b\u0439", "Language": "ru", "Recurrent": "N", "CustomerKey": "1", "RedirectDueDate": "2025-08-20T18:12:53+0300", "SuccessURL": "https://vedinfo.online/payments/payment/success/", "FailURL": "https://vedinfo.online/payments/payment/fail/", "NotificationURL": "https://vedinfo.online/payments/tbank/callback/", "Token": "45ddf050f7fb5a53a9e594a829c24646a34fd7243252e41c7b5017427d13365d"}
+Init Response: <html>
+<head><title>502 Bad Gateway</title></head>
+<body>
+<center><h1>502 Bad Gateway</h1></center>
+<hr><center>nginx</center>
+</body>
+</html>
+
+[2025-08-19 15:12:53] Ошибка сети при инициализации платежа: 502 Server Error: Bad Gateway for url: https://rest-api-test.tinkoff.ru/v2/Init
+[2025-08-19 15:13:52] DEBUG TOKEN GEN: Sorted Keys: ['Amount', 'CustomerKey', 'FailURL', 'Language', 'NotificationURL', 'OrderId', 'Recurrent', 'RedirectDueDate', 'SuccessURL', 'TerminalKey']
+[2025-08-19 15:13:52] DEBUG TOKEN GEN: Values: ['100', '1', 'https://vedinfo.online/payments/payment/fail/', 'ru', 'https://vedinfo.online/payments/tbank/callback/', '9d44a53f-bb70-421d-a560-8d4ce6044f84', 'N', '2025-08-20T18:13:52+0300', 'https://vedinfo.online/payments/payment/success/', '1754725169593DEMO']
+[2025-08-19 15:13:52] DEBUG TOKEN GEN: Concatenated: '1001https://vedinfo.online/payments/payment/fail/ruhttps://vedinfo.online/payments/tbank/callback/9d44a53f-bb70-421d-a560-8d4ce6044f84N2025-08-20T18:13:52+0300https://vedinfo.online/payments/payment/success/1754725169593DEMO'
+[2025-08-19 15:13:52] DEBUG TOKEN GEN: With Secret: '1001https://vedinfo.online/payments/payment/fail/ruhttps://vedinfo.online/payments/tbank/callback/9d44a53f-bb70-421d-a560-8d4ce6044f84N2025-08-20T18:13:52+0300https://vedinfo.online/payments/payment/success/1754725169593DEMOOPJ2Ky4AVVRMnPFH'
+[2025-08-19 15:13:52] DEBUG TOKEN GEN: Generated Token: 5c053e03f10de6ddf5c4ef6f765978cd79b6624482b3d6924debb80fc1eeab90
+[2025-08-19 15:13:52] Init Request: {"TerminalKey": "1754725169593DEMO", "Amount": 100, "OrderId": "9d44a53f-bb70-421d-a560-8d4ce6044f84", "Description": "\u041f\u043e\u0434\u043f\u0438\u0441\u043a\u0430: \u0422\u0435\u0441\u0442\u043e\u0432\u044b\u0439", "Language": "ru", "Recurrent": "N", "CustomerKey": "1", "RedirectDueDate": "2025-08-20T18:13:52+0300", "SuccessURL": "https://vedinfo.online/payments/payment/success/", "FailURL": "https://vedinfo.online/payments/payment/fail/", "NotificationURL": "https://vedinfo.online/payments/tbank/callback/", "Token": "5c053e03f10de6ddf5c4ef6f765978cd79b6624482b3d6924debb80fc1eeab90"}
+Init Response: <html>
+<head><title>502 Bad Gateway</title></head>
+<body>
+<center><h1>502 Bad Gateway</h1></center>
+<hr><center>nginx</center>
+</body>
+</html>
+
+[2025-08-19 15:13:52] Ошибка сети при инициализации платежа: 502 Server Error: Bad Gateway for url: https://rest-api-test.tinkoff.ru/v2/Init
+[2025-08-19 15:26:52] DEBUG TOKEN GEN: Sorted Keys: ['Amount', 'CustomerKey', 'FailURL', 'Language', 'NotificationURL', 'OrderId', 'Recurrent', 'RedirectDueDate', 'SuccessURL', 'TerminalKey']
+[2025-08-19 15:26:52] DEBUG TOKEN GEN: Values: ['500', '1', 'https://vedinfo.online/payments/payment/fail/', 'ru', 'https://vedinfo.online/payments/tbank/callback/', '9a3ba271-31e8-41af-9343-d82b97a3f9c6', 'N', '2025-08-20T18:26:52+0300', 'https://vedinfo.online/payments/payment/success/', '1754725169593DEMO']
+[2025-08-19 15:26:52] DEBUG TOKEN GEN: Concatenated: '5001https://vedinfo.online/payments/payment/fail/ruhttps://vedinfo.online/payments/tbank/callback/9a3ba271-31e8-41af-9343-d82b97a3f9c6N2025-08-20T18:26:52+0300https://vedinfo.online/payments/payment/success/1754725169593DEMO'
+[2025-08-19 15:26:52] DEBUG TOKEN GEN: With Secret: '5001https://vedinfo.online/payments/payment/fail/ruhttps://vedinfo.online/payments/tbank/callback/9a3ba271-31e8-41af-9343-d82b97a3f9c6N2025-08-20T18:26:52+0300https://vedinfo.online/payments/payment/success/1754725169593DEMOOPJ2Ky4AVVRMnPFH'
+[2025-08-19 15:26:52] DEBUG TOKEN GEN: Generated Token: 6aaa9ca077f4af63011e527e144e0e4db79a5671287a850b25766fa9fdecf3c2
+[2025-08-19 15:26:52] Init Request: {"TerminalKey": "1754725169593DEMO", "Amount": 500, "OrderId": "9a3ba271-31e8-41af-9343-d82b97a3f9c6", "Description": "\u041f\u043e\u0434\u043f\u0438\u0441\u043a\u0430: \u0420\u0430\u0431\u043e\u0447\u0438\u0439", "Language": "ru", "Recurrent": "N", "CustomerKey": "1", "RedirectDueDate": "2025-08-20T18:26:52+0300", "SuccessURL": "https://vedinfo.online/payments/payment/success/", "FailURL": "https://vedinfo.online/payments/payment/fail/", "NotificationURL": "https://vedinfo.online/payments/tbank/callback/", "Token": "6aaa9ca077f4af63011e527e144e0e4db79a5671287a850b25766fa9fdecf3c2"}
+Init Response: <html>
+<head><title>502 Bad Gateway</title></head>
+<body>
+<center><h1>502 Bad Gateway</h1></center>
+<hr><center>nginx</center>
+</body>
+</html>
+
+[2025-08-19 15:26:52] Ошибка сети при инициализации платежа: 502 Server Error: Bad Gateway for url: https://rest-api-test.tinkoff.ru/v2/Init
