@@ -1,6 +1,5 @@
 # bank_clearing/services.py
 import hashlib
-import hmac
 import json
 import logging
 import uuid
@@ -15,145 +14,90 @@ from .models import TBankPayment, Cart, log_payment
 
 logger = logging.getLogger(__name__)
 
+# --- Настройки Т-Банка ---
+# ВАЖНО: Убедитесь, что в settings.py или .env эти значения заданы БЕЗ пробелов
 TBANK_API_URL = getattr(settings, 'TBANK_API_URL', 'https://rest-api-test.tinkoff.ru/v2/').rstrip('/') + '/'
 TBANK_TERMINAL_KEY = getattr(settings, 'TBANK_TERMINAL_KEY', '').strip()
 TBANK_SECRET_KEY = getattr(settings, 'TBANK_SECRET_KEY', '').strip()
-TBANK_SUCCESS_URL = getattr(settings, 'TBANK_SUCCESS_URL', '')
-TBANK_FAIL_URL = getattr(settings, 'TBANK_FAIL_URL', '')
-TBANK_NOTIFICATION_URL = getattr(settings, 'TBANK_NOTIFICATION_URL', '')
-
-# def generate_token(data: dict) -> str:
-#     """Генерирует токен для подписи запроса к Т-Банку.
-#     Согласно документации: значения параметров конкатенируются в алфавитном 
-#     порядке ключей, и SecretKey добавляется в КОНЦЕ
-#     """
-#     # 1. Исключаем Token и Description из данных для хеширования
-#     #    Description может содержать Unicode, которое может привести к ошибкам
-#     #    при конкатенации, если не обрабатывать кодировку одинаково.
-#     #    Для простоты исключаем Description, как указано в некоторых примерах,
-#     #    хотя в других местах оно используется. Лучше проверить документацию.
-#     #    См. также: https://qna.habr.com/q/1331914?ysclid=meilg7utqj803630336
-#     #    "Поле Description не используется при формировании токена"
-#     data_for_token = {k: v for k, v in data.items() if k not in ['Token', 'Description'] and v is not None}
-    
-
-#     # 1. Сортируем ключи
-#     # sorted_data = dict(sorted(data.items()))
-#      # 2. Сортируем ключи
-#     sorted_keys = sorted(data_for_token.keys())
-    
-#     # 2. Добавляем пароль
-#     # sorted_data['Password'] = TBANK_SECRET_KEY
-#     # 3. Конкатенируем значения в порядке отсортированных ключей
-#     values = [str(data_for_token[key]) for key in sorted_keys]
-#     concatenated = ''.join(values)
-    
-#     # 3. Конкатенируем значения
-#     # values = [str(v) for v in sorted_data.values() if v is not None]
-#     # concatenated = ''.join(values)
-#     # 4. Добавляем SecretKey в КОНЦЕ
-#     concatenated_with_secret = concatenated + TBANK_SECRET_KEY
-
-#      # --- ВРЕМЕННО ДЛЯ ОТЛАДКИ ---
-#     log_payment(f"DEBUG TOKEN GEN: Sorted Keys: {sorted_keys}")
-#     log_payment(f"DEBUG TOKEN GEN: Values: {values}")
-#     log_payment(f"DEBUG TOKEN GEN: Concatenated: '{concatenated}'")
-#     log_payment(f"DEBUG TOKEN GEN: With Secret: '{concatenated_with_secret}'")
-#     # ----------------------------
-    
-#     # 4. Хешируем SHA-256 и возвращаем в hex
-#     # token = hashlib.sha256(concatenated.encode('utf-8')).hexdigest()
-#     # return token
-#      # 5. Хешируем SHA-256 и возвращаем в hex
-#     token = hashlib.sha256(concatenated_with_secret.encode('utf-8')).hexdigest()
-#     log_payment(f"DEBUG TOKEN GEN: Generated Token: {token}")
-#     return token
-
-# bank_clearing/services.py
-# import hashlib
-# ... другие импорты ...
-
-# Убедитесь, что TBANK_SECRET_KEY загружается правильно, без лишних пробелов
-# TBANK_API_URL = getattr(settings, 'TBANK_API_URL', 'https://rest-api-test.tinkoff.ru/v2/').rstrip('/') + '/'
-# TBANK_TERMINAL_KEY = getattr(settings, 'TBANK_TERMINAL_KEY', '').strip() # .strip() удаляет пробелы
-# TBANK_SECRET_KEY = getattr(settings, 'TBANK_SECRET_KEY', '').strip()
-# ... остальные настройки ...
+TBANK_SUCCESS_URL = getattr(settings, 'TBANK_SUCCESS_URL', '').rstrip() # Убираем пробелы справа
+TBANK_FAIL_URL = getattr(settings, 'TBANK_FAIL_URL', '').rstrip()
+TBANK_NOTIFICATION_URL = getattr(settings, 'TBANK_NOTIFICATION_URL', '').rstrip()
+# -------------------------
 
 def generate_token(data: dict) -> str:
     """
-    Генерирует токен для подписи запроса к Т-Банку.
-    Алгоритм согласно https://qna.habr.com/q/1331914:
-    1. Собрать массив передаваемых данных (только корневые параметры).
+    Генерирует токен для подписи запроса к Т-Банку согласно официальной документации.
+    
+    Алгоритм (для метода Init):
+    1. Собрать массив передаваемых данных в виде пар Ключ-Значение.
+       В массив нужно добавить только параметры корневого объекта.
+       Вложенные объекты (Receipt, DATA) и массивы не участвуют в расчете токена.
+       Также исключаются Token и Description.
     2. Добавить в массив пару {Password, Значение пароля}.
     3. Отсортировать массив по алфавиту по ключу.
     4. Конкатенировать только значения пар в одну строку.
-    5. Применить к строке хеш-функцию SHA-256.
+    5. Применить к строке хеш-функцию SHA-256 (с поддержкой UTF-8).
     """
+    # --- ВРЕМЕННО ДЛЯ ОТЛАДКИ ---
+    log_payment(f"DEBUG TOKEN GEN: Исходные данные: {data}")
+    # ----------------------------
+
     # 1. Собрать только корневые параметры (исключая Token, Description и вложенные объекты/массивы)
-    # Пример: {"TerminalKey": "TinkoffBankTest", "Amount": 100000, "OrderId": "TokenGen2000"}
-    # Исключаем Token и Description, как указано в алгоритме и часто в примерах.
-    # Также исключаем вложенные структуры, если они есть (например, Receipt, DATA)
-    # Проверим типы значений: если это dict или list, исключаем.
     data_for_token = {}
     for key, value in data.items():
-        # Исключаем Token и Description
+        # Исключаем Token и Description (как указано в документации и примерах)
         if key in ['Token', 'Description']:
             continue
-        # Исключаем вложенные объекты/массивы
+        # Исключаем вложенные объекты/массивы (Receipt, DATA и т.д.)
         if isinstance(value, (dict, list)):
-             # Если DATA или Receipt обязательны для токена, их нужно обрабатывать отдельно.
-             # Согласно алгоритму, "Вложенные объекты и массивы не участвуют в расчете токена."
-             # Но проверьте документацию Т-Банка. Для Init они обычно не нужны.
-             # Для методов Charge, Confirm и др. они могут быть нужны, но обычно они
-             # формируются позже или имеют другой способ подписи.
-             # В данном случае для Init они не передаются, так что можно пропустить.
             continue
-        # Добавляем только скалярные значения (строки, числа и т.д.)
-        # Убеждаемся, что значение не None
+        # Добавляем только скалярные значения (строки, числа и т.д.), исключая None
         if value is not None:
-             # Преобразуем значение в строку. Важно: str(100) == "100", str(None) == "None"
-             # Но мы уже проверили на None. str(True) == "True", str(False) == "False"
-             # str(123.45) == "123.45". Это должно быть корректно для Т-Банка.
-            data_for_token[key] = str(value) # Преобразование в строку обязательно
+            # Преобразуем значение в строку. Это критично для конкатенации.
+            data_for_token[key] = str(value)
+
+    # --- ВРЕМЕННО ДЛЯ ОТЛАДКИ ---
+    log_payment(f"DEBUG TOKEN GEN: Данные для токена (без Password): {data_for_token}")
+    # ----------------------------
 
     # 2. Добавить пару {Password, Значение пароля}
-    # ВАЖНО: Используем TBANK_SECRET_KEY как значение Password
+    # ВАЖНО: Password добавляется как ключ, а TBANK_SECRET_KEY как значение
     data_for_token['Password'] = TBANK_SECRET_KEY
 
     # --- ВРЕМЕННО ДЛЯ ОТЛАДКИ ---
-    # log_payment(f"DEBUG TOKEN GEN: Data for token (before sort): {data_for_token}")
+    log_payment(f"DEBUG TOKEN GEN: Данные для токена (с Password): {data_for_token}")
     # ----------------------------
 
     # 3. Отсортировать массив по алфавиту по ключу
     sorted_keys = sorted(data_for_token.keys())
+    
     # --- ВРЕМЕННО ДЛЯ ОТЛАДКИ ---
-    # log_payment(f"DEBUG TOKEN GEN: Sorted Keys: {sorted_keys}")
+    log_payment(f"DEBUG TOKEN GEN: Отсортированные ключи: {sorted_keys}")
     # ----------------------------
 
     # 4. Конкатенировать только значения пар в одну строку
     # Собираем список значений в порядке отсортированных ключей
     values_list = [data_for_token[key] for key in sorted_keys]
+    
     # --- ВРЕМЕННО ДЛЯ ОТЛАДКИ ---
-    # log_payment(f"DEBUG TOKEN GEN: Values to concatenate: {values_list}")
+    log_payment(f"DEBUG TOKEN GEN: Список значений для конкатенации: {values_list}")
     # ----------------------------
+    
     concatenated_values = ''.join(values_list)
+    
     # --- ВРЕМЕННО ДЛЯ ОТЛАДКИ ---
-    # log_payment(f"DEBUG TOKEN GEN: Final concatenated string: '{concatenated_values}'")
+    log_payment(f"DEBUG TOKEN GEN: Финальная строка для хеширования: '{concatenated_values}'")
     # ----------------------------
 
     # 5. Применить к строке хеш-функцию SHA-256
     # ВАЖНО: encode('utf-8') преобразует строку в байты, как требуется для hashlib
-    token_bytes = hashlib.sha256(concatenated_values.encode('utf-8')).digest()
-    # ВАЖНО: hexdigest() возвращает строку шестнадцатеричного представления хеша
     token = hashlib.sha256(concatenated_values.encode('utf-8')).hexdigest()
 
     # --- ВРЕМЕННО ДЛЯ ОТЛАДКИ ---
-    # log_payment(f"DEBUG TOKEN GEN: Generated Token: {token}")
+    log_payment(f"DEBUG TOKEN GEN: Сгенерированный токен: {token}")
     # ----------------------------
 
     return token
-
-# ... остальной код файла services.py ...
 
 def create_payment(user, cart: Cart) -> dict:
     """
@@ -167,50 +111,54 @@ def create_payment(user, cart: Cart) -> dict:
         # 1. Подготовка данных для Init
         order_id = str(uuid.uuid4()) # Уникальный ID заказа
         amount = int(cart.subscription.price * 100) # Сумма в копейках
-        print('services order_id==', order_id) #+
 
-        from django.utils.timezone import localtime
-        redirect_due_date = localtime(timezone.now() + timezone.timedelta(hours=24))
-        # Формат без микросекунд и с 'Z' или правильным смещением
-        formatted_date = redirect_due_date.strftime('%Y-%m-%dT%H:%M:%S%z') 
-        # Или, если Т-Банк принимает UTC:
-        # formatted_date = redirect_due_date.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')
+        # Формат даты для RedirectDueDate (ISO 8601 без микросекунд и с правильным смещением)
+        redirect_due_date = timezone.localtime(timezone.now() + timezone.timedelta(hours=24))
+        formatted_redirect_due_date = redirect_due_date.strftime('%Y-%m-%dT%H:%M:%S%z')
+        # Формат %z дает '+0300', что соответствует требованию "YYYY-MM-DDTHH24:MI:SS+GMT"
 
         init_data = {
             "TerminalKey": TBANK_TERMINAL_KEY,
             "Amount": amount,
             "OrderId": order_id,
-            "Description": f"Подписка: {cart.subscription.name}",
-            "Language": "ru",
-            "Recurrent": "N",
-            "CustomerKey": str(user.id), # Или используйте более уникальный идентификатор клиента
-            # "RedirectDueDate": (timezone.now() + timezone.timedelta(hours=24)).isoformat(),
-            "RedirectDueDate": formatted_date,
-            "SuccessURL": TBANK_SUCCESS_URL.rstrip(),
-            "FailURL": TBANK_FAIL_URL.rstrip(),
-            "NotificationURL": TBANK_NOTIFICATION_URL.rstrip(),
+            "Description": f"Подписка: {cart.subscription.name}", # Описание будет отображено на форме
+            # "Language": "ru", # Необязательно, по умолчанию ru
+            "Recurrent": "N", # Не рекуррентный платёж
+            "CustomerKey": str(user.id), # Идентификатор клиента
+            "RedirectDueDate": formatted_redirect_due_date,
+            "SuccessURL": TBANK_SUCCESS_URL,
+            "FailURL": TBANK_FAIL_URL,
+            "NotificationURL": TBANK_NOTIFICATION_URL,
             # "Receipt": { ... } # Если нужен чек, добавьте здесь данные
+            # "DATA": { ... } # Если нужны дополнительные данные, добавьте здесь
         }
-        print('services init_data ==', init_data) #+
+        
+        # --- ВРЕМЕННО ДЛЯ ОТЛАДКИ ---
+        log_payment(f"DEBUG INIT: Данные для запроса Init (до добавления токена): {json.dumps(init_data, ensure_ascii=False, indent=2)}")
+        # ----------------------------
+
         # 2. Генерация токена
         token = generate_token(init_data)
         init_data['Token'] = token
-        print('services init_data Token ==', token) #+
+        
         # 3. Отправка запроса
         url = f"{TBANK_API_URL}Init"
-        print('services URL==', url) #+
         headers = {'Content-Type': 'application/json'}
-        print('services Headers==', headers) #+
-        response = requests.post(url, json=init_data, headers=headers) #post
-        print('services Response==', response)
-
         
-        log_message = f"Init Request: {json.dumps(init_data)}\nInit Response: {response.text}"
+        # --- ВРЕМЕННО ДЛЯ ОТЛАДКИ ---
+        log_payment(f"DEBUG INIT: Отправка запроса на {url}")
+        log_payment(f"DEBUG INIT: Заголовки: {headers}")
+        log_payment(f"DEBUG INIT: Тело запроса: {json.dumps(init_data, ensure_ascii=False, indent=2)}")
+        # ----------------------------
+        
+        response = requests.post(url, json=init_data, headers=headers)
+        
+        response_text = response.text
+        log_message = f"Init Request: {json.dumps(init_data, ensure_ascii=False)}\nInit Response: {response_text}"
         log_payment(log_message)
         
         response.raise_for_status()
         response_data = response.json()
-        print("3. services - Отправка запроса", response_data)
         
         # 4. Проверка ответа
         if response_data.get('Success') and response_data.get('PaymentId'):
@@ -253,7 +201,7 @@ def create_payment(user, cart: Cart) -> dict:
     except Exception as e:
         error_msg = f"Неожиданная ошибка при инициализации платежа: {e}"
         log_payment(error_msg)
-        logger.error(error_msg)
+        logger.error(error_msg, exc_info=True) # Лог с трассировкой стека
         return {'success': False, 'error': 'Произошла внутренняя ошибка.'}
 
 
