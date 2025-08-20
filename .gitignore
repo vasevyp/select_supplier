@@ -35,6 +35,8 @@ MANIFEST
 # Installer logs
 pip-log.txt
 pip-delete-this-directory.txt
+bank_clearing/Payment_log.txt
+SendenEmailSave.txt
 
 # Unit test / coverage reports
 htmlcov/

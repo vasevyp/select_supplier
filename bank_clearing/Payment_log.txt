@@ -251,3 +251,43 @@ Init Response: <html>
 </html>
 
 [2025-08-19 15:26:52] Ошибка сети при инициализации платежа: 502 Server Error: Bad Gateway for url: https://rest-api-test.tinkoff.ru/v2/Init
+[2025-08-20 06:10:03] DEBUG TOKEN GEN: Sorted Keys: ['Amount', 'CustomerKey', 'FailURL', 'Language', 'NotificationURL', 'OrderId', 'Recurrent', 'RedirectDueDate', 'SuccessURL', 'TerminalKey']
+[2025-08-20 06:10:03] DEBUG TOKEN GEN: Values: ['200', '1', 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/', 'ru', 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/', '6374723c-0a38-4a03-9006-11302247c94b', 'N', '2025-08-21T09:10:03+0300', 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/', '1754725169593DEMO']
+[2025-08-20 06:10:03] DEBUG TOKEN GEN: Concatenated: '2001https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/ruhttps://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/6374723c-0a38-4a03-9006-11302247c94bN2025-08-21T09:10:03+0300https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/1754725169593DEMO'
+[2025-08-20 06:10:03] DEBUG TOKEN GEN: With Secret: '2001https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/ruhttps://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/6374723c-0a38-4a03-9006-11302247c94bN2025-08-21T09:10:03+0300https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/1754725169593DEMOOPJ2Ky4AVVRMnPFH'
+[2025-08-20 06:10:03] DEBUG TOKEN GEN: Generated Token: 5e02b492096f0ad6b16d561dbc32116df590f6ad754800f4b985d60154096a31
+[2025-08-20 06:10:04] Init Request: {"TerminalKey": "1754725169593DEMO", "Amount": 200, "OrderId": "6374723c-0a38-4a03-9006-11302247c94b", "Description": "\u041f\u043e\u0434\u043f\u0438\u0441\u043a\u0430: testing", "Language": "ru", "Recurrent": "N", "CustomerKey": "1", "RedirectDueDate": "2025-08-21T09:10:03+0300", "SuccessURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/", "FailURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/", "NotificationURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/", "Token": "5e02b492096f0ad6b16d561dbc32116df590f6ad754800f4b985d60154096a31"}
+Init Response: <html>
+<head><title>403 Forbidden</title></head>
+<body>
+<center><h1>403 Forbidden</h1></center>
+<hr><center>nginx</center>
+</body>
+</html>
+
+[2025-08-20 06:10:04] Ошибка сети при инициализации платежа: 403 Client Error: Forbidden for url: https://rest-api-test.tinkoff.ru/v2/Init
+[2025-08-20 06:22:25] DEBUG TOKEN GEN: Sorted Keys: ['Amount', 'CustomerKey', 'FailURL', 'Language', 'NotificationURL', 'OrderId', 'Recurrent', 'RedirectDueDate', 'SuccessURL', 'TerminalKey']
+[2025-08-20 06:22:25] DEBUG TOKEN GEN: Values: ['500', '1', 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/', 'ru', 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/', '6b059f8e-be34-429f-bede-1debb4b9c3d5', 'N', '2025-08-21T09:22:25+0300', 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/', '1754725169593DEMO']
+[2025-08-20 06:22:25] DEBUG TOKEN GEN: Concatenated: '5001https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/ruhttps://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/6b059f8e-be34-429f-bede-1debb4b9c3d5N2025-08-21T09:22:25+0300https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/1754725169593DEMO'
+[2025-08-20 06:22:25] DEBUG TOKEN GEN: With Secret: '5001https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/ruhttps://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/6b059f8e-be34-429f-bede-1debb4b9c3d5N2025-08-21T09:22:25+0300https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/1754725169593DEMOOPJ2Ky4AVVRMnPFH'
+[2025-08-20 06:22:25] DEBUG TOKEN GEN: Generated Token: eed695a1bc14bcdd3b85161ab4b9006de39cc69dbe6b15babac3c281c38e6a56
+[2025-08-20 06:22:25] Init Request: {"TerminalKey": "1754725169593DEMO", "Amount": 500, "OrderId": "6b059f8e-be34-429f-bede-1debb4b9c3d5", "Description": "\u041f\u043e\u0434\u043f\u0438\u0441\u043a\u0430: \u041d\u0430\u0447\u0430\u043b\u044c\u043d\u044b\u0439", "Language": "ru", "Recurrent": "N", "CustomerKey": "1", "RedirectDueDate": "2025-08-21T09:22:25+0300", "SuccessURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/", "FailURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/", "NotificationURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/", "Token": "eed695a1bc14bcdd3b85161ab4b9006de39cc69dbe6b15babac3c281c38e6a56"}
+Init Response: <html>
+<head><title>403 Forbidden</title></head>
+<body>
+<center><h1>403 Forbidden</h1></center>
+<hr><center>nginx</center>
+</body>
+</html>
+
+[2025-08-20 06:22:25] Ошибка сети при инициализации платежа: 403 Client Error: Forbidden for url: https://rest-api-test.tinkoff.ru/v2/Init
+[2025-08-20 06:40:15] Init Request: {"TerminalKey": "1754725169593DEMO", "Amount": 1000, "OrderId": "08057997-1cf7-4f66-9fd2-451b38aef191", "Description": "\u041f\u043e\u0434\u043f\u0438\u0441\u043a\u0430: \u0420\u0430\u0431\u043e\u0447\u0438\u0439", "Language": "ru", "Recurrent": "N", "CustomerKey": "1", "RedirectDueDate": "2025-08-21T09:40:14+0300", "SuccessURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/", "FailURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/", "NotificationURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/", "Token": "24de83893429f550e57a87f9afad727f09e4e92efbde728e5445bf31a5f94f6c"}
+Init Response: <html>
+<head><title>403 Forbidden</title></head>
+<body>
+<center><h1>403 Forbidden</h1></center>
+<hr><center>nginx</center>
+</body>
+</html>
+
+[2025-08-20 06:40:15] Ошибка сети при инициализации платежа: 403 Client Error: Forbidden for url: https://rest-api-test.tinkoff.ru/v2/Init

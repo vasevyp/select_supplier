@@ -15,59 +15,145 @@ from .models import TBankPayment, Cart, log_payment
 
 logger = logging.getLogger(__name__)
 
-TBANK_API_URL = getattr(settings, 'TBANK_API_URL', 'https://rest-api-test.tinkoff.ru/v2/')
+TBANK_API_URL = getattr(settings, 'TBANK_API_URL', 'https://rest-api-test.tinkoff.ru/v2/').rstrip('/') + '/'
 TBANK_TERMINAL_KEY = getattr(settings, 'TBANK_TERMINAL_KEY', '').strip()
 TBANK_SECRET_KEY = getattr(settings, 'TBANK_SECRET_KEY', '').strip()
 TBANK_SUCCESS_URL = getattr(settings, 'TBANK_SUCCESS_URL', '')
 TBANK_FAIL_URL = getattr(settings, 'TBANK_FAIL_URL', '')
 TBANK_NOTIFICATION_URL = getattr(settings, 'TBANK_NOTIFICATION_URL', '')
 
+# def generate_token(data: dict) -> str:
+#     """Генерирует токен для подписи запроса к Т-Банку.
+#     Согласно документации: значения параметров конкатенируются в алфавитном 
+#     порядке ключей, и SecretKey добавляется в КОНЦЕ
+#     """
+#     # 1. Исключаем Token и Description из данных для хеширования
+#     #    Description может содержать Unicode, которое может привести к ошибкам
+#     #    при конкатенации, если не обрабатывать кодировку одинаково.
+#     #    Для простоты исключаем Description, как указано в некоторых примерах,
+#     #    хотя в других местах оно используется. Лучше проверить документацию.
+#     #    См. также: https://qna.habr.com/q/1331914?ysclid=meilg7utqj803630336
+#     #    "Поле Description не используется при формировании токена"
+#     data_for_token = {k: v for k, v in data.items() if k not in ['Token', 'Description'] and v is not None}
+    
+
+#     # 1. Сортируем ключи
+#     # sorted_data = dict(sorted(data.items()))
+#      # 2. Сортируем ключи
+#     sorted_keys = sorted(data_for_token.keys())
+    
+#     # 2. Добавляем пароль
+#     # sorted_data['Password'] = TBANK_SECRET_KEY
+#     # 3. Конкатенируем значения в порядке отсортированных ключей
+#     values = [str(data_for_token[key]) for key in sorted_keys]
+#     concatenated = ''.join(values)
+    
+#     # 3. Конкатенируем значения
+#     # values = [str(v) for v in sorted_data.values() if v is not None]
+#     # concatenated = ''.join(values)
+#     # 4. Добавляем SecretKey в КОНЦЕ
+#     concatenated_with_secret = concatenated + TBANK_SECRET_KEY
+
+#      # --- ВРЕМЕННО ДЛЯ ОТЛАДКИ ---
+#     log_payment(f"DEBUG TOKEN GEN: Sorted Keys: {sorted_keys}")
+#     log_payment(f"DEBUG TOKEN GEN: Values: {values}")
+#     log_payment(f"DEBUG TOKEN GEN: Concatenated: '{concatenated}'")
+#     log_payment(f"DEBUG TOKEN GEN: With Secret: '{concatenated_with_secret}'")
+#     # ----------------------------
+    
+#     # 4. Хешируем SHA-256 и возвращаем в hex
+#     # token = hashlib.sha256(concatenated.encode('utf-8')).hexdigest()
+#     # return token
+#      # 5. Хешируем SHA-256 и возвращаем в hex
+#     token = hashlib.sha256(concatenated_with_secret.encode('utf-8')).hexdigest()
+#     log_payment(f"DEBUG TOKEN GEN: Generated Token: {token}")
+#     return token
+
+# bank_clearing/services.py
+# import hashlib
+# ... другие импорты ...
+
+# Убедитесь, что TBANK_SECRET_KEY загружается правильно, без лишних пробелов
+# TBANK_API_URL = getattr(settings, 'TBANK_API_URL', 'https://rest-api-test.tinkoff.ru/v2/').rstrip('/') + '/'
+# TBANK_TERMINAL_KEY = getattr(settings, 'TBANK_TERMINAL_KEY', '').strip() # .strip() удаляет пробелы
+# TBANK_SECRET_KEY = getattr(settings, 'TBANK_SECRET_KEY', '').strip()
+# ... остальные настройки ...
+
 def generate_token(data: dict) -> str:
-    """Генерирует токен для подписи запроса к Т-Банку.
-    Согласно документации: значения параметров конкатенируются в алфавитном 
-    порядке ключей, и SecretKey добавляется в КОНЦЕ
     """
-    # 1. Исключаем Token и Description из данных для хеширования
-    #    Description может содержать Unicode, которое может привести к ошибкам
-    #    при конкатенации, если не обрабатывать кодировку одинаково.
-    #    Для простоты исключаем Description, как указано в некоторых примерах,
-    #    хотя в других местах оно используется. Лучше проверить документацию.
-    #    См. также: https://qna.habr.com/q/1331914?ysclid=meilg7utqj803630336
-    #    "Поле Description не используется при формировании токена"
-    data_for_token = {k: v for k, v in data.items() if k not in ['Token', 'Description'] and v is not None}
-    
+    Генерирует токен для подписи запроса к Т-Банку.
+    Алгоритм согласно https://qna.habr.com/q/1331914:
+    1. Собрать массив передаваемых данных (только корневые параметры).
+    2. Добавить в массив пару {Password, Значение пароля}.
+    3. Отсортировать массив по алфавиту по ключу.
+    4. Конкатенировать только значения пар в одну строку.
+    5. Применить к строке хеш-функцию SHA-256.
+    """
+    # 1. Собрать только корневые параметры (исключая Token, Description и вложенные объекты/массивы)
+    # Пример: {"TerminalKey": "TinkoffBankTest", "Amount": 100000, "OrderId": "TokenGen2000"}
+    # Исключаем Token и Description, как указано в алгоритме и часто в примерах.
+    # Также исключаем вложенные структуры, если они есть (например, Receipt, DATA)
+    # Проверим типы значений: если это dict или list, исключаем.
+    data_for_token = {}
+    for key, value in data.items():
+        # Исключаем Token и Description
+        if key in ['Token', 'Description']:
+            continue
+        # Исключаем вложенные объекты/массивы
+        if isinstance(value, (dict, list)):
+             # Если DATA или Receipt обязательны для токена, их нужно обрабатывать отдельно.
+             # Согласно алгоритму, "Вложенные объекты и массивы не участвуют в расчете токена."
+             # Но проверьте документацию Т-Банка. Для Init они обычно не нужны.
+             # Для методов Charge, Confirm и др. они могут быть нужны, но обычно они
+             # формируются позже или имеют другой способ подписи.
+             # В данном случае для Init они не передаются, так что можно пропустить.
+            continue
+        # Добавляем только скалярные значения (строки, числа и т.д.)
+        # Убеждаемся, что значение не None
+        if value is not None:
+             # Преобразуем значение в строку. Важно: str(100) == "100", str(None) == "None"
+             # Но мы уже проверили на None. str(True) == "True", str(False) == "False"
+             # str(123.45) == "123.45". Это должно быть корректно для Т-Банка.
+            data_for_token[key] = str(value) # Преобразование в строку обязательно
 
-    # 1. Сортируем ключи
-    # sorted_data = dict(sorted(data.items()))
-     # 2. Сортируем ключи
-    sorted_keys = sorted(data_for_token.keys())
-    
-    # 2. Добавляем пароль
-    # sorted_data['Password'] = TBANK_SECRET_KEY
-    # 3. Конкатенируем значения в порядке отсортированных ключей
-    values = [str(data_for_token[key]) for key in sorted_keys]
-    concatenated = ''.join(values)
-    
-    # 3. Конкатенируем значения
-    # values = [str(v) for v in sorted_data.values() if v is not None]
-    # concatenated = ''.join(values)
-    # 4. Добавляем SecretKey в КОНЦЕ
-    concatenated_with_secret = concatenated + TBANK_SECRET_KEY
+    # 2. Добавить пару {Password, Значение пароля}
+    # ВАЖНО: Используем TBANK_SECRET_KEY как значение Password
+    data_for_token['Password'] = TBANK_SECRET_KEY
 
-     # --- ВРЕМЕННО ДЛЯ ОТЛАДКИ ---
-    log_payment(f"DEBUG TOKEN GEN: Sorted Keys: {sorted_keys}")
-    log_payment(f"DEBUG TOKEN GEN: Values: {values}")
-    log_payment(f"DEBUG TOKEN GEN: Concatenated: '{concatenated}'")
-    log_payment(f"DEBUG TOKEN GEN: With Secret: '{concatenated_with_secret}'")
+    # --- ВРЕМЕННО ДЛЯ ОТЛАДКИ ---
+    # log_payment(f"DEBUG TOKEN GEN: Data for token (before sort): {data_for_token}")
     # ----------------------------
-    
-    # 4. Хешируем SHA-256 и возвращаем в hex
-    # token = hashlib.sha256(concatenated.encode('utf-8')).hexdigest()
-    # return token
-     # 5. Хешируем SHA-256 и возвращаем в hex
-    token = hashlib.sha256(concatenated_with_secret.encode('utf-8')).hexdigest()
-    log_payment(f"DEBUG TOKEN GEN: Generated Token: {token}")
+
+    # 3. Отсортировать массив по алфавиту по ключу
+    sorted_keys = sorted(data_for_token.keys())
+    # --- ВРЕМЕННО ДЛЯ ОТЛАДКИ ---
+    # log_payment(f"DEBUG TOKEN GEN: Sorted Keys: {sorted_keys}")
+    # ----------------------------
+
+    # 4. Конкатенировать только значения пар в одну строку
+    # Собираем список значений в порядке отсортированных ключей
+    values_list = [data_for_token[key] for key in sorted_keys]
+    # --- ВРЕМЕННО ДЛЯ ОТЛАДКИ ---
+    # log_payment(f"DEBUG TOKEN GEN: Values to concatenate: {values_list}")
+    # ----------------------------
+    concatenated_values = ''.join(values_list)
+    # --- ВРЕМЕННО ДЛЯ ОТЛАДКИ ---
+    # log_payment(f"DEBUG TOKEN GEN: Final concatenated string: '{concatenated_values}'")
+    # ----------------------------
+
+    # 5. Применить к строке хеш-функцию SHA-256
+    # ВАЖНО: encode('utf-8') преобразует строку в байты, как требуется для hashlib
+    token_bytes = hashlib.sha256(concatenated_values.encode('utf-8')).digest()
+    # ВАЖНО: hexdigest() возвращает строку шестнадцатеричного представления хеша
+    token = hashlib.sha256(concatenated_values.encode('utf-8')).hexdigest()
+
+    # --- ВРЕМЕННО ДЛЯ ОТЛАДКИ ---
+    # log_payment(f"DEBUG TOKEN GEN: Generated Token: {token}")
+    # ----------------------------
+
     return token
+
+# ... остальной код файла services.py ...
 
 def create_payment(user, cart: Cart) -> dict:
     """
