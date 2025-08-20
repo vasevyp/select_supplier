@@ -15,7 +15,6 @@ from .models import TBankPayment, Cart, log_payment
 logger = logging.getLogger(__name__)
 
 # --- Настройки Т-Банка ---
-# ВАЖНО: Убедитесь, что в settings.py или .env эти значения заданы БЕЗ пробелов
 TBANK_API_URL = getattr(settings, 'TBANK_API_URL', 'https://rest-api-test.tinkoff.ru/v2/').rstrip('/') + '/'
 TBANK_TERMINAL_KEY = getattr(settings, 'TBANK_TERMINAL_KEY', '').strip()
 TBANK_SECRET_KEY = getattr(settings, 'TBANK_SECRET_KEY', '').strip()
@@ -61,7 +60,7 @@ def generate_token(data: dict) -> str:
     # ----------------------------
 
     # 2. Добавить пару {Password, Значение пароля}
-    # ВАЖНО: Password добавляется как ключ, а TBANK_SECRET_KEY как значение
+    # Password добавляется как ключ, а TBANK_SECRET_KEY как значение
     data_for_token['Password'] = TBANK_SECRET_KEY
 
     # --- ВРЕМЕННО ДЛЯ ОТЛАДКИ ---
@@ -90,7 +89,7 @@ def generate_token(data: dict) -> str:
     # ----------------------------
 
     # 5. Применить к строке хеш-функцию SHA-256
-    # ВАЖНО: encode('utf-8') преобразует строку в байты, как требуется для hashlib
+    # encode('utf-8') преобразует строку в байты, как требуется для hashlib
     token = hashlib.sha256(concatenated_values.encode('utf-8')).hexdigest()
 
     # --- ВРЕМЕННО ДЛЯ ОТЛАДКИ ---
@@ -126,9 +125,9 @@ def create_payment(user, cart: Cart) -> dict:
             "Recurrent": "N", # Не рекуррентный платёж
             "CustomerKey": str(user.id), # Идентификатор клиента
             "RedirectDueDate": formatted_redirect_due_date,
-            "SuccessURL": TBANK_SUCCESS_URL,
-            "FailURL": TBANK_FAIL_URL,
-            "NotificationURL": TBANK_NOTIFICATION_URL,
+            "SuccessURL": TBANK_SUCCESS_URL.rstrip(),
+            "FailURL": TBANK_FAIL_URL.rstrip(),
+            "NotificationURL": TBANK_NOTIFICATION_URL.rstrip(),
             # "Receipt": { ... } # Если нужен чек, добавьте здесь данные
             # "DATA": { ... } # Если нужны дополнительные данные, добавьте здесь
         }

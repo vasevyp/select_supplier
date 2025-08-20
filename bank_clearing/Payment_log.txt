@@ -291,3 +291,443 @@ Init Response: <html>
 </html>
 
 [2025-08-20 06:40:15] Ошибка сети при инициализации платежа: 403 Client Error: Forbidden for url: https://rest-api-test.tinkoff.ru/v2/Init
+[2025-08-20 09:04:07] DEBUG INIT: Данные для запроса Init (до добавления токена): {
+  "TerminalKey": "1754725169593DEMO",
+  "Amount": 500,
+  "OrderId": "07a674cd-86a9-495d-be28-bd01d78cb693",
+  "Description": "Подписка: Начальный",
+  "Recurrent": "N",
+  "CustomerKey": "1",
+  "RedirectDueDate": "2025-08-21T12:04:07+0300",
+  "SuccessURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/",
+  "FailURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/",
+  "NotificationURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/"
+}
+[2025-08-20 09:04:07] DEBUG TOKEN GEN: Исходные данные: {'TerminalKey': '1754725169593DEMO', 'Amount': 500, 'OrderId': '07a674cd-86a9-495d-be28-bd01d78cb693', 'Description': 'Подписка: Начальный', 'Recurrent': 'N', 'CustomerKey': '1', 'RedirectDueDate': '2025-08-21T12:04:07+0300', 'SuccessURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/', 'FailURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/', 'NotificationURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/'}
+[2025-08-20 09:04:07] DEBUG TOKEN GEN: Данные для токена (без Password): {'TerminalKey': '1754725169593DEMO', 'Amount': '500', 'OrderId': '07a674cd-86a9-495d-be28-bd01d78cb693', 'Recurrent': 'N', 'CustomerKey': '1', 'RedirectDueDate': '2025-08-21T12:04:07+0300', 'SuccessURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/', 'FailURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/', 'NotificationURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/'}
+[2025-08-20 09:04:07] DEBUG TOKEN GEN: Данные для токена (с Password): {'TerminalKey': '1754725169593DEMO', 'Amount': '500', 'OrderId': '07a674cd-86a9-495d-be28-bd01d78cb693', 'Recurrent': 'N', 'CustomerKey': '1', 'RedirectDueDate': '2025-08-21T12:04:07+0300', 'SuccessURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/', 'FailURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/', 'NotificationURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/', 'Password': 'OPJ2Ky4AVVRMnPFH'}
+[2025-08-20 09:04:07] DEBUG TOKEN GEN: Отсортированные ключи: ['Amount', 'CustomerKey', 'FailURL', 'NotificationURL', 'OrderId', 'Password', 'Recurrent', 'RedirectDueDate', 'SuccessURL', 'TerminalKey']
+[2025-08-20 09:04:07] DEBUG TOKEN GEN: Список значений для конкатенации: ['500', '1', 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/', 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/', '07a674cd-86a9-495d-be28-bd01d78cb693', 'OPJ2Ky4AVVRMnPFH', 'N', '2025-08-21T12:04:07+0300', 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/', '1754725169593DEMO']
+[2025-08-20 09:04:07] DEBUG TOKEN GEN: Финальная строка для хеширования: '5001https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/07a674cd-86a9-495d-be28-bd01d78cb693OPJ2Ky4AVVRMnPFHN2025-08-21T12:04:07+0300https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/1754725169593DEMO'
+[2025-08-20 09:04:07] DEBUG TOKEN GEN: Сгенерированный токен: 2db874555dd0c93fe22f9a0330e97ad620eeec97972a586e7e2d1c7265356564
+[2025-08-20 09:04:07] DEBUG INIT: Отправка запроса на https://rest-api-test.tinkoff.ru/v2/Init
+[2025-08-20 09:04:07] DEBUG INIT: Заголовки: {'Content-Type': 'application/json'}
+[2025-08-20 09:04:07] DEBUG INIT: Тело запроса: {
+  "TerminalKey": "1754725169593DEMO",
+  "Amount": 500,
+  "OrderId": "07a674cd-86a9-495d-be28-bd01d78cb693",
+  "Description": "Подписка: Начальный",
+  "Recurrent": "N",
+  "CustomerKey": "1",
+  "RedirectDueDate": "2025-08-21T12:04:07+0300",
+  "SuccessURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/",
+  "FailURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/",
+  "NotificationURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/",
+  "Token": "2db874555dd0c93fe22f9a0330e97ad620eeec97972a586e7e2d1c7265356564"
+}
+[2025-08-20 09:04:07] Init Request: {"TerminalKey": "1754725169593DEMO", "Amount": 500, "OrderId": "07a674cd-86a9-495d-be28-bd01d78cb693", "Description": "Подписка: Начальный", "Recurrent": "N", "CustomerKey": "1", "RedirectDueDate": "2025-08-21T12:04:07+0300", "SuccessURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/", "FailURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/", "NotificationURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/", "Token": "2db874555dd0c93fe22f9a0330e97ad620eeec97972a586e7e2d1c7265356564"}
+Init Response: <html>
+<head><title>403 Forbidden</title></head>
+<body>
+<center><h1>403 Forbidden</h1></center>
+<hr><center>nginx</center>
+</body>
+</html>
+
+[2025-08-20 09:04:07] Ошибка сети при инициализации платежа: 403 Client Error: Forbidden for url: https://rest-api-test.tinkoff.ru/v2/Init
+[2025-08-20 09:08:52] DEBUG INIT: Данные для запроса Init (до добавления токена): {
+  "TerminalKey": "1754725169593DEMO",
+  "Amount": 1000,
+  "OrderId": "646f4e2e-84cf-46a0-87dd-605866c01c61",
+  "Description": "Подписка: Рабочий",
+  "Recurrent": "N",
+  "CustomerKey": "1",
+  "RedirectDueDate": "2025-08-21T12:08:52+0300",
+  "SuccessURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/",
+  "FailURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/",
+  "NotificationURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/"
+}
+[2025-08-20 09:08:52] DEBUG TOKEN GEN: Исходные данные: {'TerminalKey': '1754725169593DEMO', 'Amount': 1000, 'OrderId': '646f4e2e-84cf-46a0-87dd-605866c01c61', 'Description': 'Подписка: Рабочий', 'Recurrent': 'N', 'CustomerKey': '1', 'RedirectDueDate': '2025-08-21T12:08:52+0300', 'SuccessURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/', 'FailURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/', 'NotificationURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/'}
+[2025-08-20 09:08:52] DEBUG TOKEN GEN: Данные для токена (без Password): {'TerminalKey': '1754725169593DEMO', 'Amount': '1000', 'OrderId': '646f4e2e-84cf-46a0-87dd-605866c01c61', 'Recurrent': 'N', 'CustomerKey': '1', 'RedirectDueDate': '2025-08-21T12:08:52+0300', 'SuccessURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/', 'FailURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/', 'NotificationURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/'}
+[2025-08-20 09:08:52] DEBUG TOKEN GEN: Данные для токена (с Password): {'TerminalKey': '1754725169593DEMO', 'Amount': '1000', 'OrderId': '646f4e2e-84cf-46a0-87dd-605866c01c61', 'Recurrent': 'N', 'CustomerKey': '1', 'RedirectDueDate': '2025-08-21T12:08:52+0300', 'SuccessURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/', 'FailURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/', 'NotificationURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/', 'Password': 'OPJ2Ky4AVVRMnPFH'}
+[2025-08-20 09:08:52] DEBUG TOKEN GEN: Отсортированные ключи: ['Amount', 'CustomerKey', 'FailURL', 'NotificationURL', 'OrderId', 'Password', 'Recurrent', 'RedirectDueDate', 'SuccessURL', 'TerminalKey']
+[2025-08-20 09:08:52] DEBUG TOKEN GEN: Список значений для конкатенации: ['1000', '1', 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/', 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/', '646f4e2e-84cf-46a0-87dd-605866c01c61', 'OPJ2Ky4AVVRMnPFH', 'N', '2025-08-21T12:08:52+0300', 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/', '1754725169593DEMO']
+[2025-08-20 09:08:52] DEBUG TOKEN GEN: Финальная строка для хеширования: '10001https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/646f4e2e-84cf-46a0-87dd-605866c01c61OPJ2Ky4AVVRMnPFHN2025-08-21T12:08:52+0300https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/1754725169593DEMO'
+[2025-08-20 09:08:52] DEBUG TOKEN GEN: Сгенерированный токен: e53338f44704ef5bde165508e1377d2c34a9550f69743c746a69f13d14b056f7
+[2025-08-20 09:08:52] DEBUG INIT: Отправка запроса на https://rest-api-test.tinkoff.ru/v2/Init
+[2025-08-20 09:08:52] DEBUG INIT: Заголовки: {'Content-Type': 'application/json'}
+[2025-08-20 09:08:52] DEBUG INIT: Тело запроса: {
+  "TerminalKey": "1754725169593DEMO",
+  "Amount": 1000,
+  "OrderId": "646f4e2e-84cf-46a0-87dd-605866c01c61",
+  "Description": "Подписка: Рабочий",
+  "Recurrent": "N",
+  "CustomerKey": "1",
+  "RedirectDueDate": "2025-08-21T12:08:52+0300",
+  "SuccessURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/",
+  "FailURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/",
+  "NotificationURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/",
+  "Token": "e53338f44704ef5bde165508e1377d2c34a9550f69743c746a69f13d14b056f7"
+}
+[2025-08-20 09:08:52] Init Request: {"TerminalKey": "1754725169593DEMO", "Amount": 1000, "OrderId": "646f4e2e-84cf-46a0-87dd-605866c01c61", "Description": "Подписка: Рабочий", "Recurrent": "N", "CustomerKey": "1", "RedirectDueDate": "2025-08-21T12:08:52+0300", "SuccessURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/", "FailURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/", "NotificationURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/", "Token": "e53338f44704ef5bde165508e1377d2c34a9550f69743c746a69f13d14b056f7"}
+Init Response: <html>
+<head><title>403 Forbidden</title></head>
+<body>
+<center><h1>403 Forbidden</h1></center>
+<hr><center>nginx</center>
+</body>
+</html>
+
+[2025-08-20 09:08:52] Ошибка сети при инициализации платежа: 403 Client Error: Forbidden for url: https://rest-api-test.tinkoff.ru/v2/Init
+[2025-08-20 11:16:08] DEBUG INIT: Данные для запроса Init (до добавления токена): {
+  "TerminalKey": "1754725169593DEMO",
+  "Amount": 200,
+  "OrderId": "9e1b87f9-5f77-4b6b-9d96-c9a6b2f76873",
+  "Description": "Подписка: testing",
+  "Recurrent": "N",
+  "CustomerKey": "1",
+  "RedirectDueDate": "2025-08-21T14:16:08+0300",
+  "SuccessURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/",
+  "FailURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/",
+  "NotificationURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/"
+}
+[2025-08-20 11:16:08] DEBUG TOKEN GEN: Исходные данные: {'TerminalKey': '1754725169593DEMO', 'Amount': 200, 'OrderId': '9e1b87f9-5f77-4b6b-9d96-c9a6b2f76873', 'Description': 'Подписка: testing', 'Recurrent': 'N', 'CustomerKey': '1', 'RedirectDueDate': '2025-08-21T14:16:08+0300', 'SuccessURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/', 'FailURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/', 'NotificationURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/'}
+[2025-08-20 11:16:08] DEBUG TOKEN GEN: Данные для токена (без Password): {'TerminalKey': '1754725169593DEMO', 'Amount': '200', 'OrderId': '9e1b87f9-5f77-4b6b-9d96-c9a6b2f76873', 'Recurrent': 'N', 'CustomerKey': '1', 'RedirectDueDate': '2025-08-21T14:16:08+0300', 'SuccessURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/', 'FailURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/', 'NotificationURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/'}
+[2025-08-20 11:16:08] DEBUG TOKEN GEN: Данные для токена (с Password): {'TerminalKey': '1754725169593DEMO', 'Amount': '200', 'OrderId': '9e1b87f9-5f77-4b6b-9d96-c9a6b2f76873', 'Recurrent': 'N', 'CustomerKey': '1', 'RedirectDueDate': '2025-08-21T14:16:08+0300', 'SuccessURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/', 'FailURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/', 'NotificationURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/', 'Password': 'OPJ2Ky4AVVRMnPFH'}
+[2025-08-20 11:16:08] DEBUG TOKEN GEN: Отсортированные ключи: ['Amount', 'CustomerKey', 'FailURL', 'NotificationURL', 'OrderId', 'Password', 'Recurrent', 'RedirectDueDate', 'SuccessURL', 'TerminalKey']
+[2025-08-20 11:16:08] DEBUG TOKEN GEN: Список значений для конкатенации: ['200', '1', 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/', 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/', '9e1b87f9-5f77-4b6b-9d96-c9a6b2f76873', 'OPJ2Ky4AVVRMnPFH', 'N', '2025-08-21T14:16:08+0300', 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/', '1754725169593DEMO']
+[2025-08-20 11:16:08] DEBUG TOKEN GEN: Финальная строка для хеширования: '2001https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/9e1b87f9-5f77-4b6b-9d96-c9a6b2f76873OPJ2Ky4AVVRMnPFHN2025-08-21T14:16:08+0300https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/1754725169593DEMO'
+[2025-08-20 11:16:08] DEBUG TOKEN GEN: Сгенерированный токен: b239c259ec1eff38539a8186c9a65725f676401448e2d0548f8f2a2067b70e3a
+[2025-08-20 11:16:08] DEBUG INIT: Отправка запроса на https://rest-api-test.tinkoff.ru/v2/Init
+[2025-08-20 11:16:08] DEBUG INIT: Заголовки: {'Content-Type': 'application/json'}
+[2025-08-20 11:16:08] DEBUG INIT: Тело запроса: {
+  "TerminalKey": "1754725169593DEMO",
+  "Amount": 200,
+  "OrderId": "9e1b87f9-5f77-4b6b-9d96-c9a6b2f76873",
+  "Description": "Подписка: testing",
+  "Recurrent": "N",
+  "CustomerKey": "1",
+  "RedirectDueDate": "2025-08-21T14:16:08+0300",
+  "SuccessURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/",
+  "FailURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/",
+  "NotificationURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/",
+  "Token": "b239c259ec1eff38539a8186c9a65725f676401448e2d0548f8f2a2067b70e3a"
+}
+[2025-08-20 11:16:08] Init Request: {"TerminalKey": "1754725169593DEMO", "Amount": 200, "OrderId": "9e1b87f9-5f77-4b6b-9d96-c9a6b2f76873", "Description": "Подписка: testing", "Recurrent": "N", "CustomerKey": "1", "RedirectDueDate": "2025-08-21T14:16:08+0300", "SuccessURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/", "FailURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/", "NotificationURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/", "Token": "b239c259ec1eff38539a8186c9a65725f676401448e2d0548f8f2a2067b70e3a"}
+Init Response: <html>
+<head><title>403 Forbidden</title></head>
+<body>
+<center><h1>403 Forbidden</h1></center>
+<hr><center>nginx</center>
+</body>
+</html>
+
+[2025-08-20 11:16:08] Ошибка сети при инициализации платежа: 403 Client Error: Forbidden for url: https://rest-api-test.tinkoff.ru/v2/Init
+[2025-08-20 11:18:28] DEBUG INIT: Данные для запроса Init (до добавления токена): {
+  "TerminalKey": "1754725169593DEMO",
+  "Amount": 500,
+  "OrderId": "ddc6e1a2-da33-4c5b-96b9-4d4d9ee27d85",
+  "Description": "Подписка: Начальный",
+  "Recurrent": "N",
+  "CustomerKey": "1",
+  "RedirectDueDate": "2025-08-21T14:18:28+0300",
+  "SuccessURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/",
+  "FailURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/",
+  "NotificationURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/"
+}
+[2025-08-20 11:18:28] DEBUG TOKEN GEN: Исходные данные: {'TerminalKey': '1754725169593DEMO', 'Amount': 500, 'OrderId': 'ddc6e1a2-da33-4c5b-96b9-4d4d9ee27d85', 'Description': 'Подписка: Начальный', 'Recurrent': 'N', 'CustomerKey': '1', 'RedirectDueDate': '2025-08-21T14:18:28+0300', 'SuccessURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/', 'FailURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/', 'NotificationURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/'}
+[2025-08-20 11:18:28] DEBUG TOKEN GEN: Данные для токена (без Password): {'TerminalKey': '1754725169593DEMO', 'Amount': '500', 'OrderId': 'ddc6e1a2-da33-4c5b-96b9-4d4d9ee27d85', 'Recurrent': 'N', 'CustomerKey': '1', 'RedirectDueDate': '2025-08-21T14:18:28+0300', 'SuccessURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/', 'FailURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/', 'NotificationURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/'}
+[2025-08-20 11:18:28] DEBUG TOKEN GEN: Данные для токена (с Password): {'TerminalKey': '1754725169593DEMO', 'Amount': '500', 'OrderId': 'ddc6e1a2-da33-4c5b-96b9-4d4d9ee27d85', 'Recurrent': 'N', 'CustomerKey': '1', 'RedirectDueDate': '2025-08-21T14:18:28+0300', 'SuccessURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/', 'FailURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/', 'NotificationURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/', 'Password': 'OPJ2Ky4AVVRMnPFH'}
+[2025-08-20 11:18:28] DEBUG TOKEN GEN: Отсортированные ключи: ['Amount', 'CustomerKey', 'FailURL', 'NotificationURL', 'OrderId', 'Password', 'Recurrent', 'RedirectDueDate', 'SuccessURL', 'TerminalKey']
+[2025-08-20 11:18:28] DEBUG TOKEN GEN: Список значений для конкатенации: ['500', '1', 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/', 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/', 'ddc6e1a2-da33-4c5b-96b9-4d4d9ee27d85', 'OPJ2Ky4AVVRMnPFH', 'N', '2025-08-21T14:18:28+0300', 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/', '1754725169593DEMO']
+[2025-08-20 11:18:28] DEBUG TOKEN GEN: Финальная строка для хеширования: '5001https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/ddc6e1a2-da33-4c5b-96b9-4d4d9ee27d85OPJ2Ky4AVVRMnPFHN2025-08-21T14:18:28+0300https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/1754725169593DEMO'
+[2025-08-20 11:18:28] DEBUG TOKEN GEN: Сгенерированный токен: 79aac36f81cef1fe9b3a50bbfce3cd0e8349575db559cfbe874a4c9166610d0b
+[2025-08-20 11:18:28] DEBUG INIT: Отправка запроса на https://rest-api-test.tinkoff.ru/v2/Init
+[2025-08-20 11:18:28] DEBUG INIT: Заголовки: {'Content-Type': 'application/json'}
+[2025-08-20 11:18:28] DEBUG INIT: Тело запроса: {
+  "TerminalKey": "1754725169593DEMO",
+  "Amount": 500,
+  "OrderId": "ddc6e1a2-da33-4c5b-96b9-4d4d9ee27d85",
+  "Description": "Подписка: Начальный",
+  "Recurrent": "N",
+  "CustomerKey": "1",
+  "RedirectDueDate": "2025-08-21T14:18:28+0300",
+  "SuccessURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/",
+  "FailURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/",
+  "NotificationURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/",
+  "Token": "79aac36f81cef1fe9b3a50bbfce3cd0e8349575db559cfbe874a4c9166610d0b"
+}
+[2025-08-20 11:18:28] Init Request: {"TerminalKey": "1754725169593DEMO", "Amount": 500, "OrderId": "ddc6e1a2-da33-4c5b-96b9-4d4d9ee27d85", "Description": "Подписка: Начальный", "Recurrent": "N", "CustomerKey": "1", "RedirectDueDate": "2025-08-21T14:18:28+0300", "SuccessURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/", "FailURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/", "NotificationURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/", "Token": "79aac36f81cef1fe9b3a50bbfce3cd0e8349575db559cfbe874a4c9166610d0b"}
+Init Response: <html>
+<head><title>403 Forbidden</title></head>
+<body>
+<center><h1>403 Forbidden</h1></center>
+<hr><center>nginx</center>
+</body>
+</html>
+
+[2025-08-20 11:18:28] Ошибка сети при инициализации платежа: 403 Client Error: Forbidden for url: https://rest-api-test.tinkoff.ru/v2/Init
+[2025-08-20 11:21:42] DEBUG INIT: Данные для запроса Init (до добавления токена): {
+  "TerminalKey": "1754725169593DEMO",
+  "Amount": 500,
+  "OrderId": "d1e023c1-25b6-42ea-8ea3-40a8fa83efba",
+  "Description": "Подписка: Начальный",
+  "Recurrent": "N",
+  "CustomerKey": "1",
+  "RedirectDueDate": "2025-08-21T14:21:42+0300",
+  "SuccessURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/",
+  "FailURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/",
+  "NotificationURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/"
+}
+[2025-08-20 11:21:42] DEBUG TOKEN GEN: Исходные данные: {'TerminalKey': '1754725169593DEMO', 'Amount': 500, 'OrderId': 'd1e023c1-25b6-42ea-8ea3-40a8fa83efba', 'Description': 'Подписка: Начальный', 'Recurrent': 'N', 'CustomerKey': '1', 'RedirectDueDate': '2025-08-21T14:21:42+0300', 'SuccessURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/', 'FailURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/', 'NotificationURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/'}
+[2025-08-20 11:21:42] DEBUG TOKEN GEN: Данные для токена (без Password): {'TerminalKey': '1754725169593DEMO', 'Amount': '500', 'OrderId': 'd1e023c1-25b6-42ea-8ea3-40a8fa83efba', 'Recurrent': 'N', 'CustomerKey': '1', 'RedirectDueDate': '2025-08-21T14:21:42+0300', 'SuccessURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/', 'FailURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/', 'NotificationURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/'}
+[2025-08-20 11:21:42] DEBUG TOKEN GEN: Данные для токена (с Password): {'TerminalKey': '1754725169593DEMO', 'Amount': '500', 'OrderId': 'd1e023c1-25b6-42ea-8ea3-40a8fa83efba', 'Recurrent': 'N', 'CustomerKey': '1', 'RedirectDueDate': '2025-08-21T14:21:42+0300', 'SuccessURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/', 'FailURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/', 'NotificationURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/', 'Password': 'OPJ2Ky4AVVRMnPFH'}
+[2025-08-20 11:21:42] DEBUG TOKEN GEN: Отсортированные ключи: ['Amount', 'CustomerKey', 'FailURL', 'NotificationURL', 'OrderId', 'Password', 'Recurrent', 'RedirectDueDate', 'SuccessURL', 'TerminalKey']
+[2025-08-20 11:21:42] DEBUG TOKEN GEN: Список значений для конкатенации: ['500', '1', 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/', 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/', 'd1e023c1-25b6-42ea-8ea3-40a8fa83efba', 'OPJ2Ky4AVVRMnPFH', 'N', '2025-08-21T14:21:42+0300', 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/', '1754725169593DEMO']
+[2025-08-20 11:21:42] DEBUG TOKEN GEN: Финальная строка для хеширования: '5001https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/d1e023c1-25b6-42ea-8ea3-40a8fa83efbaOPJ2Ky4AVVRMnPFHN2025-08-21T14:21:42+0300https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/1754725169593DEMO'
+[2025-08-20 11:21:42] DEBUG TOKEN GEN: Сгенерированный токен: c86120dad7576908bce773ad2877d2505eb69ebdedb52492c8882ae20c838160
+[2025-08-20 11:21:42] DEBUG INIT: Отправка запроса на https://rest-api-test.tinkoff.ru/v2/Init
+[2025-08-20 11:21:42] DEBUG INIT: Заголовки: {'Content-Type': 'application/json'}
+[2025-08-20 11:21:42] DEBUG INIT: Тело запроса: {
+  "TerminalKey": "1754725169593DEMO",
+  "Amount": 500,
+  "OrderId": "d1e023c1-25b6-42ea-8ea3-40a8fa83efba",
+  "Description": "Подписка: Начальный",
+  "Recurrent": "N",
+  "CustomerKey": "1",
+  "RedirectDueDate": "2025-08-21T14:21:42+0300",
+  "SuccessURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/",
+  "FailURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/",
+  "NotificationURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/",
+  "Token": "c86120dad7576908bce773ad2877d2505eb69ebdedb52492c8882ae20c838160"
+}
+[2025-08-20 11:21:42] Init Request: {"TerminalKey": "1754725169593DEMO", "Amount": 500, "OrderId": "d1e023c1-25b6-42ea-8ea3-40a8fa83efba", "Description": "Подписка: Начальный", "Recurrent": "N", "CustomerKey": "1", "RedirectDueDate": "2025-08-21T14:21:42+0300", "SuccessURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/", "FailURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/", "NotificationURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/", "Token": "c86120dad7576908bce773ad2877d2505eb69ebdedb52492c8882ae20c838160"}
+Init Response: <html>
+<head><title>403 Forbidden</title></head>
+<body>
+<center><h1>403 Forbidden</h1></center>
+<hr><center>nginx</center>
+</body>
+</html>
+
+[2025-08-20 11:21:42] Ошибка сети при инициализации платежа: 403 Client Error: Forbidden for url: https://rest-api-test.tinkoff.ru/v2/Init
+[2025-08-20 11:24:18] DEBUG INIT: Данные для запроса Init (до добавления токена): {
+  "TerminalKey": "1754725169593DEMO",
+  "Amount": 500,
+  "OrderId": "b9e65ee0-f666-4310-9880-ea569a805d19",
+  "Description": "Подписка: Начальный",
+  "Recurrent": "N",
+  "CustomerKey": "1",
+  "RedirectDueDate": "2025-08-21T14:24:18+0300",
+  "SuccessURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/",
+  "FailURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/",
+  "NotificationURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/"
+}
+[2025-08-20 11:24:18] DEBUG TOKEN GEN: Исходные данные: {'TerminalKey': '1754725169593DEMO', 'Amount': 500, 'OrderId': 'b9e65ee0-f666-4310-9880-ea569a805d19', 'Description': 'Подписка: Начальный', 'Recurrent': 'N', 'CustomerKey': '1', 'RedirectDueDate': '2025-08-21T14:24:18+0300', 'SuccessURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/', 'FailURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/', 'NotificationURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/'}
+[2025-08-20 11:24:18] DEBUG TOKEN GEN: Данные для токена (без Password): {'TerminalKey': '1754725169593DEMO', 'Amount': '500', 'OrderId': 'b9e65ee0-f666-4310-9880-ea569a805d19', 'Recurrent': 'N', 'CustomerKey': '1', 'RedirectDueDate': '2025-08-21T14:24:18+0300', 'SuccessURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/', 'FailURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/', 'NotificationURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/'}
+[2025-08-20 11:24:18] DEBUG TOKEN GEN: Данные для токена (с Password): {'TerminalKey': '1754725169593DEMO', 'Amount': '500', 'OrderId': 'b9e65ee0-f666-4310-9880-ea569a805d19', 'Recurrent': 'N', 'CustomerKey': '1', 'RedirectDueDate': '2025-08-21T14:24:18+0300', 'SuccessURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/', 'FailURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/', 'NotificationURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/', 'Password': 'OPJ2Ky4AVVRMnPFH'}
+[2025-08-20 11:24:18] DEBUG TOKEN GEN: Отсортированные ключи: ['Amount', 'CustomerKey', 'FailURL', 'NotificationURL', 'OrderId', 'Password', 'Recurrent', 'RedirectDueDate', 'SuccessURL', 'TerminalKey']
+[2025-08-20 11:24:18] DEBUG TOKEN GEN: Список значений для конкатенации: ['500', '1', 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/', 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/', 'b9e65ee0-f666-4310-9880-ea569a805d19', 'OPJ2Ky4AVVRMnPFH', 'N', '2025-08-21T14:24:18+0300', 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/', '1754725169593DEMO']
+[2025-08-20 11:24:18] DEBUG TOKEN GEN: Финальная строка для хеширования: '5001https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/b9e65ee0-f666-4310-9880-ea569a805d19OPJ2Ky4AVVRMnPFHN2025-08-21T14:24:18+0300https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/1754725169593DEMO'
+[2025-08-20 11:24:18] DEBUG TOKEN GEN: Сгенерированный токен: 891f9aaf75c462e7737cba23e78d39c336aeb63fa2bcf94c198eb820a01b23ad
+[2025-08-20 11:24:18] DEBUG INIT: Отправка запроса на https://rest-api-test.tinkoff.ru/v2/Init
+[2025-08-20 11:24:18] DEBUG INIT: Заголовки: {'Content-Type': 'application/json'}
+[2025-08-20 11:24:18] DEBUG INIT: Тело запроса: {
+  "TerminalKey": "1754725169593DEMO",
+  "Amount": 500,
+  "OrderId": "b9e65ee0-f666-4310-9880-ea569a805d19",
+  "Description": "Подписка: Начальный",
+  "Recurrent": "N",
+  "CustomerKey": "1",
+  "RedirectDueDate": "2025-08-21T14:24:18+0300",
+  "SuccessURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/",
+  "FailURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/",
+  "NotificationURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/",
+  "Token": "891f9aaf75c462e7737cba23e78d39c336aeb63fa2bcf94c198eb820a01b23ad"
+}
+[2025-08-20 11:24:18] Init Request: {"TerminalKey": "1754725169593DEMO", "Amount": 500, "OrderId": "b9e65ee0-f666-4310-9880-ea569a805d19", "Description": "Подписка: Начальный", "Recurrent": "N", "CustomerKey": "1", "RedirectDueDate": "2025-08-21T14:24:18+0300", "SuccessURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/", "FailURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/", "NotificationURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/", "Token": "891f9aaf75c462e7737cba23e78d39c336aeb63fa2bcf94c198eb820a01b23ad"}
+Init Response: <html>
+<head><title>403 Forbidden</title></head>
+<body>
+<center><h1>403 Forbidden</h1></center>
+<hr><center>nginx</center>
+</body>
+</html>
+
+[2025-08-20 11:24:18] Ошибка сети при инициализации платежа: 403 Client Error: Forbidden for url: https://rest-api-test.tinkoff.ru/v2/Init
+[2025-08-20 11:33:24] DEBUG INIT: Данные для запроса Init (до добавления токена): {
+  "TerminalKey": "1754725169593DEMO",
+  "Amount": 1000,
+  "OrderId": "9e0dceb3-2052-4660-aa96-fdf8f34e8ff0",
+  "Description": "Подписка: Рабочий",
+  "Recurrent": "N",
+  "CustomerKey": "1",
+  "RedirectDueDate": "2025-08-21T14:33:24+0300",
+  "SuccessURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/",
+  "FailURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/",
+  "NotificationURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/"
+}
+[2025-08-20 11:33:24] DEBUG TOKEN GEN: Исходные данные: {'TerminalKey': '1754725169593DEMO', 'Amount': 1000, 'OrderId': '9e0dceb3-2052-4660-aa96-fdf8f34e8ff0', 'Description': 'Подписка: Рабочий', 'Recurrent': 'N', 'CustomerKey': '1', 'RedirectDueDate': '2025-08-21T14:33:24+0300', 'SuccessURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/', 'FailURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/', 'NotificationURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/'}
+[2025-08-20 11:33:24] DEBUG TOKEN GEN: Данные для токена (без Password): {'TerminalKey': '1754725169593DEMO', 'Amount': '1000', 'OrderId': '9e0dceb3-2052-4660-aa96-fdf8f34e8ff0', 'Recurrent': 'N', 'CustomerKey': '1', 'RedirectDueDate': '2025-08-21T14:33:24+0300', 'SuccessURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/', 'FailURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/', 'NotificationURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/'}
+[2025-08-20 11:33:24] DEBUG TOKEN GEN: Данные для токена (с Password): {'TerminalKey': '1754725169593DEMO', 'Amount': '1000', 'OrderId': '9e0dceb3-2052-4660-aa96-fdf8f34e8ff0', 'Recurrent': 'N', 'CustomerKey': '1', 'RedirectDueDate': '2025-08-21T14:33:24+0300', 'SuccessURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/', 'FailURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/', 'NotificationURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/', 'Password': 'OPJ2Ky4AVVRMnPFH'}
+[2025-08-20 11:33:24] DEBUG TOKEN GEN: Отсортированные ключи: ['Amount', 'CustomerKey', 'FailURL', 'NotificationURL', 'OrderId', 'Password', 'Recurrent', 'RedirectDueDate', 'SuccessURL', 'TerminalKey']
+[2025-08-20 11:33:24] DEBUG TOKEN GEN: Список значений для конкатенации: ['1000', '1', 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/', 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/', '9e0dceb3-2052-4660-aa96-fdf8f34e8ff0', 'OPJ2Ky4AVVRMnPFH', 'N', '2025-08-21T14:33:24+0300', 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/', '1754725169593DEMO']
+[2025-08-20 11:33:24] DEBUG TOKEN GEN: Финальная строка для хеширования: '10001https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/9e0dceb3-2052-4660-aa96-fdf8f34e8ff0OPJ2Ky4AVVRMnPFHN2025-08-21T14:33:24+0300https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/1754725169593DEMO'
+[2025-08-20 11:33:24] DEBUG TOKEN GEN: Сгенерированный токен: 0a7a2a8eb83900b300afb1649dee633d0ef4c190a04e40d3d97b85a67657e1f1
+[2025-08-20 11:33:24] DEBUG INIT: Отправка запроса на https://rest-api-test.tinkoff.ru/v2/Init
+[2025-08-20 11:33:24] DEBUG INIT: Заголовки: {'Content-Type': 'application/json'}
+[2025-08-20 11:33:24] DEBUG INIT: Тело запроса: {
+  "TerminalKey": "1754725169593DEMO",
+  "Amount": 1000,
+  "OrderId": "9e0dceb3-2052-4660-aa96-fdf8f34e8ff0",
+  "Description": "Подписка: Рабочий",
+  "Recurrent": "N",
+  "CustomerKey": "1",
+  "RedirectDueDate": "2025-08-21T14:33:24+0300",
+  "SuccessURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/",
+  "FailURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/",
+  "NotificationURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/",
+  "Token": "0a7a2a8eb83900b300afb1649dee633d0ef4c190a04e40d3d97b85a67657e1f1"
+}
+[2025-08-20 11:33:24] Init Request: {"TerminalKey": "1754725169593DEMO", "Amount": 1000, "OrderId": "9e0dceb3-2052-4660-aa96-fdf8f34e8ff0", "Description": "Подписка: Рабочий", "Recurrent": "N", "CustomerKey": "1", "RedirectDueDate": "2025-08-21T14:33:24+0300", "SuccessURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/", "FailURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/", "NotificationURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/", "Token": "0a7a2a8eb83900b300afb1649dee633d0ef4c190a04e40d3d97b85a67657e1f1"}
+Init Response: <html>
+<head><title>403 Forbidden</title></head>
+<body>
+<center><h1>403 Forbidden</h1></center>
+<hr><center>nginx</center>
+</body>
+</html>
+
+[2025-08-20 11:33:24] Ошибка сети при инициализации платежа: 403 Client Error: Forbidden for url: https://rest-api-test.tinkoff.ru/v2/Init
+[2025-08-20 11:33:49] DEBUG INIT: Данные для запроса Init (до добавления токена): {
+  "TerminalKey": "1754725169593DEMO",
+  "Amount": 500,
+  "OrderId": "ae77d822-14f4-4fb2-b1a1-49d4d8ccb29a",
+  "Description": "Подписка: Начальный",
+  "Recurrent": "N",
+  "CustomerKey": "1",
+  "RedirectDueDate": "2025-08-21T14:33:49+0300",
+  "SuccessURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/",
+  "FailURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/",
+  "NotificationURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/"
+}
+[2025-08-20 11:33:49] DEBUG TOKEN GEN: Исходные данные: {'TerminalKey': '1754725169593DEMO', 'Amount': 500, 'OrderId': 'ae77d822-14f4-4fb2-b1a1-49d4d8ccb29a', 'Description': 'Подписка: Начальный', 'Recurrent': 'N', 'CustomerKey': '1', 'RedirectDueDate': '2025-08-21T14:33:49+0300', 'SuccessURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/', 'FailURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/', 'NotificationURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/'}
+[2025-08-20 11:33:49] DEBUG TOKEN GEN: Данные для токена (без Password): {'TerminalKey': '1754725169593DEMO', 'Amount': '500', 'OrderId': 'ae77d822-14f4-4fb2-b1a1-49d4d8ccb29a', 'Recurrent': 'N', 'CustomerKey': '1', 'RedirectDueDate': '2025-08-21T14:33:49+0300', 'SuccessURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/', 'FailURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/', 'NotificationURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/'}
+[2025-08-20 11:33:49] DEBUG TOKEN GEN: Данные для токена (с Password): {'TerminalKey': '1754725169593DEMO', 'Amount': '500', 'OrderId': 'ae77d822-14f4-4fb2-b1a1-49d4d8ccb29a', 'Recurrent': 'N', 'CustomerKey': '1', 'RedirectDueDate': '2025-08-21T14:33:49+0300', 'SuccessURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/', 'FailURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/', 'NotificationURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/', 'Password': 'OPJ2Ky4AVVRMnPFH'}
+[2025-08-20 11:33:49] DEBUG TOKEN GEN: Отсортированные ключи: ['Amount', 'CustomerKey', 'FailURL', 'NotificationURL', 'OrderId', 'Password', 'Recurrent', 'RedirectDueDate', 'SuccessURL', 'TerminalKey']
+[2025-08-20 11:33:49] DEBUG TOKEN GEN: Список значений для конкатенации: ['500', '1', 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/', 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/', 'ae77d822-14f4-4fb2-b1a1-49d4d8ccb29a', 'OPJ2Ky4AVVRMnPFH', 'N', '2025-08-21T14:33:49+0300', 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/', '1754725169593DEMO']
+[2025-08-20 11:33:49] DEBUG TOKEN GEN: Финальная строка для хеширования: '5001https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/ae77d822-14f4-4fb2-b1a1-49d4d8ccb29aOPJ2Ky4AVVRMnPFHN2025-08-21T14:33:49+0300https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/1754725169593DEMO'
+[2025-08-20 11:33:49] DEBUG TOKEN GEN: Сгенерированный токен: e321f52ac54f813092ef7be6acb2bf00902cc01bfda6e1d764eac458c457248b
+[2025-08-20 11:33:49] DEBUG INIT: Отправка запроса на https://rest-api-test.tinkoff.ru/v2/Init
+[2025-08-20 11:33:49] DEBUG INIT: Заголовки: {'Content-Type': 'application/json'}
+[2025-08-20 11:33:49] DEBUG INIT: Тело запроса: {
+  "TerminalKey": "1754725169593DEMO",
+  "Amount": 500,
+  "OrderId": "ae77d822-14f4-4fb2-b1a1-49d4d8ccb29a",
+  "Description": "Подписка: Начальный",
+  "Recurrent": "N",
+  "CustomerKey": "1",
+  "RedirectDueDate": "2025-08-21T14:33:49+0300",
+  "SuccessURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/",
+  "FailURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/",
+  "NotificationURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/",
+  "Token": "e321f52ac54f813092ef7be6acb2bf00902cc01bfda6e1d764eac458c457248b"
+}
+[2025-08-20 11:33:49] Init Request: {"TerminalKey": "1754725169593DEMO", "Amount": 500, "OrderId": "ae77d822-14f4-4fb2-b1a1-49d4d8ccb29a", "Description": "Подписка: Начальный", "Recurrent": "N", "CustomerKey": "1", "RedirectDueDate": "2025-08-21T14:33:49+0300", "SuccessURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/", "FailURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/", "NotificationURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/", "Token": "e321f52ac54f813092ef7be6acb2bf00902cc01bfda6e1d764eac458c457248b"}
+Init Response: <html>
+<head><title>403 Forbidden</title></head>
+<body>
+<center><h1>403 Forbidden</h1></center>
+<hr><center>nginx</center>
+</body>
+</html>
+
+[2025-08-20 11:33:49] Ошибка сети при инициализации платежа: 403 Client Error: Forbidden for url: https://rest-api-test.tinkoff.ru/v2/Init
+[2025-08-20 11:58:46] DEBUG INIT: Данные для запроса Init (до добавления токена): {
+  "TerminalKey": "1754725169593DEMO",
+  "Amount": 500,
+  "OrderId": "ba915039-21d9-4806-a14a-c2d897b73382",
+  "Description": "Подписка: Начальный",
+  "Recurrent": "N",
+  "CustomerKey": "1",
+  "RedirectDueDate": "2025-08-21T14:58:46+0300",
+  "SuccessURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/",
+  "FailURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/",
+  "NotificationURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/"
+}
+[2025-08-20 11:58:46] DEBUG TOKEN GEN: Исходные данные: {'TerminalKey': '1754725169593DEMO', 'Amount': 500, 'OrderId': 'ba915039-21d9-4806-a14a-c2d897b73382', 'Description': 'Подписка: Начальный', 'Recurrent': 'N', 'CustomerKey': '1', 'RedirectDueDate': '2025-08-21T14:58:46+0300', 'SuccessURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/', 'FailURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/', 'NotificationURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/'}
+[2025-08-20 11:58:46] DEBUG TOKEN GEN: Данные для токена (без Password): {'TerminalKey': '1754725169593DEMO', 'Amount': '500', 'OrderId': 'ba915039-21d9-4806-a14a-c2d897b73382', 'Recurrent': 'N', 'CustomerKey': '1', 'RedirectDueDate': '2025-08-21T14:58:46+0300', 'SuccessURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/', 'FailURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/', 'NotificationURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/'}
+[2025-08-20 11:58:46] DEBUG TOKEN GEN: Данные для токена (с Password): {'TerminalKey': '1754725169593DEMO', 'Amount': '500', 'OrderId': 'ba915039-21d9-4806-a14a-c2d897b73382', 'Recurrent': 'N', 'CustomerKey': '1', 'RedirectDueDate': '2025-08-21T14:58:46+0300', 'SuccessURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/', 'FailURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/', 'NotificationURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/', 'Password': 'OPJ2Ky4AVVRMnPFH'}
+[2025-08-20 11:58:46] DEBUG TOKEN GEN: Отсортированные ключи: ['Amount', 'CustomerKey', 'FailURL', 'NotificationURL', 'OrderId', 'Password', 'Recurrent', 'RedirectDueDate', 'SuccessURL', 'TerminalKey']
+[2025-08-20 11:58:46] DEBUG TOKEN GEN: Список значений для конкатенации: ['500', '1', 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/', 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/', 'ba915039-21d9-4806-a14a-c2d897b73382', 'OPJ2Ky4AVVRMnPFH', 'N', '2025-08-21T14:58:46+0300', 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/', '1754725169593DEMO']
+[2025-08-20 11:58:46] DEBUG TOKEN GEN: Финальная строка для хеширования: '5001https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/ba915039-21d9-4806-a14a-c2d897b73382OPJ2Ky4AVVRMnPFHN2025-08-21T14:58:46+0300https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/1754725169593DEMO'
+[2025-08-20 11:58:46] DEBUG TOKEN GEN: Сгенерированный токен: bc6d7ef5da9e50f07e418d9a128f8440c20922a2e93436b71d36aabbbac8fa41
+[2025-08-20 11:58:46] DEBUG INIT: Отправка запроса на https://rest-api-test.tinkoff.ru/v2/Init
+[2025-08-20 11:58:46] DEBUG INIT: Заголовки: {'Content-Type': 'application/json'}
+[2025-08-20 11:58:46] DEBUG INIT: Тело запроса: {
+  "TerminalKey": "1754725169593DEMO",
+  "Amount": 500,
+  "OrderId": "ba915039-21d9-4806-a14a-c2d897b73382",
+  "Description": "Подписка: Начальный",
+  "Recurrent": "N",
+  "CustomerKey": "1",
+  "RedirectDueDate": "2025-08-21T14:58:46+0300",
+  "SuccessURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/",
+  "FailURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/",
+  "NotificationURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/",
+  "Token": "bc6d7ef5da9e50f07e418d9a128f8440c20922a2e93436b71d36aabbbac8fa41"
+}
+[2025-08-20 11:58:47] Init Request: {"TerminalKey": "1754725169593DEMO", "Amount": 500, "OrderId": "ba915039-21d9-4806-a14a-c2d897b73382", "Description": "Подписка: Начальный", "Recurrent": "N", "CustomerKey": "1", "RedirectDueDate": "2025-08-21T14:58:46+0300", "SuccessURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/", "FailURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/", "NotificationURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/", "Token": "bc6d7ef5da9e50f07e418d9a128f8440c20922a2e93436b71d36aabbbac8fa41"}
+Init Response: <html>
+<head><title>403 Forbidden</title></head>
+<body>
+<center><h1>403 Forbidden</h1></center>
+<hr><center>nginx</center>
+</body>
+</html>
+
+[2025-08-20 11:58:47] Ошибка сети при инициализации платежа: 403 Client Error: Forbidden for url: https://rest-api-test.tinkoff.ru/v2/Init
+[2025-08-20 12:00:12] DEBUG INIT: Данные для запроса Init (до добавления токена): {
+  "TerminalKey": "1754725169593DEMO",
+  "Amount": 500,
+  "OrderId": "39a059a8-cde3-46fe-9379-bc06663e3e91",
+  "Description": "Подписка: Начальный",
+  "Recurrent": "N",
+  "CustomerKey": "1",
+  "RedirectDueDate": "2025-08-21T15:00:12+0300",
+  "SuccessURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/",
+  "FailURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/",
+  "NotificationURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/"
+}
+[2025-08-20 12:00:12] DEBUG TOKEN GEN: Исходные данные: {'TerminalKey': '1754725169593DEMO', 'Amount': 500, 'OrderId': '39a059a8-cde3-46fe-9379-bc06663e3e91', 'Description': 'Подписка: Начальный', 'Recurrent': 'N', 'CustomerKey': '1', 'RedirectDueDate': '2025-08-21T15:00:12+0300', 'SuccessURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/', 'FailURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/', 'NotificationURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/'}
+[2025-08-20 12:00:12] DEBUG TOKEN GEN: Данные для токена (без Password): {'TerminalKey': '1754725169593DEMO', 'Amount': '500', 'OrderId': '39a059a8-cde3-46fe-9379-bc06663e3e91', 'Recurrent': 'N', 'CustomerKey': '1', 'RedirectDueDate': '2025-08-21T15:00:12+0300', 'SuccessURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/', 'FailURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/', 'NotificationURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/'}
+[2025-08-20 12:00:12] DEBUG TOKEN GEN: Данные для токена (с Password): {'TerminalKey': '1754725169593DEMO', 'Amount': '500', 'OrderId': '39a059a8-cde3-46fe-9379-bc06663e3e91', 'Recurrent': 'N', 'CustomerKey': '1', 'RedirectDueDate': '2025-08-21T15:00:12+0300', 'SuccessURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/', 'FailURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/', 'NotificationURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/', 'Password': 'OPJ2Ky4AVVRMnPFH'}
+[2025-08-20 12:00:12] DEBUG TOKEN GEN: Отсортированные ключи: ['Amount', 'CustomerKey', 'FailURL', 'NotificationURL', 'OrderId', 'Password', 'Recurrent', 'RedirectDueDate', 'SuccessURL', 'TerminalKey']
+[2025-08-20 12:00:12] DEBUG TOKEN GEN: Список значений для конкатенации: ['500', '1', 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/', 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/', '39a059a8-cde3-46fe-9379-bc06663e3e91', 'OPJ2Ky4AVVRMnPFH', 'N', '2025-08-21T15:00:12+0300', 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/', '1754725169593DEMO']
+[2025-08-20 12:00:12] DEBUG TOKEN GEN: Финальная строка для хеширования: '5001https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/39a059a8-cde3-46fe-9379-bc06663e3e91OPJ2Ky4AVVRMnPFHN2025-08-21T15:00:12+0300https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/1754725169593DEMO'
+[2025-08-20 12:00:12] DEBUG TOKEN GEN: Сгенерированный токен: 7189abc7dad32371372304c8114a9e163b02ec30b195f1cb674be1cd3ccdff41
+[2025-08-20 12:00:12] DEBUG INIT: Отправка запроса на https://rest-api-test.tinkoff.ru/v2/Init
+[2025-08-20 12:00:12] DEBUG INIT: Заголовки: {'Content-Type': 'application/json'}
+[2025-08-20 12:00:12] DEBUG INIT: Тело запроса: {
+  "TerminalKey": "1754725169593DEMO",
+  "Amount": 500,
+  "OrderId": "39a059a8-cde3-46fe-9379-bc06663e3e91",
+  "Description": "Подписка: Начальный",
+  "Recurrent": "N",
+  "CustomerKey": "1",
+  "RedirectDueDate": "2025-08-21T15:00:12+0300",
+  "SuccessURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/",
+  "FailURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/",
+  "NotificationURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/",
+  "Token": "7189abc7dad32371372304c8114a9e163b02ec30b195f1cb674be1cd3ccdff41"
+}
+[2025-08-20 12:00:13] Init Request: {"TerminalKey": "1754725169593DEMO", "Amount": 500, "OrderId": "39a059a8-cde3-46fe-9379-bc06663e3e91", "Description": "Подписка: Начальный", "Recurrent": "N", "CustomerKey": "1", "RedirectDueDate": "2025-08-21T15:00:12+0300", "SuccessURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/", "FailURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/", "NotificationURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/", "Token": "7189abc7dad32371372304c8114a9e163b02ec30b195f1cb674be1cd3ccdff41"}
+Init Response: <html>
+<head><title>403 Forbidden</title></head>
+<body>
+<center><h1>403 Forbidden</h1></center>
+<hr><center>nginx</center>
+</body>
+</html>
+
+[2025-08-20 12:00:13] Ошибка сети при инициализации платежа: 403 Client Error: Forbidden for url: https://rest-api-test.tinkoff.ru/v2/Init

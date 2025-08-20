@@ -1,4 +1,6 @@
 # bank_clearing/views.py
+import json
+import logging
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -7,10 +9,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django.utils.decorators import method_decorator
 from django.views import View
-import json
-import logging
 
-from .models import SubscriptionRates, Cart, TBankPayment
+from .models import SubscriptionRates, Cart
 from .forms import AddSubscriptionToCartForm
 from .services import create_payment, handle_notification
 
@@ -57,7 +57,7 @@ def initiate_payment(request):
         return redirect('bank_clearing:cart_detail')
 
     result = create_payment(request.user, cart)
-    print("Views-Отправка запроса на платеж", result) #test <Response [403]> prod <Response [200]>
+    print("Views-Отправка запроса на платеж", result) 
     
     if result['success']:
         # Перенаправляем пользователя на форму оплаты Т-Банка
