@@ -44,8 +44,8 @@ def generate_token(data: dict) -> str:
     # 1. Собрать только корневые параметры (исключая Token, Description и вложенные объекты/массивы)
     data_for_token = {}
     for key, value in data.items():
-        # Исключаем Token и Description (как указано в документации и примерах)
-        if key in ['Token', 'Description']:
+        # Исключаем Token (как указано в документации и примерах)
+        if key in ['Token']:
             continue
         # Исключаем вложенные объекты/массивы (Receipt, DATA и т.д.)
         if isinstance(value, (dict, list)):
@@ -55,6 +55,7 @@ def generate_token(data: dict) -> str:
             # Преобразуем значение в строку. Это критично для конкатенации.
             data_for_token[key] = str(value)
 
+    print('Данные для токена==', data_for_token)
     # --- ВРЕМЕННО ДЛЯ ОТЛАДКИ ---
     log_payment(f"DEBUG TOKEN GEN: Данные для токена (без Password): {data_for_token}")
     # ----------------------------
@@ -116,12 +117,12 @@ def create_payment(user, cart: Cart) -> dict:
         formatted_redirect_due_date = redirect_due_date.strftime('%Y-%m-%dT%H:%M:%S%z')
         # Формат %z дает '+0300', что соответствует требованию "YYYY-MM-DDTHH24:MI:SS+GMT"
 
+        # 2. Подготовка полного набора данных для запроса Init
         init_data = {
             "TerminalKey": TBANK_TERMINAL_KEY,
             "Amount": amount,
             "OrderId": order_id,
             "Description": f"Подписка: {cart.subscription.name}", # Описание будет отображено на форме
-            # "Language": "ru", # Необязательно, по умолчанию ru
             "Recurrent": "N", # Не рекуррентный платёж
             "CustomerKey": str(user.id), # Идентификатор клиента
             "RedirectDueDate": formatted_redirect_due_date,
@@ -135,12 +136,29 @@ def create_payment(user, cart: Cart) -> dict:
         # --- ВРЕМЕННО ДЛЯ ОТЛАДКИ ---
         log_payment(f"DEBUG INIT: Данные для запроса Init (до добавления токена): {json.dumps(init_data, ensure_ascii=False, indent=2)}")
         # ----------------------------
+        
+        # 3. Подготовка данных ТОЛЬКО для генерации токена (согласно документации Т-Банка для Init)
+        # См. https://www.tbank.ru/kassa/dev/payments/ -> "Пример процесса шифрования тела запроса для метода Init"
+        # В примере используются только TerminalKey, Amount, OrderId, Description
+        # Даже если Description исключается в некоторых случаях, документация его включает.
+        init_data_for_token = {
+            "TerminalKey": init_data["TerminalKey"],
+            "Amount": init_data["Amount"],
+            "OrderId": init_data["OrderId"],
+            "Description": init_data["Description"],
+                        # Не включаем Receipt, DATA, SuccessURL, FailURL, NotificationURL, Recurrent, CustomerKey, RedirectDueDate
+                    }
 
-        # 2. Генерация токена
-        token = generate_token(init_data)
+        # --- ВРЕМЕННО ДЛЯ ОТЛАДКИ ---
+        log_payment(f"DEBUG INIT: Данные для генерации токена: {json.dumps(init_data_for_token, ensure_ascii=False, indent=2)}")
+        # ----------------------------
+
+        # 4. Генерация токена ТОЛЬКО на основе разрешенного набора параметров
+        token = generate_token(init_data_for_token)
+        # Добавляем токен в полный набор данных для отправки
         init_data['Token'] = token
         
-        # 3. Отправка запроса
+        # 5. Отправка запроса
         url = f"{TBANK_API_URL}Init"
         headers = {'Content-Type': 'application/json'}
         
@@ -159,11 +177,11 @@ def create_payment(user, cart: Cart) -> dict:
         response.raise_for_status()
         response_data = response.json()
         
-        # 4. Проверка ответа
+        # 6. Проверка ответа
         if response_data.get('Success') and response_data.get('PaymentId'):
             payment_id = response_data['PaymentId']
             
-            # 5. Создание/обновление записи в БД
+            # 7. Создание/обновление записи в БД
             payment, created = TBankPayment.objects.update_or_create(
                 order_id=order_id,
                 defaults={
@@ -176,7 +194,7 @@ def create_payment(user, cart: Cart) -> dict:
                 }
             )
             
-            # 6. Очистка корзины
+            # 8. Очистка корзины
             cart.clear()
             
             return {
