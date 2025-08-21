@@ -27,11 +27,11 @@ def generate_token(data: dict) -> str:
     """
     Генерирует токен для подписи запроса к Т-Банку согласно официальной документации.
     
-    Алгоритм (для метода Init):
+     Алгоритм (для метода Init, по информации от Т-Банка):
     1. Собрать массив передаваемых данных в виде пар Ключ-Значение.
        В массив нужно добавить только параметры корневого объекта.
-       Вложенные объекты (Receipt, DATA) и массивы не участвуют в расчете токена.
-       Также исключаются Token и Description.
+       Вложенные объекты (Receipt, DATA) НЕ участвуют в расчете токена.
+       Также исключается Token.
     2. Добавить в массив пару {Password, Значение пароля}.
     3. Отсортировать массив по алфавиту по ключу.
     4. Конкатенировать только значения пар в одну строку.
@@ -41,11 +41,11 @@ def generate_token(data: dict) -> str:
     log_payment(f"DEBUG TOKEN GEN: Исходные данные: {data}")
     # ----------------------------
 
-    # 1. Собрать только корневые параметры (исключая Token, Description и вложенные объекты/массивы)
+    # 1. Собрать только корневые параметры (исключая Token и вложенные объекты/массивы)
     data_for_token = {}
     for key, value in data.items():
         # Исключаем Token (как указано в документации и примерах)
-        if key in ['Token']:
+        if key == 'Token':
             continue
         # Исключаем вложенные объекты/массивы (Receipt, DATA и т.д.)
         if isinstance(value, (dict, list)):
@@ -113,9 +113,17 @@ def create_payment(user, cart: Cart) -> dict:
         amount = int(cart.subscription.price * 100) # Сумма в копейках
 
         # Формат даты для RedirectDueDate (ISO 8601 без микросекунд и с правильным смещением)
+        # Используем timezone.localtime для получения локального времени с таймзоной
         redirect_due_date = timezone.localtime(timezone.now() + timezone.timedelta(hours=24))
+        # Форматируем без микросекунд и с правильным смещением
+        # %z дает '+0300' или '+03:00' в зависимости от Python версии. Проверим.
+        # Более надежный способ для формата 'YYYY-MM-DDTHH:MM:SS+GMT' (как в примере Т-Банка)
+        # где GMT это '+0300'. Попробуем strftime('%Y-%m-%dT%H:%M:%S%z')
+        # Если %z дает '+03:00', нужно заменить ':'
         formatted_redirect_due_date = redirect_due_date.strftime('%Y-%m-%dT%H:%M:%S%z')
-        # Формат %z дает '+0300', что соответствует требованию "YYYY-MM-DDTHH24:MI:SS+GMT"
+        if ':' in formatted_redirect_due_date[-5:] and formatted_redirect_due_date[-3] == ':':
+             # Если формат '+03:00', меняем на '+0300'
+            formatted_redirect_due_date = formatted_redirect_due_date[:-3] + formatted_redirect_due_date[-2:]
 
         # 2. Подготовка полного набора данных для запроса Init
         init_data = {
@@ -123,7 +131,6 @@ def create_payment(user, cart: Cart) -> dict:
             "Amount": amount,
             "OrderId": order_id,
             "Description": f"Подписка: {cart.subscription.name}", # Описание будет отображено на форме
-            "Recurrent": "N", # Не рекуррентный платёж
             "CustomerKey": str(user.id), # Идентификатор клиента
             "RedirectDueDate": formatted_redirect_due_date,
             "SuccessURL": TBANK_SUCCESS_URL.rstrip(),
@@ -134,31 +141,31 @@ def create_payment(user, cart: Cart) -> dict:
         }
         
         # --- ВРЕМЕННО ДЛЯ ОТЛАДКИ ---
-        log_payment(f"DEBUG INIT: Данные для запроса Init (до добавления токена): {json.dumps(init_data, ensure_ascii=False, indent=2)}")
+        # log_payment(f"DEBUG INIT: Данные для запроса Init (и для генерации токена): {json.dumps(init_data, ensure_ascii=False, indent=2)}")
         # ----------------------------
         
-        # 3. Подготовка данных ТОЛЬКО для генерации токена (согласно документации Т-Банка для Init)
-        # См. https://www.tbank.ru/kassa/dev/payments/ -> "Пример процесса шифрования тела запроса для метода Init"
-        # В примере используются только TerminalKey, Amount, OrderId, Description
-        # Даже если Description исключается в некоторых случаях, документация его включает.
-        init_data_for_token = {
-            "TerminalKey": init_data["TerminalKey"],
-            "Amount": init_data["Amount"],
-            "OrderId": init_data["OrderId"],
-            "Description": init_data["Description"],
-                        # Не включаем Receipt, DATA, SuccessURL, FailURL, NotificationURL, Recurrent, CustomerKey, RedirectDueDate
-                    }
+        # # 3. Подготовка данных ТОЛЬКО для генерации токена (согласно документации Т-Банка для Init)
+        # # См. https://www.tbank.ru/kassa/dev/payments/ -> "Пример процесса шифрования тела запроса для метода Init"
+        # # В примере используются только TerminalKey, Amount, OrderId, Description
+        # # Даже если Description исключается в некоторых случаях, документация его включает.
+        # init_data_for_token = {
+        #     "TerminalKey": init_data["TerminalKey"],
+        #     "Amount": init_data["Amount"],
+        #     "OrderId": init_data["OrderId"],
+        #     "Description": init_data["Description"],
+        #                 # Не включаем Receipt, DATA, SuccessURL, FailURL, NotificationURL, Recurrent, CustomerKey, RedirectDueDate
+        #             }
 
         # --- ВРЕМЕННО ДЛЯ ОТЛАДКИ ---
-        log_payment(f"DEBUG INIT: Данные для генерации токена: {json.dumps(init_data_for_token, ensure_ascii=False, indent=2)}")
+        log_payment(f"DEBUG INIT: Данные для генерации токена (без Password): {json.dumps(init_data, ensure_ascii=False, indent=2)}")
         # ----------------------------
 
-        # 4. Генерация токена ТОЛЬКО на основе разрешенного набора параметров
-        token = generate_token(init_data_for_token)
+        # 3. Генерация токена
+        token = generate_token(init_data)
         # Добавляем токен в полный набор данных для отправки
         init_data['Token'] = token
         
-        # 5. Отправка запроса
+        # 4. Отправка запроса
         url = f"{TBANK_API_URL}Init"
         headers = {'Content-Type': 'application/json'}
         
@@ -177,11 +184,11 @@ def create_payment(user, cart: Cart) -> dict:
         response.raise_for_status()
         response_data = response.json()
         
-        # 6. Проверка ответа
+        # 5. Проверка ответа
         if response_data.get('Success') and response_data.get('PaymentId'):
             payment_id = response_data['PaymentId']
             
-            # 7. Создание/обновление записи в БД
+            # 6. Создание/обновление записи в БД
             payment, created = TBankPayment.objects.update_or_create(
                 order_id=order_id,
                 defaults={
@@ -194,7 +201,7 @@ def create_payment(user, cart: Cart) -> dict:
                 }
             )
             
-            # 8. Очистка корзины
+            # 7. Очистка корзины
             cart.clear()
             
             return {
@@ -225,19 +232,10 @@ def create_payment(user, cart: Cart) -> dict:
 # ---------------------------------------------------------
 
 def generate_token_for_verification(data: dict) -> str:
-    """
-    Генерирует токен для проверки уведомлений от Т-Банка.
-    Использует тот же алгоритм, что и generate_token.
-    Согласно документации Т-Банка для Init, Description участвует в токене.
-    Для уведомлений список полей может отличаться, но алгоритм тот же:
-    1. Собрать корневые параметры (исключая только Token).
-    2. Добавить Password.
-    3. Отсортировать.
-    4. Конкатенировать значения.
-    5. Хешировать.
-    """
-    # 1. Собрать только корневые параметры (исключая ТОЛЬКО Token)
-    # Description НЕ исключается, согласно примерам из документации.
+    '''Генерирует токен для проверки уведомлений от Т-Банка.
+    Использует ту же логику, что и generate_token.'''    
+    
+    # 1. Собрать только корневые параметры (исключая Token и вложенные объекты/массивы)
     data_for_token = {}
     for key, value in data.items():
         # Исключаем только Token
