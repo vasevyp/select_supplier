@@ -1126,3 +1126,106 @@ Init Response: <html>
 [2025-08-21 12:26:45] Init Request: {"TerminalKey": "1754725169593DEMO", "Amount": 500, "OrderId": "93e7538a-2b2b-4679-b309-0cac114e4765", "Description": "Подписка: Начальный", "CustomerKey": "1", "RedirectDueDate": "2025-08-22T15:26:45+0300", "SuccessURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/", "FailURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/", "NotificationURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/", "Token": "1f2cb42e24b5cc54c9711733776a1ae22c438f3d3897bd494fa2d92f932484e7"}
 Init Response: {"Success":false,"ErrorCode":"9999","Message":"Повторите попытку позже.","Details":""}
 [2025-08-21 12:26:45] Ошибка Init: Ошибка инициализации платежа: 9999 - Повторите попытку позже.. Детали: 
+[2025-08-21 12:50:43] DEBUG INIT: Данные для генерации токена (без Password): {
+  "TerminalKey": "1754725169593DEMO",
+  "Amount": 200,
+  "OrderId": "15d8fb0a-bef5-446c-bd14-1fedeb616af2",
+  "Description": "Подписка: testing",
+  "CustomerKey": "1",
+  "RedirectDueDate": "2025-08-22T15:50:43+0300",
+  "SuccessURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/",
+  "FailURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/",
+  "NotificationURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/"
+}
+[2025-08-21 12:50:43] DEBUG TOKEN GEN: Исходные данные: {'TerminalKey': '1754725169593DEMO', 'Amount': 200, 'OrderId': '15d8fb0a-bef5-446c-bd14-1fedeb616af2', 'Description': 'Подписка: testing', 'CustomerKey': '1', 'RedirectDueDate': '2025-08-22T15:50:43+0300', 'SuccessURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/', 'FailURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/', 'NotificationURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/'}
+[2025-08-21 12:50:43] DEBUG TOKEN GEN: Данные для токена (без Password): {'TerminalKey': '1754725169593DEMO', 'Amount': '200', 'OrderId': '15d8fb0a-bef5-446c-bd14-1fedeb616af2', 'Description': 'Подписка: testing', 'CustomerKey': '1', 'RedirectDueDate': '2025-08-22T15:50:43+0300', 'SuccessURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/', 'FailURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/', 'NotificationURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/'}
+[2025-08-21 12:50:43] DEBUG TOKEN GEN: Данные для токена (с Password): {'TerminalKey': '1754725169593DEMO', 'Amount': '200', 'OrderId': '15d8fb0a-bef5-446c-bd14-1fedeb616af2', 'Description': 'Подписка: testing', 'CustomerKey': '1', 'RedirectDueDate': '2025-08-22T15:50:43+0300', 'SuccessURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/', 'FailURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/', 'NotificationURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/', 'Password': 'OPJ2Ky4AVVRMnPFH'}
+[2025-08-21 12:50:43] DEBUG TOKEN GEN: Отсортированные ключи: ['Amount', 'CustomerKey', 'Description', 'FailURL', 'NotificationURL', 'OrderId', 'Password', 'RedirectDueDate', 'SuccessURL', 'TerminalKey']
+[2025-08-21 12:50:43] DEBUG TOKEN GEN: Список значений для конкатенации: ['200', '1', 'Подписка: testing', 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/', 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/', '15d8fb0a-bef5-446c-bd14-1fedeb616af2', 'OPJ2Ky4AVVRMnPFH', '2025-08-22T15:50:43+0300', 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/', '1754725169593DEMO']
+[2025-08-21 12:50:43] DEBUG TOKEN GEN: Финальная строка для хеширования: '2001Подписка: testinghttps://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/15d8fb0a-bef5-446c-bd14-1fedeb616af2OPJ2Ky4AVVRMnPFH2025-08-22T15:50:43+0300https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/1754725169593DEMO'
+[2025-08-21 12:50:43] DEBUG TOKEN GEN: Сгенерированный токен: f8ffd69c707fbb7f295c298aa9d9cb8a1bfb307cbef94e621d4c076fb141d3d8
+[2025-08-21 12:50:43] DEBUG INIT: Отправка запроса на https://securepay.tinkoff.ru/v2/Init
+[2025-08-21 12:50:43] DEBUG INIT: Заголовки: {'Content-Type': 'application/json'}
+[2025-08-21 12:50:43] DEBUG INIT: Тело запроса: {
+  "TerminalKey": "1754725169593DEMO",
+  "Amount": 200,
+  "OrderId": "15d8fb0a-bef5-446c-bd14-1fedeb616af2",
+  "Description": "Подписка: testing",
+  "CustomerKey": "1",
+  "RedirectDueDate": "2025-08-22T15:50:43+0300",
+  "SuccessURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/",
+  "FailURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/",
+  "NotificationURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/",
+  "Token": "f8ffd69c707fbb7f295c298aa9d9cb8a1bfb307cbef94e621d4c076fb141d3d8"
+}
+[2025-08-21 12:50:43] Init Request: {"TerminalKey": "1754725169593DEMO", "Amount": 200, "OrderId": "15d8fb0a-bef5-446c-bd14-1fedeb616af2", "Description": "Подписка: testing", "CustomerKey": "1", "RedirectDueDate": "2025-08-22T15:50:43+0300", "SuccessURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/", "FailURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/", "NotificationURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/", "Token": "f8ffd69c707fbb7f295c298aa9d9cb8a1bfb307cbef94e621d4c076fb141d3d8"}
+Init Response: {"Success":false,"ErrorCode":"9999","Message":"Повторите попытку позже.","Details":""}
+[2025-08-21 12:50:43] Ошибка Init: Ошибка инициализации платежа: 9999 - Повторите попытку позже.. Детали: 
+[2025-08-21 15:10:25] DEBUG INIT: Данные для генерации токена (без Password): {
+  "TerminalKey": "1754725169593DEMO",
+  "Amount": 1000,
+  "OrderId": "70691bfe-445e-4aa2-8720-10dae08dbf35",
+  "Description": "Подписка: Рабочий",
+  "CustomerKey": "1",
+  "RedirectDueDate": "2025-08-22T18:10:25+03:00",
+  "SuccessURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/",
+  "FailURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/",
+  "NotificationURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/"
+}
+[2025-08-21 15:10:25] DEBUG TOKEN GEN: Исходные данные: {'TerminalKey': '1754725169593DEMO', 'Amount': 1000, 'OrderId': '70691bfe-445e-4aa2-8720-10dae08dbf35', 'Description': 'Подписка: Рабочий', 'CustomerKey': '1', 'RedirectDueDate': '2025-08-22T18:10:25+03:00', 'SuccessURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/', 'FailURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/', 'NotificationURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/'}
+[2025-08-21 15:10:25] DEBUG TOKEN GEN: Данные для токена (без Password): {'TerminalKey': '1754725169593DEMO', 'Amount': '1000', 'OrderId': '70691bfe-445e-4aa2-8720-10dae08dbf35', 'Description': 'Подписка: Рабочий', 'CustomerKey': '1', 'RedirectDueDate': '2025-08-22T18:10:25+03:00', 'SuccessURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/', 'FailURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/', 'NotificationURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/'}
+[2025-08-21 15:10:25] DEBUG TOKEN GEN: Данные для токена (с Password): {'TerminalKey': '1754725169593DEMO', 'Amount': '1000', 'OrderId': '70691bfe-445e-4aa2-8720-10dae08dbf35', 'Description': 'Подписка: Рабочий', 'CustomerKey': '1', 'RedirectDueDate': '2025-08-22T18:10:25+03:00', 'SuccessURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/', 'FailURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/', 'NotificationURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/', 'Password': 'OPJ2Ky4AVVRMnPFH'}
+[2025-08-21 15:10:25] DEBUG TOKEN GEN: Отсортированные ключи: ['Amount', 'CustomerKey', 'Description', 'FailURL', 'NotificationURL', 'OrderId', 'Password', 'RedirectDueDate', 'SuccessURL', 'TerminalKey']
+[2025-08-21 15:10:25] DEBUG TOKEN GEN: Список значений для конкатенации: ['1000', '1', 'Подписка: Рабочий', 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/', 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/', '70691bfe-445e-4aa2-8720-10dae08dbf35', 'OPJ2Ky4AVVRMnPFH', '2025-08-22T18:10:25+03:00', 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/', '1754725169593DEMO']
+[2025-08-21 15:10:25] DEBUG TOKEN GEN: Финальная строка для хеширования: '10001Подписка: Рабочийhttps://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/70691bfe-445e-4aa2-8720-10dae08dbf35OPJ2Ky4AVVRMnPFH2025-08-22T18:10:25+03:00https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/1754725169593DEMO'
+[2025-08-21 15:10:25] DEBUG TOKEN GEN: Сгенерированный токен: 9d033ddff3ee39af9a6d00ff590cabe154a716dd9fbefb8d6499fc8a91654345
+[2025-08-21 15:10:25] DEBUG INIT: Отправка запроса на https://securepay.tinkoff.ru/v2/Init
+[2025-08-21 15:10:25] DEBUG INIT: Заголовки: {'Content-Type': 'application/json'}
+[2025-08-21 15:10:25] DEBUG INIT: Тело запроса: {
+  "TerminalKey": "1754725169593DEMO",
+  "Amount": 1000,
+  "OrderId": "70691bfe-445e-4aa2-8720-10dae08dbf35",
+  "Description": "Подписка: Рабочий",
+  "CustomerKey": "1",
+  "RedirectDueDate": "2025-08-22T18:10:25+03:00",
+  "SuccessURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/",
+  "FailURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/",
+  "NotificationURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/",
+  "Token": "9d033ddff3ee39af9a6d00ff590cabe154a716dd9fbefb8d6499fc8a91654345"
+}
+[2025-08-21 15:10:25] Init Request: {"TerminalKey": "1754725169593DEMO", "Amount": 1000, "OrderId": "70691bfe-445e-4aa2-8720-10dae08dbf35", "Description": "Подписка: Рабочий", "CustomerKey": "1", "RedirectDueDate": "2025-08-22T18:10:25+03:00", "SuccessURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/", "FailURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/", "NotificationURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/", "Token": "9d033ddff3ee39af9a6d00ff590cabe154a716dd9fbefb8d6499fc8a91654345"}
+Init Response: {"Success":true,"ErrorCode":"0","TerminalKey":"1754725169593DEMO","Status":"NEW","PaymentId":"6889821107","OrderId":"70691bfe-445e-4aa2-8720-10dae08dbf35","Amount":1000,"PaymentURL":"https://securepayments.tinkoff.ru/Q4SnoIs3"}
+[2025-08-21 15:10:58] DEBUG INIT: Данные для генерации токена (без Password): {
+  "TerminalKey": "1754725169593DEMO",
+  "Amount": 200,
+  "OrderId": "fb266ef3-0828-4104-8fd8-79ce645a2d06",
+  "Description": "Подписка: testing",
+  "CustomerKey": "1",
+  "RedirectDueDate": "2025-08-22T18:10:58+03:00",
+  "SuccessURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/",
+  "FailURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/",
+  "NotificationURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/"
+}
+[2025-08-21 15:10:58] DEBUG TOKEN GEN: Исходные данные: {'TerminalKey': '1754725169593DEMO', 'Amount': 200, 'OrderId': 'fb266ef3-0828-4104-8fd8-79ce645a2d06', 'Description': 'Подписка: testing', 'CustomerKey': '1', 'RedirectDueDate': '2025-08-22T18:10:58+03:00', 'SuccessURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/', 'FailURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/', 'NotificationURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/'}
+[2025-08-21 15:10:58] DEBUG TOKEN GEN: Данные для токена (без Password): {'TerminalKey': '1754725169593DEMO', 'Amount': '200', 'OrderId': 'fb266ef3-0828-4104-8fd8-79ce645a2d06', 'Description': 'Подписка: testing', 'CustomerKey': '1', 'RedirectDueDate': '2025-08-22T18:10:58+03:00', 'SuccessURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/', 'FailURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/', 'NotificationURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/'}
+[2025-08-21 15:10:58] DEBUG TOKEN GEN: Данные для токена (с Password): {'TerminalKey': '1754725169593DEMO', 'Amount': '200', 'OrderId': 'fb266ef3-0828-4104-8fd8-79ce645a2d06', 'Description': 'Подписка: testing', 'CustomerKey': '1', 'RedirectDueDate': '2025-08-22T18:10:58+03:00', 'SuccessURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/', 'FailURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/', 'NotificationURL': 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/', 'Password': 'OPJ2Ky4AVVRMnPFH'}
+[2025-08-21 15:10:58] DEBUG TOKEN GEN: Отсортированные ключи: ['Amount', 'CustomerKey', 'Description', 'FailURL', 'NotificationURL', 'OrderId', 'Password', 'RedirectDueDate', 'SuccessURL', 'TerminalKey']
+[2025-08-21 15:10:58] DEBUG TOKEN GEN: Список значений для конкатенации: ['200', '1', 'Подписка: testing', 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/', 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/', 'fb266ef3-0828-4104-8fd8-79ce645a2d06', 'OPJ2Ky4AVVRMnPFH', '2025-08-22T18:10:58+03:00', 'https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/', '1754725169593DEMO']
+[2025-08-21 15:10:58] DEBUG TOKEN GEN: Финальная строка для хеширования: '2001Подписка: testinghttps://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/fb266ef3-0828-4104-8fd8-79ce645a2d06OPJ2Ky4AVVRMnPFH2025-08-22T18:10:58+03:00https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/1754725169593DEMO'
+[2025-08-21 15:10:58] DEBUG TOKEN GEN: Сгенерированный токен: 0d0daa3bd055eace413d93365378c77696f3e6a76ccd5351c47a6f9683336b03
+[2025-08-21 15:10:58] DEBUG INIT: Отправка запроса на https://securepay.tinkoff.ru/v2/Init
+[2025-08-21 15:10:58] DEBUG INIT: Заголовки: {'Content-Type': 'application/json'}
+[2025-08-21 15:10:58] DEBUG INIT: Тело запроса: {
+  "TerminalKey": "1754725169593DEMO",
+  "Amount": 200,
+  "OrderId": "fb266ef3-0828-4104-8fd8-79ce645a2d06",
+  "Description": "Подписка: testing",
+  "CustomerKey": "1",
+  "RedirectDueDate": "2025-08-22T18:10:58+03:00",
+  "SuccessURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/",
+  "FailURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/",
+  "NotificationURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/",
+  "Token": "0d0daa3bd055eace413d93365378c77696f3e6a76ccd5351c47a6f9683336b03"
+}
+[2025-08-21 15:10:59] Init Request: {"TerminalKey": "1754725169593DEMO", "Amount": 200, "OrderId": "fb266ef3-0828-4104-8fd8-79ce645a2d06", "Description": "Подписка: testing", "CustomerKey": "1", "RedirectDueDate": "2025-08-22T18:10:58+03:00", "SuccessURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/success/", "FailURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/payment/fail/", "NotificationURL": "https://cautiously-supportive-butterfly.cloudpub.ru/payments/tbank/callback/", "Token": "0d0daa3bd055eace413d93365378c77696f3e6a76ccd5351c47a6f9683336b03"}
+Init Response: {"Success":true,"ErrorCode":"0","TerminalKey":"1754725169593DEMO","Status":"NEW","PaymentId":"6889823614","OrderId":"fb266ef3-0828-4104-8fd8-79ce645a2d06","Amount":200,"PaymentURL":"https://securepayments.tinkoff.ru/TOytKAek"}

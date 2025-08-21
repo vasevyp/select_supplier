@@ -112,20 +112,31 @@ def create_payment(user, cart: Cart) -> dict:
         order_id = str(uuid.uuid4()) # Уникальный ID заказа
         amount = int(cart.subscription.price * 100) # Сумма в копейках
 
-        # Формат даты для RedirectDueDate (ISO 8601 без микросекунд и с правильным смещением)
-        # Используем timezone.localtime для получения локального времени с таймзоной
+        # 2. Формат даты для RedirectDueDate (исправляем формат таймзоны)
+        # Требуемый формат от Т-Банка: "YYYY-MM-DDTHH:MM:SS+03:00"
         redirect_due_date = timezone.localtime(timezone.now() + timezone.timedelta(hours=24))
-        # Форматируем без микросекунд и с правильным смещением
-        # %z дает '+0300' или '+03:00' в зависимости от Python версии. Проверим.
-        # Более надежный способ для формата 'YYYY-MM-DDTHH:MM:SS+GMT' (как в примере Т-Банка)
-        # где GMT это '+0300'. Попробуем strftime('%Y-%m-%dT%H:%M:%S%z')
-        # Если %z дает '+03:00', нужно заменить ':'
-        formatted_redirect_due_date = redirect_due_date.strftime('%Y-%m-%dT%H:%M:%S%z')
-        if ':' in formatted_redirect_due_date[-5:] and formatted_redirect_due_date[-3] == ':':
-             # Если формат '+03:00', меняем на '+0300'
-            formatted_redirect_due_date = formatted_redirect_due_date[:-3] + formatted_redirect_due_date[-2:]
+        
+        # Используем isoformat(), который по умолчанию генерирует корректный формат
+        # с двоеточием в смещении таймзоны (например, +03:00)
+        # Однако, isoformat() может добавить микросекунды, которых быть не должно.
+        # Поэтому форматируем вручную, но с сохранением двоеточия.
+        
+        # Получаем смещение таймзоны в виде строки, например, '+0300'
+        tz_offset = redirect_due_date.strftime('%z')
+        # Вставляем двоеточие: '+0300' -> '+03:00'
+        if len(tz_offset) == 5: # Формат '+0300'
+            formatted_tz_offset = tz_offset[:3] + ':' + tz_offset[3:]
+        else:
+            # Если формат уже правильный (например, '+03:00') или нестандартный
+            formatted_tz_offset = tz_offset
+            
+        # Формируем итоговую строку даты без микросекунд
+        formatted_redirect_due_date = redirect_due_date.strftime('%Y-%m-%dT%H:%M:%S') + formatted_tz_offset
 
-        # 2. Подготовка полного набора данных для запроса Init
+
+    
+
+        # 3. Подготовка полного набора данных для запроса Init
         init_data = {
             "TerminalKey": TBANK_TERMINAL_KEY,
             "Amount": amount,
@@ -160,7 +171,7 @@ def create_payment(user, cart: Cart) -> dict:
         log_payment(f"DEBUG INIT: Данные для генерации токена (без Password): {json.dumps(init_data, ensure_ascii=False, indent=2)}")
         # ----------------------------
 
-        # 3. Генерация токена
+        # 4. Генерация токена
         token = generate_token(init_data)
         # Добавляем токен в полный набор данных для отправки
         init_data['Token'] = token
