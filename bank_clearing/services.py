@@ -55,7 +55,7 @@ def generate_token(data: dict) -> str:
             # Преобразуем значение в строку. Это критично для конкатенации.
             data_for_token[key] = str(value)
 
-    print('Данные для токена==', data_for_token)
+    # print('Данные для токена==', data_for_token)
     # --- ВРЕМЕННО ДЛЯ ОТЛАДКИ ---
     # log_payment(f"DEBUG TOKEN GEN: Данные для токена (без Password): {data_for_token}")
     # ----------------------------
@@ -72,7 +72,7 @@ def generate_token(data: dict) -> str:
     sorted_keys = sorted(data_for_token.keys())
     
     # --- ВРЕМЕННО ДЛЯ ОТЛАДКИ ---
-    log_payment(f"DEBUG TOKEN GEN: Отсортированные ключи: {sorted_keys}")
+    # log_payment(f"DEBUG TOKEN GEN: Отсортированные ключи: {sorted_keys}")
     # ----------------------------
 
     # 4. Конкатенировать только значения пар в одну строку
@@ -80,13 +80,13 @@ def generate_token(data: dict) -> str:
     values_list = [data_for_token[key] for key in sorted_keys]
     
     # --- ВРЕМЕННО ДЛЯ ОТЛАДКИ ---
-    log_payment(f"DEBUG TOKEN GEN: Список значений для конкатенации: {values_list}")
+    # log_payment(f"DEBUG TOKEN GEN: Список значений для конкатенации: {values_list}")
     # ----------------------------
     
     concatenated_values = ''.join(values_list)
     
     # --- ВРЕМЕННО ДЛЯ ОТЛАДКИ ---
-    log_payment(f"DEBUG TOKEN GEN: Финальная строка для хеширования: '{concatenated_values}'")
+    # log_payment(f"DEBUG TOKEN GEN: Финальная строка для хеширования: '{concatenated_values}'")
     # ----------------------------
 
     # 5. Применить к строке хеш-функцию SHA-256
@@ -94,7 +94,7 @@ def generate_token(data: dict) -> str:
     token = hashlib.sha256(concatenated_values.encode('utf-8')).hexdigest()
 
     # --- ВРЕМЕННО ДЛЯ ОТЛАДКИ ---
-    log_payment(f"DEBUG TOKEN GEN: Сгенерированный токен: {token}")
+    # log_payment(f"DEBUG TOKEN GEN: Сгенерированный токен: {token}")
     # ----------------------------
 
     return token
@@ -229,7 +229,7 @@ def handle_notification(data: dict) -> dict:
     """
     try:
         # --- ВРЕМЕННО ДЛЯ ОТЛАДКИ ---
-        log_payment(f"DEBUG NOTIF: Получено уведомление: {json.dumps(data, ensure_ascii=False)}")
+        log_payment(f"DEBUG NOTIF: Notification received: {json.dumps(data, ensure_ascii=False)}")
         # ----------------------------
 
         # 1. Проверка токена
@@ -244,7 +244,7 @@ def handle_notification(data: dict) -> dict:
             return {'success': False, 'error': error_msg}
 
         # --- ВРЕМЕННО ДЛЯ ОТЛАДКИ ---
-        log_payment(f"DEBUG NOTIF TOKEN: Полученный токен: {received_token}")
+        log_payment(f"DEBUG NOTIF TOKEN: Received token: {received_token}")
         # ----------------------------
 
         # 2. Подготовка данных для проверки токена (алгоритм из документации Т-Банка)
@@ -252,41 +252,41 @@ def handle_notification(data: dict) -> dict:
         data_for_token_check = {k: v for k, v in data.items() if k != 'Token' and v is not None}
         
         # --- ВРЕМЕННО ДЛЯ ОТЛАДКИ ---
-        log_payment(f"DEBUG NOTIF TOKEN: Данные для проверки токена (без Password): {data_for_token_check}")
+        log_payment(f"DEBUG NOTIF TOKEN: Data for token check (before adding Password): {data_for_token_check}")
         # ----------------------------
 
         # b. Добавить пароль
         data_for_token_check['Password'] = TBANK_SECRET_KEY
         
         # --- ВРЕМЕННО ДЛЯ ОТЛАДКИ ---
-        log_payment(f"DEBUG NOTIF TOKEN: Данные для проверки токена (с Password): {data_for_token_check}")
+        log_payment(f"DEBUG NOTIF TOKEN: Data for token check (with Password): {data_for_token_check}")
         # ----------------------------
 
         # c. Отсортировать по ключам
         sorted_keys = sorted(data_for_token_check.keys())
         
         # --- ВРЕМЕННО ДЛЯ ОТЛАДКИ ---
-        log_payment(f"DEBUG NOTIF TOKEN: Сортированные ключи: {sorted_keys}")
+        log_payment(f"DEBUG NOTIF TOKEN: Sorted keys: {sorted_keys}")
         # ----------------------------
 
         # d. Конкатенировать только значения в порядке отсортированных ключей
         values_to_concatenate = [str(data_for_token_check[k]) for k in sorted_keys]
         
         # --- ВРЕМЕННО ДЛЯ ОТЛАДКИ ---
-        log_payment(f"DEBUG NOTIF TOKEN: Список значений для конкатенации: {values_to_concatenate}")
+        log_payment(f"DEBUG NOTIF TOKEN: Values to concatenate: {values_to_concatenate}")
         # ----------------------------
         
         concatenated_string = "".join(values_to_concatenate)
         
         # --- ВРЕМЕННО ДЛЯ ОТЛАДКИ ---
-        log_payment(f"DEBUG NOTIF TOKEN: Финальная строка для хеширования: '{concatenated_string}'")
+        log_payment(f"DEBUG NOTIF TOKEN: Final concatenated string: '{concatenated_string}'")
         # ----------------------------
 
         # e. Вычислить SHA-256
         expected_token = hashlib.sha256(concatenated_string.encode('utf-8')).hexdigest()
         
         # --- ВРЕМЕННО ДЛЯ ОТЛАДКИ ---
-        log_payment(f"DEBUG NOTIF TOKEN: Рассчитанный ожидаемый токен: {expected_token}")
+        log_payment(f"DEBUG NOTIF TOKEN: Calculated Expected Token: {expected_token}")
         # ----------------------------
 
         # f. Сравнить токены
