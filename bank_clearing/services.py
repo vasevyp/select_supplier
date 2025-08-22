@@ -38,7 +38,7 @@ def generate_token(data: dict) -> str:
     5. Применить к строке хеш-функцию SHA-256 (с поддержкой UTF-8).
     """
     # --- ВРЕМЕННО ДЛЯ ОТЛАДКИ ---
-    log_payment(f"DEBUG TOKEN GEN: Исходные данные: {data}")
+    # log_payment(f"DEBUG TOKEN GEN: Исходные данные: {data}")
     # ----------------------------
 
     # 1. Собрать только корневые параметры (исключая Token и вложенные объекты/массивы)
@@ -57,7 +57,7 @@ def generate_token(data: dict) -> str:
 
     print('Данные для токена==', data_for_token)
     # --- ВРЕМЕННО ДЛЯ ОТЛАДКИ ---
-    log_payment(f"DEBUG TOKEN GEN: Данные для токена (без Password): {data_for_token}")
+    # log_payment(f"DEBUG TOKEN GEN: Данные для токена (без Password): {data_for_token}")
     # ----------------------------
 
     # 2. Добавить пару {Password, Значение пароля}
@@ -65,7 +65,7 @@ def generate_token(data: dict) -> str:
     data_for_token['Password'] = TBANK_SECRET_KEY
 
     # --- ВРЕМЕННО ДЛЯ ОТЛАДКИ ---
-    log_payment(f"DEBUG TOKEN GEN: Данные для токена (с Password): {data_for_token}")
+    # log_payment(f"DEBUG TOKEN GEN: Данные для токена (с Password): {data_for_token}")
     # ----------------------------
 
     # 3. Отсортировать массив по алфавиту по ключу
@@ -151,26 +151,6 @@ def create_payment(user, cart: Cart) -> dict:
             # "DATA": { ... } # Если нужны дополнительные данные, добавьте здесь
         }
         
-        # --- ВРЕМЕННО ДЛЯ ОТЛАДКИ ---
-        # log_payment(f"DEBUG INIT: Данные для запроса Init (и для генерации токена): {json.dumps(init_data, ensure_ascii=False, indent=2)}")
-        # ----------------------------
-        
-        # # 3. Подготовка данных ТОЛЬКО для генерации токена (согласно документации Т-Банка для Init)
-        # # См. https://www.tbank.ru/kassa/dev/payments/ -> "Пример процесса шифрования тела запроса для метода Init"
-        # # В примере используются только TerminalKey, Amount, OrderId, Description
-        # # Даже если Description исключается в некоторых случаях, документация его включает.
-        # init_data_for_token = {
-        #     "TerminalKey": init_data["TerminalKey"],
-        #     "Amount": init_data["Amount"],
-        #     "OrderId": init_data["OrderId"],
-        #     "Description": init_data["Description"],
-        #                 # Не включаем Receipt, DATA, SuccessURL, FailURL, NotificationURL, Recurrent, CustomerKey, RedirectDueDate
-        #             }
-
-        # --- ВРЕМЕННО ДЛЯ ОТЛАДКИ ---
-        log_payment(f"DEBUG INIT: Данные для генерации токена (без Password): {json.dumps(init_data, ensure_ascii=False, indent=2)}")
-        # ----------------------------
-
         # 4. Генерация токена
         token = generate_token(init_data)
         # Добавляем токен в полный набор данных для отправки
@@ -242,140 +222,162 @@ def create_payment(user, cart: Cart) -> dict:
 
 # ---------------------------------------------------------
 
-def generate_token_for_verification(data: dict) -> str:
-    '''Генерирует токен для проверки уведомлений от Т-Банка.
-    Использует ту же логику, что и generate_token.'''    
-    
-    # 1. Собрать только корневые параметры (исключая Token и вложенные объекты/массивы)
-    data_for_token = {}
-    for key, value in data.items():
-        # Исключаем только Token
-        if key == 'Token':
-            continue
-        # Исключаем вложенные объекты/массивы
-        if isinstance(value, (dict, list)):
-            continue
-        # Добавляем только скалярные значения, исключая None
-        if value is not None:
-            data_for_token[key] = str(value)
-
-    # 2. Добавить пару {Password, Значение пароля}
-    data_for_token['Password'] = TBANK_SECRET_KEY
-
-    # 3. Отсортировать массив по алфавиту по ключу
-    sorted_keys = sorted(data_for_token.keys())
-
-    # 4. Конкатенировать только значения пар в одну строку
-    values_list = [data_for_token[key] for key in sorted_keys]
-    concatenated_values = ''.join(values_list)
-
-    # 5. Применить к строке хеш-функцию SHA-256
-    token = hashlib.sha256(concatenated_values.encode('utf-8')).hexdigest()
-    return token
-
 def handle_notification(data: dict) -> dict:
     """
     Обрабатывает уведомление от Т-Банка.
     Возвращает словарь с результатом.
     """
     try:
-        # 1. Получение токена из уведомления (не удаляя его из data)
-        received_token = data.get('Token')
+        # --- ВРЕМЕННО ДЛЯ ОТЛАДКИ ---
+        log_payment(f"DEBUG NOTIF: Получено уведомление: {json.dumps(data, ensure_ascii=False)}")
+        # ----------------------------
+
+        # 1. Проверка токена
+        received_token = data.get('Token') # Используем .get(), не .pop(), чтобы не модифицировать исходные данные сразу
         if not received_token:
             error_msg = "Уведомление не содержит токен."
             log_payment(error_msg)
+            # Даже при ошибке нужно вернуть "OK", чтобы Т-Банк не повторял уведомление бесконечно
+            # Но для отладки можно вернуть ошибку, чтобы видеть её в логах Т-Банка
+            # return {'success': False, 'error': error_msg, 'http_response': HttpResponse('Bad Request: Missing Token', status=400)}
+            # Лучше для отладки:
             return {'success': False, 'error': error_msg}
 
-        # 2. Генерация ожидаемого токена на основе ВСЕГО тела уведомления
-        # (используя ту же логику, что и для Init)
-        expected_token = generate_token_for_verification(data)
-
-        # --- ВРЕМЕННО ДЛЯ ОТЛАДКИ (можно закомментировать позже) ---
-        log_payment(f"DEBUG NOTIF TOKEN: Received: {received_token}")
-        log_payment(f"DEBUG NOTIF TOKEN: Expected: {expected_token}")
+        # --- ВРЕМЕННО ДЛЯ ОТЛАДКИ ---
+        log_payment(f"DEBUG NOTIF TOKEN: Полученный токен: {received_token}")
         # ----------------------------
 
-        # 3. Сравнение токенов
-        if received_token != expected_token:
-            error_msg = f"Неверный токен в уведомлении."
-            log_payment(error_msg)
-            # Детальное логирование для отладки (можно закомментировать позже)
-            sorted_debug = dict(sorted({k: str(v) for k, v in data.items() if k not in ['Token'] and not isinstance(v, (dict, list)) and v is not None}.items()))
-            sorted_debug['Password'] = TBANK_SECRET_KEY
-            debug_keys = sorted(sorted_debug.keys())
-            debug_values = [sorted_debug[k] for k in debug_keys]
-            debug_concat = ''.join(debug_values)
-            log_payment(f"DEBUG NOTIF TOKEN: Expected Keys: {debug_keys}")
-            log_payment(f"DEBUG NOTIF TOKEN: Expected Values: {debug_values}")
-            log_payment(f"DEBUG NOTIF TOKEN: Expected Concat: '{debug_concat}'")
-            log_payment(f"DEBUG NOTIF TOKEN: Expected Token: {expected_token}")
-            return {'success': False, 'error': 'Неверный токен уведомления.'}
+        # 2. Подготовка данных для проверки токена (алгоритм из документации Т-Банка)
+        # a. Собрать все параметры, кроме Token
+        data_for_token_check = {k: v for k, v in data.items() if k != 'Token' and v is not None}
+        
+        # --- ВРЕМЕННО ДЛЯ ОТЛАДКИ ---
+        log_payment(f"DEBUG NOTIF TOKEN: Данные для проверки токена (без Password): {data_for_token_check}")
+        # ----------------------------
 
-        # 4. Получение данных платежа
-        payment_id = data.get('PaymentId')
+        # b. Добавить пароль
+        data_for_token_check['Password'] = TBANK_SECRET_KEY
+        
+        # --- ВРЕМЕННО ДЛЯ ОТЛАДКИ ---
+        log_payment(f"DEBUG NOTIF TOKEN: Данные для проверки токена (с Password): {data_for_token_check}")
+        # ----------------------------
+
+        # c. Отсортировать по ключам
+        sorted_keys = sorted(data_for_token_check.keys())
+        
+        # --- ВРЕМЕННО ДЛЯ ОТЛАДКИ ---
+        log_payment(f"DEBUG NOTIF TOKEN: Сортированные ключи: {sorted_keys}")
+        # ----------------------------
+
+        # d. Конкатенировать только значения в порядке отсортированных ключей
+        values_to_concatenate = [str(data_for_token_check[k]) for k in sorted_keys]
+        
+        # --- ВРЕМЕННО ДЛЯ ОТЛАДКИ ---
+        log_payment(f"DEBUG NOTIF TOKEN: Список значений для конкатенации: {values_to_concatenate}")
+        # ----------------------------
+        
+        concatenated_string = "".join(values_to_concatenate)
+        
+        # --- ВРЕМЕННО ДЛЯ ОТЛАДКИ ---
+        log_payment(f"DEBUG NOTIF TOKEN: Финальная строка для хеширования: '{concatenated_string}'")
+        # ----------------------------
+
+        # e. Вычислить SHA-256
+        expected_token = hashlib.sha256(concatenated_string.encode('utf-8')).hexdigest()
+        
+        # --- ВРЕМЕННО ДЛЯ ОТЛАДКИ ---
+        log_payment(f"DEBUG NOTIF TOKEN: Рассчитанный ожидаемый токен: {expected_token}")
+        # ----------------------------
+
+        # f. Сравнить токены
+        if received_token != expected_token:
+            error_msg = f"Неверный токен в уведомлении. Получен: {received_token}, Рассчитанный: {expected_token}"
+            log_payment(error_msg)
+            # return {'success': False, 'error': error_msg, 'http_response': HttpResponse('Bad Request: Invalid Token', status=400)}
+            return {'success': False, 'error': error_msg}
+
+        # 3. Получение данных платежа
+        payment_id_str = data.get('PaymentId')
         status = data.get('Status')
         order_id = data.get('OrderId')
-        
-        if not payment_id or not status:
-            error_msg = f"Некорректные данные в уведомлении: PaymentId={payment_id}, Status={status}"
-            log_payment(error_msg)
-            return {'success': False, 'error': 'Некорректные данные уведомления.'}
 
-        # 5. Поиск платежа в БД
+        # --- ВРЕМЕННО ДЛЯ ОТЛАДКИ ---
+        log_payment(f"DEBUG NOTIF: PaymentId: {payment_id_str}, Status: {status}, OrderId: {order_id}")
+        # ----------------------------
+
+        if not payment_id_str or not status:
+            error_msg = f"Некорректные данные в уведомлении: PaymentId={payment_id_str}, Status={status}"
+            log_payment(error_msg)
+            # return {'success': False, 'error': error_msg, 'http_response': HttpResponse('Bad Request: Missing PaymentId or Status', status=400)}
+            return {'success': False, 'error': error_msg}
+
+        # Конвертируем PaymentId в строку, если это число
+        payment_id = str(payment_id_str)
+
+        # 4. Поиск платежа в БД
         try:
             payment = TBankPayment.objects.get(payment_id=payment_id)
         except TBankPayment.DoesNotExist:
             error_msg = f"Платёж с PaymentId={payment_id} не найден в БД."
             log_payment(error_msg)
-            return {'success': False, 'error': 'Платёж не найден.'}
+            # return {'success': False, 'error': error_msg, 'http_response': HttpResponse('Bad Request: Payment Not Found', status=404)}
+            return {'success': False, 'error': error_msg}
 
-        # 6. Обновление статуса
+        # 5. Обновление статуса
         old_status = payment.status
         payment.status = status
         payment.save()
-        
+
         log_message = f"Статус платежа {payment_id} обновлён с {old_status} на {status}."
         log_payment(log_message)
 
-        # 7. Обработка успешного платежа
+        # 6. Обработка успешного платежа (CONFIRMED)
         if status == 'CONFIRMED':
             # Проверка, чтобы не обрабатывать повторно
             if not payment.user_search_history_record:
                 from django.contrib.auth import get_user_model
+                from .models import UserSearchCount, UserSearchCountHistory # Импортируем здесь, чтобы избежать циклических импортов
                 User = get_user_model()
                 try:
                     user = User.objects.get(id=payment.user.id)
                 except User.DoesNotExist:
                     log_payment(f"Пользователь {payment.user.id} не найден для подтверждения платежа {payment_id}.")
-                    return {'success': True, 'message': 'Пользователь не найден.'}
-                
+                    return {'success': True, 'message': 'Пользователь не найден.'} # Возвращаем успех, так как уведомление обработано
+
                 # --- Обновление UserSearchCount ---
-                from .models import UserSearchCount, UserSearchCountHistory
                 search_count_obj, created = UserSearchCount.objects.get_or_create(user=user)
                 search_count_obj.add_count += payment.subscription.search_count
+                # Убедимся, что available_count пересчитывается
+                search_count_obj.available_count = search_count_obj.add_count - search_count_obj.reduce_count
                 search_count_obj.save()
-                
+
                 # --- Создание записи в UserSearchCountHistory ---
+                # TODO: Определить правильный 'section', если он важен. Пока используем 'payment'.
                 history_record = UserSearchCountHistory.objects.create(
                     user=user,
                     add_count=payment.subscription.search_count,
                     reduce_count=0,
-                    section='goods' # Или другой раздел по умолчанию или передавать из контекста
+                    section='payment'
                 )
                 payment.user_search_history_record = history_record
                 payment.save()
-                
+
                 log_payment(f"Успешная оплата для пользователя {user}. Добавлено {payment.subscription.search_count} поисков.")
                 return {'success': True, 'message': 'Платёж подтверждён и счёт пополнен.'}
             else:
                 log_payment(f"Платёж {payment_id} уже был обработан ранее.")
                 return {'success': True, 'message': 'Платёж уже обработан.'}
 
+        # Для других статусов (AUTHORIZED, REJECTED и т.д.) просто логируем
         return {'success': True, 'message': f'Статус обновлён на {status}.'}
 
     except Exception as e:
         error_msg = f"Ошибка обработки уведомления: {e}"
         log_payment(error_msg)
         logger.error(error_msg, exc_info=True) # Лог с трассировкой стека
-        return {'success': False, 'error': 'Ошибка обработки уведомления.'}
+        # Даже при внутренней ошибке лучше вернуть "OK", чтобы Т-Банк не спамил повторными уведомлениями.
+        # Но для отладки можно вернуть 500. Выберите подходящий вариант.
+        # return {'success': False, 'error': 'Internal Server Error', 'http_response': HttpResponse('Internal Server Error', status=500)}
+        return {'success': False, 'error': 'Internal Server Error'}
+
 #--------------------------------------

@@ -82,36 +82,83 @@ def payment_fail(request):
         'error_message': error_message
     })
 
-@method_decorator(csrf_exempt, name='dispatch')
+
+@method_decorator(csrf_exempt, name='dispatch') # CSRF не нужен для вебхуков
 class TBankNotificationView(View):
     """Обработчик уведомлений от Т-Банка."""
-    
+
     def post(self, request):
         try:
             # 1. Получение данных из тела запроса
             body_unicode = request.body.decode('utf-8')
             data = json.loads(body_unicode)
-            
-            # 2. Обработка уведомления
-            result = handle_notification(data)
-            
+
+            # 2. Обработка уведомления с помощью сервиса
+            # Передаем словарь data в сервисную функцию
+            result = handle_notification(data) # <-- Передаем data
+
             # 3. Отправка ответа Т-Банку
-            if result['success']:
-                # Т-Банк ожидает JSON ответ в формате {"Result": "OK"}
-                # или {"Result": "Error", "Message": "..."}
-                # Согласно документации, успешный ответ - это {"Result": "OK"}
-                return JsonResponse({"Result": "OK"})
+            # Согласно документации, успешный ответ - это "OK"
+            if result.get('success'):
+                # ВАЖНО: Ответ должен быть строго "OK" без дополнительных заголовков или HTML
+                return HttpResponse("OK", content_type="text/plain") # content_type для ясности
             else:
-                logger.error(f"Ошибка обработки уведомления: {result['error']}")
-                # Возвращаем ошибку, чтобы Т-Банк мог повторить уведомление
-                return JsonResponse({
-                    "Result": "Error", 
-                    "Message": result.get('error', 'Ошибка обработки уведомления')
-                }, status=400) # Или 200, если Т-Банк не рекомендует 4xx
+                # Даже если была логическая ошибка (например, неверный токен),
+                # документация Т-Банка требует ответ "OK", чтобы уведомление не повторялось.
+                # Однако для отладки можно временно вернуть ошибку.
+                # ПОСЛЕ ОТЛАДКИ ОБЯЗАТЕЛЬНО ВЕРНИТЕ "OK"!
+                logger.error(f"Ошибка обработки уведомления: {result.get('error')}")
                 
+                # --- ДЛЯ ОТЛАДКИ ---
+                return HttpResponse(f"Error: {result.get('error')}", status=400, content_type="text/plain")
+                # --- ПОСЛЕ ОТЛАДКИ (ОБЯЗАТЕЛЬНО) ---
+                # return HttpResponse("OK", content_type="text/plain")
+
         except json.JSONDecodeError:
             logger.error("Ошибка декодирования JSON в уведомлении от Т-Банка.")
-            return JsonResponse({"Result": "Error", "Message": "Invalid JSON"}, status=400)
+            # И для этой ошибки тоже "OK" согласно документации (после отладки)
+            # --- ДЛЯ ОТЛАДКИ ---
+            return HttpResponse("Invalid JSON", status=400, content_type="text/plain")
+            # --- ПОСЛЕ ОТЛАДКИ ---
+            # return HttpResponse("OK", content_type="text/plain")
         except Exception as e:
             logger.error(f"Неожиданная ошибка в обработчике уведомлений: {e}", exc_info=True)
-            return JsonResponse({"Result": "Error", "Message": "Internal Server Error"}, status=500)
+            # И для этой ошибки тоже "OK" (после отладки)
+            # --- ДЛЯ ОТЛАДКИ ---
+            return HttpResponse("Internal Server Error", status=500, content_type="text/plain")
+            # --- ПОСЛЕ ОТЛАДКИ ---
+            # return HttpResponse("OK", content_type="text/plain")
+
+# @method_decorator(csrf_exempt, name='dispatch')
+# class TBankNotificationView(View):
+#     """Обработчик уведомлений от Т-Банка."""
+    
+#     def post(self, request):
+#         try:
+#             # 1. Получение данных из тела запроса
+#             body_unicode = request.body.decode('utf-8')
+#             data = json.loads(body_unicode)
+            
+#             # 2. Обработка уведомления
+#             result = handle_notification(data)
+            
+#             # 3. Отправка ответа Т-Банку
+#             if result['success']:
+#                 # Т-Банк ожидает JSON ответ в формате {"Result": "OK"}
+#                 # или {"Result": "Error", "Message": "..."}
+#                 # Согласно документации, успешный ответ - это {"Result": "OK"}
+#                 return JsonResponse({"Result": "OK"})
+#             else:
+#                 logger.error(f"Ошибка обработки уведомления: {result['error']}")
+#                 # Возвращаем ошибку, чтобы Т-Банк мог повторить уведомление
+#                 return JsonResponse({
+#                     "Result": "Error", 
+#                     "Message": result.get('error', 'Ошибка обработки уведомления')
+#                 }, status=400) # Или 200, если Т-Банк не рекомендует 4xx
+                
+#         except json.JSONDecodeError:
+#             logger.error("Ошибка декодирования JSON в уведомлении от Т-Банка.")
+#             return JsonResponse({"Result": "Error", "Message": "Invalid JSON"}, status=400)
+#         except Exception as e:
+#             logger.error(f"Неожиданная ошибка в обработчике уведомлений: {e}", exc_info=True)
+#             return JsonResponse({"Result": "Error", "Message": "Internal Server Error"}, status=500)
