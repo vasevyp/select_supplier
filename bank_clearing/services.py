@@ -161,9 +161,9 @@ def create_payment(user, cart: Cart) -> dict:
         headers = {'Content-Type': 'application/json'}
         
         # --- ВРЕМЕННО ДЛЯ ОТЛАДКИ ---
-        log_payment(f"DEBUG INIT: Отправка запроса на {url}")
-        log_payment(f"DEBUG INIT: Заголовки: {headers}")
-        log_payment(f"DEBUG INIT: Тело запроса: {json.dumps(init_data, ensure_ascii=False, indent=2)}")
+        # log_payment(f"DEBUG INIT: Отправка запроса на {url}")
+        # log_payment(f"DEBUG INIT: Заголовки: {headers}")
+        # log_payment(f"DEBUG INIT: Тело запроса: {json.dumps(init_data, ensure_ascii=False, indent=2)}")
         # ----------------------------
         
         response = requests.post(url, json=init_data, headers=headers)
@@ -229,6 +229,7 @@ def handle_notification(data: dict) -> dict:
     """
     try:
         # --- ВРЕМЕННО ДЛЯ ОТЛАДКИ ---
+        log_payment(f"DEBUG: TBANK_SECRET_KEY из settings: '{TBANK_SECRET_KEY}'")
         log_payment(f"DEBUG NOTIF: Notification received: {json.dumps(data, ensure_ascii=False)}")
         # ----------------------------
 

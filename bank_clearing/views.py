@@ -99,32 +99,20 @@ class TBankNotificationView(View):
 
             # 3. Отправка ответа Т-Банку
             # Согласно документации, успешный ответ - это "OK"
-            if result.get('success'):
-                # ВАЖНО: Ответ должен быть строго "OK" без дополнительных заголовков или HTML
-                return HttpResponse("OK", content_type="text/plain") # content_type для ясности
-            else:
-                # Даже если была логическая ошибка (например, неверный токен),
-                # документация Т-Банка требует ответ "OK", чтобы уведомление не повторялось.
-                # Однако для отладки можно временно вернуть ошибку.
-                # ПОСЛЕ ОТЛАДКИ ОБЯЗАТЕЛЬНО ВЕРНИТЕ "OK"!
-                logger.error(f"Ошибка обработки уведомления: {result.get('error')}")
-                
-                # --- ДЛЯ ОТЛАДКИ ---
-                # return HttpResponse(f"Error: {result.get('error')}", status=400, content_type="text/plain")
-                # --- ПОСЛЕ ОТЛАДКИ (ОБЯЗАТЕЛЬНО) ---
-                return HttpResponse("OK", content_type="text/plain")
+            if not result.get('success'):
+                logger.error(f"Ошибка обработки уведомления от Т-Банка: {result.get('error')}")
+                # В логах Payment_log.txt и в логах сервера будет видна ошибка.
+                # Т-Банк больше не будет повторять это уведомление (если оно было корректным, но с логикой ошибка).
+                # Если токен неверен, Т-Банк будет повторять, пока не истечет срок или не пофиксим.
+            
+            # ВАЖНО: Ответ строго "OK"
+            return HttpResponse("OK", content_type="text/plain", status=200)
 
-        except json.JSONDecodeError:
-            logger.error("Ошибка декодирования JSON в уведомлении от Т-Банка.")
-            # И для этой ошибки тоже "OK" согласно документации (после отладки)
-            # --- ДЛЯ ОТЛАДКИ ---
-            # return HttpResponse("Invalid JSON", status=400, content_type="text/plain")
-            # --- ПОСЛЕ ОТЛАДКИ ---
-            return HttpResponse("OK", content_type="text/plain")
+        except json.JSONDecodeError as e:
+            logger.error(f"Ошибка декодирования JSON в уведомлении от Т-Банка: {e}")
+            # И для этой ошибки тоже "OK"
+            return HttpResponse("OK", content_type="text/plain", status=200)
         except Exception as e:
             logger.error(f"Неожиданная ошибка в обработчике уведомлений: {e}", exc_info=True)
-            # И для этой ошибки тоже "OK" (после отладки)
-            # --- ДЛЯ ОТЛАДКИ ---
-            # return HttpResponse("Internal Server Error", status=500, content_type="text/plain")
-            # --- ПОСЛЕ ОТЛАДКИ ---
-            return HttpResponse("OK", content_type="text/plain")
+            # И для этой ошибки тоже "OK"
+            return HttpResponse("OK", content_type="text/plain", status=200)
