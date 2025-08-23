@@ -16,9 +16,9 @@ class CartAdmin(admin.ModelAdmin):
 
 @admin.register(TBankPayment)
 class TBankPaymentAdmin(admin.ModelAdmin):
-    list_display = ('order_id', 'user', 'subscription', 'amount', 'status', 'created_at')
+    list_display = ('order_id', 'user', 'subscription', 'amount', 'status', 'updated_at')
     list_filter = ('status', 'created_at')
-    search_fields = ('order_id', 'user__username', 'payment_id')
+    search_fields = ('order_id', 'user__username', 'payment_id', 'updated_at')
     readonly_fields = ('payment_id', 'order_id', 'amount', 'payment_url', 'created_at', 'updated_at')
 
 @admin.register(UserSearchCount)
@@ -31,5 +31,5 @@ class UserSearchCountAdmin(admin.ModelAdmin):
 class UserSearchCountHistoryAdmin(admin.ModelAdmin):
     list_display = ('user', 'add_count', 'reduce_count', 'section', 'created_at')
     list_filter = ('section', 'created_at')
-    search_fields = ('user__username',)
-    readonly_fields = ('created_at',)
+    search_fields = ('user__username', 'created_at')
+    # readonly_fields = ('created_at',)
