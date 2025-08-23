@@ -249,53 +249,63 @@ def handle_notification(data: dict) -> dict:
         # ----------------------------
 
         # 2. Подготовка данных для проверки токена (алгоритм из документации Т-Банка)
-        # a. Собрать все параметры, кроме Token
-        data_for_token_check = {k: v for k, v in data.items() if k != 'Token' and v is not None}
-        
+                # a. Собрать все параметры, кроме Token
+        # b. Преобразовать значения в строки, как они представлены в JSON
+        #    Это важно для boolean (true/false) и чисел
+        data_for_token_check = {}
+        for k, v in data.items():
+            if k != 'Token' and v is not None: # Исключаем Token и None
+                 # Используем json.dumps для корректной сериализации
+                 # separators=(',', ':') убирает лишние пробелы, как это делает Т-Банк
+                data_for_token_check[k] = json.dumps(v, separators=(',', ':'))
+
         # --- ВРЕМЕННО ДЛЯ ОТЛАДКИ ---
         log_payment(f"DEBUG NOTIF TOKEN: Data for token check (before adding Password): {data_for_token_check}")
         # ----------------------------
 
-        # b. Добавить пароль
+        # c. Добавить пароль
+        # ВАЖНО: TBANK_SECRET_KEY уже строка, json.dumps не нужен
         data_for_token_check['Password'] = TBANK_SECRET_KEY
-        
+
         # --- ВРЕМЕННО ДЛЯ ОТЛАДКИ ---
         log_payment(f"DEBUG NOTIF TOKEN: Data for token check (with Password): {data_for_token_check}")
         # ----------------------------
 
-        # c. Отсортировать по ключам
+        # d. Отсортировать по ключам
         sorted_keys = sorted(data_for_token_check.keys())
-        
+
         # --- ВРЕМЕННО ДЛЯ ОТЛАДКИ ---
         log_payment(f"DEBUG NOTIF TOKEN: Sorted keys: {sorted_keys}")
         # ----------------------------
 
-        # d. Конкатенировать только значения в порядке отсортированных ключей
-        values_to_concatenate = [str(data_for_token_check[k]) for k in sorted_keys]
-        
+        # e. Конкатенировать только значения в порядке отсортированных ключей
+        # Значения уже являются строками, подготовленными json.dumps
+        values_to_concatenate = [data_for_token_check[k] for k in sorted_keys]
+
         # --- ВРЕМЕННО ДЛЯ ОТЛАДКИ ---
         log_payment(f"DEBUG NOTIF TOKEN: Values to concatenate: {values_to_concatenate}")
         # ----------------------------
-        
+
         concatenated_string = "".join(values_to_concatenate)
-        
+
         # --- ВРЕМЕННО ДЛЯ ОТЛАДКИ ---
         log_payment(f"DEBUG NOTIF TOKEN: Final concatenated string: '{concatenated_string}'")
         # ----------------------------
 
-        # e. Вычислить SHA-256
+        # f. Вычислить SHA-256
+        # concatenated_string уже является строкой, готовой для кодирования
         expected_token = hashlib.sha256(concatenated_string.encode('utf-8')).hexdigest()
-        
+
         # --- ВРЕМЕННО ДЛЯ ОТЛАДКИ ---
         log_payment(f"DEBUG NOTIF TOKEN: Calculated Expected Token: {expected_token}")
         # ----------------------------
 
-        # f. Сравнить токены
+        # g. Сравнить токены
         if received_token != expected_token:
             error_msg = f"Неверный токен в уведомлении. Получен: {received_token}, Рассчитанный: {expected_token}"
             log_payment(error_msg)
-            # return {'success': False, 'error': error_msg, 'http_response': HttpResponse('Bad Request: Invalid Token', status=400)}
             return {'success': False, 'error': error_msg}
+
 
         # 3. Получение данных платежа
         payment_id_str = data.get('PaymentId')
