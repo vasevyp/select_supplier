@@ -10,6 +10,7 @@ from django.conf import settings
 from django.urls import reverse
 from django.utils import timezone
 
+from users.models import Profile
 from .models import TBankPayment, Cart, log_payment
 
 logger = logging.getLogger(__name__)
@@ -134,6 +135,80 @@ def create_payment(user, cart: Cart) -> dict:
         formatted_redirect_due_date = redirect_due_date.strftime('%Y-%m-%dT%H:%M:%S') + formatted_tz_offset
 
 
+        # 2. Подготовка данных чека (Receipt)
+        # Получаем email и phone из профиля пользователя
+        client_email = None
+        client_phone = None
+        
+        try:
+            # Пытаемся получить связанный профиль
+            profile = user.profile # Предполагаем related_name='profile' в OneToOneField
+        except Profile.DoesNotExist:
+            # Если профиль не найден, пытаемся получить его через objects.get
+            try:
+                profile = Profile.objects.get(user=user)
+            except Profile.DoesNotExist:
+                profile = None
+                log_payment(f"WARNING: Профиль для пользователя {user.id} не найден.")
+        
+        if profile:
+            # Получаем email и phone из профиля
+            # Используем getattr с дефолтными значениями на случай, если поля отсутствуют или пусты
+            client_email = getattr(profile, 'email', None) or getattr(user, 'email', None)
+            client_phone = getattr(profile, 'phone', None) # Предполагаем, что поле называется 'phone'
+            
+            # Если в профиле phone хранится как string и может быть пустым
+            if client_phone == '':
+                client_phone = None
+                
+        # Если не удалось получить из профиля, используем значения из user или дефолтные
+        if not client_email:
+            client_email = getattr(user, 'email', 'vasevyp@yandex.ru')
+        if not client_phone:
+             # Можно оставить None, если Т-Банк позволяет, или использовать дефолтный
+            client_phone = '+79991559858' # Или None, если API это допускает
+            
+        # Пример простого чека. Адаптируйте под вашу логику и требования 54-ФЗ.
+        receipt_data = {
+            # Обязательно: Email или Phone для отправки чека клиенту
+            # Убедитесь, что передаётся хотя бы один из этих параметров
+            "Email": client_email, # Раскомментируйте, если используете email
+        }
+        
+        # Добавляем телефон, если он есть
+        if client_phone:
+            receipt_data["Phone"] = client_phone
+        # Если ни email, ни phone не удалось получить, можно использовать дефолтный email
+        # или обработать ошибку. Для примера добавим дефолтный email если phone тоже None.
+        elif not client_phone: # Это условие всегда True, если phone None. Лучше так:
+            if not receipt_data.get("Email"):
+                 receipt_data["Email"] = "70467@mail.ru" # Дефолтный email на крайний случай
+                 log_payment(f"WARNING: Ни email, ни phone для чека не найдены для пользователя {user.id}. Используется дефолтный email.")
+            
+        # Добавляем остальные обязательные поля чека
+        receipt_data.update({
+            # Обязательно: Система налогообложения 
+            # Проверьте правильную ставку в вашем ЛК Т-Банка или у бухгалтера.
+            "Taxation": "usn_income", # Система налогообложения (пример: osn, usn_income, usn_income_outcome, envd, esn, patent)
+            
+            # Обязательно: Список позиций в чеке
+            "Items": [
+                {
+                    "Name": cart.subscription.name, # Название товара/услуги
+                    "Price": amount, # Цена в копейках *за единицу*
+                    "Quantity": 1.0, # Количество
+                    "Amount": amount, # Общая стоимость позиции (Price * Quantity) в копейках
+                    "Tax": "none", # Налоговая ставка (vat20, vat10, vat110, vat110, vat0, no_vat, etc) 
+                               # или "none" если не облагается НДС или вы используете УСН и т.п.
+                               # Проверьте правильную ставку!
+                }
+                # Если в подписке было бы несколько позиций, их нужно было бы добавить сюда
+            ]
+        })
+        # print('Чек :', receipt_data)
+        # --- Конец подготовки чека ---
+
+
     
 
         # 3. Подготовка полного набора данных для запроса Init
@@ -147,7 +222,7 @@ def create_payment(user, cart: Cart) -> dict:
             "SuccessURL": TBANK_SUCCESS_URL.rstrip(),
             "FailURL": TBANK_FAIL_URL.rstrip(),
             "NotificationURL": TBANK_NOTIFICATION_URL.rstrip(),
-            # "Receipt": { ... } # Если нужен чек, добавьте здесь данные
+            "Receipt": receipt_data, # Если нужен чек, добавьте здесь данные
             # "DATA": { ... } # Если нужны дополнительные данные, добавьте здесь
         }
         

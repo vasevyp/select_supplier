@@ -57,7 +57,7 @@ def initiate_payment(request):
         return redirect('bank_clearing:cart_detail')
 
     result = create_payment(request.user, cart)
-    print("Views-Отправка запроса на платеж", result) 
+    # print("Views-Отправка запроса на платеж", result) 
     
     if result['success']:
         # Перенаправляем пользователя на форму оплаты Т-Банка
