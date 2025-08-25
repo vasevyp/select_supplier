@@ -1,4 +1,4 @@
-# bank_clearing/services.py
+# bank_clearing/services.py a6b3b8a 
 import hashlib
 import json
 import logging
@@ -134,7 +134,6 @@ def create_payment(user, cart: Cart) -> dict:
         # Формируем итоговую строку даты без микросекунд
         formatted_redirect_due_date = redirect_due_date.strftime('%Y-%m-%dT%H:%M:%S') + formatted_tz_offset
 
-
         # 2. Подготовка данных чека (Receipt)
         # Получаем email и phone из профиля пользователя
         client_email = None
@@ -205,11 +204,11 @@ def create_payment(user, cart: Cart) -> dict:
                 # Если в подписке было бы несколько позиций, их нужно было бы добавить сюда
             ]
         })
+         # --- ВРЕМЕННО ДЛЯ ОТЛАДКИ ---
+        log_payment(f"DEBUG RECEIPT: Создан Чек: {receipt_data}")
+        # ----------------------------
         # print('Чек :', receipt_data)
-        # --- Конец подготовки чека ---
-
-
-    
+        # --- Конец подготовки чека ---    
 
         # 3. Подготовка полного набора данных для запроса Init
         init_data = {
@@ -385,8 +384,16 @@ def handle_notification(data: dict) -> dict:
         if received_token != expected_token:
             error_msg = f"Неверный токен в уведомлении. Получен: {received_token}, Рассчитанный: {expected_token}"
             log_payment(error_msg)
-            return {'success': False, 'error': error_msg}
+            return {'success': False, 'error': error_msg} 
+            
+        # Если токен верен или мы решили продолжить обработку даже при ошибке (для тестирования)
+        # (В реальной системе НЕ рекомендуется игнорировать неверный токен!)
+        # if received_token != expected_token:
+        #     error_msg = f"Неверный токен в уведомлении. Получен: {received_token}, Рассчитанный: {expected_token}. Продолжаем обработку для тестирования."
+        #     log_payment(error_msg)
+        # --- КОНЕЦ БЛОКА ОТЛАДКИ ---
 
+        # ... (остальной код обработки уведомления остается без изменений) ...
         # 3. Получение данных платежа
         payment_id_str = data.get('PaymentId')
         status = data.get('Status')
@@ -412,7 +419,7 @@ def handle_notification(data: dict) -> dict:
             log_payment(error_msg)
             return {'success': False, 'error': error_msg}
 
-        # 5. Обработка статусов
+        # 5. Обновление статуса
         old_status = payment.status
         payment.status = status
         payment.save()
@@ -441,11 +448,12 @@ def handle_notification(data: dict) -> dict:
                 search_count_obj.save()
 
                 # --- Создание записи в UserSearchCountHistory ---
+                # TODO: Определить правильный 'section', если он важен. Пока используем 'payment'.
                 history_record = UserSearchCountHistory.objects.create(
                     user=user,
                     add_count=payment.subscription.search_count,
                     reduce_count=0,
-                    section='payment'
+                    section='payment' # Или другой раздел, если нужно
                 )
                 payment.user_search_history_record = history_record
                 payment.save()
@@ -456,54 +464,14 @@ def handle_notification(data: dict) -> dict:
                 log_payment(f"Платёж {payment_id} уже был обработан ранее.")
                 return {'success': True, 'message': 'Платёж уже обработан.'}
 
-        # 7. Обработка отмены платежа (переход из CONFIRMED в AUTHORIZED)
-        # Это может происходить, если платеж был отменен банком после подтверждения
-        elif status == 'AUTHORIZED' and old_status == 'CONFIRMED':
-            # Проверяем, была ли уже обработка этого изменения статуса
-            # (на случай дублирующихся уведомлений)
-            if payment.user_search_history_record:
-                from django.contrib.auth import get_user_model
-                from .models import UserSearchCount, UserSearchCountHistory
-                User = get_user_model()
-                try:
-                    user = User.objects.get(id=payment.user.id)
-                except User.DoesNotExist:
-                    log_payment(f"Пользователь {payment.user.id} не найден для отмены платежа {payment_id}.")
-                    return {'success': True, 'message': 'Пользователь не найден.'}
-
-                # --- Отмена начисления поисков ---
-                # Уменьшаем add_count на количество, которое было добавлено
-                search_count_obj, created = UserSearchCount.objects.get_or_create(user=user)
-                search_count_obj.add_count -= payment.subscription.search_count
-                # Пересчитываем available_count
-                search_count_obj.available_count = search_count_obj.add_count - search_count_obj.reduce_count
-                search_count_obj.save()
-
-                # --- Создание записи в UserSearchCountHistory об отмене ---
-                # Создаем новую запись с отрицательным значением в add_count или положительным в reduce_count
-                # Я выбираю положительное значение в reduce_count для ясности
-                cancel_history_record = UserSearchCountHistory.objects.create(
-                    user=user,
-                    add_count=0,
-                    reduce_count=payment.subscription.search_count, # Отмена начисления
-                    section='payment_cancel' # Или другой раздел для отмен
-                )
-                
-                # Обнуляем ссылку на историю подтверждения, так как операция отменена
-                payment.user_search_history_record = None
-                payment.save()
-
-                log_payment(f"Платёж {payment_id} для пользователя {user} был отменен. Снято {payment.subscription.search_count} поисков.")
-                return {'success': True, 'message': 'Платёж отменен, поиски возвращены.'}
-            else:
-                log_payment(f"Получено уведомление об отмене платежа {payment_id}, но запись об начислении не найдена.")
-                return {'success': True, 'message': 'Платёж отменен, но начисление не было зафиксировано.'}
-        
-        # Для других статусов (AUTHORIZED при первом получении, REJECTED и т.д.) просто логируем
+        # Для других статусов (AUTHORIZED, REJECTED и т.д.) просто логируем
         return {'success': True, 'message': f'Статус обновлён на {status}.'}
 
     except Exception as e:
         error_msg = f"Ошибка обработки уведомления: {e}"
         log_payment(error_msg)
         logger.error(error_msg, exc_info=True) # Лог с трассировкой стека
+        # Даже при внутренней ошибке лучше вернуть "OK", чтобы Т-Банк не спамил повторными уведомлениями.
+        # Но для отладки можно вернуть 500. Выберите подходящий вариант.
+        # return {'success': False, 'error': 'Internal Server Error', 'http_response': HttpResponse('Internal Server Error', status=500)}
         return {'success': False, 'error': 'Internal Server Error'}
