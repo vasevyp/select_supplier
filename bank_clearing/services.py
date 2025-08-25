@@ -1,17 +1,19 @@
-# bank_clearing/services.py a6b3b8a 
+# bank_clearing/services.py 67c4568
 import hashlib
 import json
 import logging
 import uuid
 from decimal import Decimal
+from urllib.parse import urljoin
 
 import requests
 from django.conf import settings
 from django.urls import reverse
 from django.utils import timezone
+from django.contrib.auth import get_user_model
 
 from users.models import Profile
-from .models import TBankPayment, Cart, log_payment
+from .models import TBankPayment, Cart, log_payment, UserSearchCount, UserSearchCountHistory
 
 logger = logging.getLogger(__name__)
 
@@ -55,6 +57,7 @@ def generate_token(data: dict) -> str:
         if value is not None:
             # Преобразуем значение в строку. Это критично для конкатенации.
             data_for_token[key] = str(value)
+            log_payment(f"WARNING: Неожиданный тип данных для ключа '{key}': {type(value)}. Преобразовано в строку.")
 
     # print('Данные для токена==', data_for_token)
     # --- ВРЕМЕННО ДЛЯ ОТЛАДКИ ---
@@ -164,8 +167,7 @@ def create_payment(user, cart: Cart) -> dict:
         if not client_email:
             client_email = getattr(user, 'email', 'vasevyp@yandex.ru')
         if not client_phone:
-             # Можно оставить None, если Т-Банк позволяет, или использовать дефолтный
-            client_phone = '+79991559858' # Или None, если API это допускает
+            client_phone = '+79991559858' #  Или другой дефолтный
             
         # Пример простого чека. Адаптируйте под вашу логику и требования 54-ФЗ.
         receipt_data = {
@@ -181,8 +183,8 @@ def create_payment(user, cart: Cart) -> dict:
         # или обработать ошибку. Для примера добавим дефолтный email если phone тоже None.
         elif not client_phone: # Это условие всегда True, если phone None. Лучше так:
             if not receipt_data.get("Email"):
-                 receipt_data["Email"] = "70467@mail.ru" # Дефолтный email на крайний случай
-                 log_payment(f"WARNING: Ни email, ни phone для чека не найдены для пользователя {user.id}. Используется дефолтный email.")
+                receipt_data["Email"] = "70467@mail.ru" # Дефолтный email на крайний случай
+                log_payment(f"WARNING: Ни email, ни phone для чека не найдены для пользователя {user.id}. Используется дефолтный email.")
             
         # Добавляем остальные обязательные поля чека
         receipt_data.update({
@@ -249,7 +251,7 @@ def create_payment(user, cart: Cart) -> dict:
         response.raise_for_status()
         response_data = response.json()
         
-        # 5. Проверка ответа
+        # 5. Проверка ответа и сохранение в БД
         if response_data.get('Success') and response_data.get('PaymentId'):
             payment_id = response_data['PaymentId']
             
@@ -292,6 +294,86 @@ def create_payment(user, cart: Cart) -> dict:
         log_payment(error_msg)
         logger.error(error_msg, exc_info=True) # Лог с трассировкой стека
         return {'success': False, 'error': 'Произошла внутренняя ошибка.'}
+
+
+def cancel_payment(payment_id: str, user_initiator=None) -> dict:
+    """
+    Инициирует отмену (возврат) платежа через метод Cancel API Т-Банка.
+    
+    Args:
+        payment_id (str): Идентификатор платежа в системе Т-Банка (PaymentId).
+        user_initiator (User, optional): Пользователь, инициировавший отмену (для логирования).
+
+    Returns:
+        dict: Словарь с результатом операции.
+    """
+    try:
+        # 1. Подготовка данных для запроса Cancel
+        cancel_data = {
+            "TerminalKey": TBANK_TERMINAL_KEY,
+            "PaymentId": str(payment_id),
+        }
+        
+        # 2. Генерация токена для Cancel
+        token = generate_token(cancel_data)
+        cancel_data['Token'] = token
+
+        # 3. Отправка запроса Cancel
+        url = urljoin(TBANK_API_URL, 'Cancel')
+        headers = {'Content-Type': 'application/json'}
+        
+        log_payment(f"Cancel Request: URL={url}, Data={json.dumps(cancel_data, ensure_ascii=False)}")
+        
+        response = requests.post(url, json=cancel_data, headers=headers)
+        response.raise_for_status()
+        response_data = response.json()
+        
+        log_payment(f"Cancel Response: {json.dumps(response_data, ensure_ascii=False)}")
+
+        # 4. Проверка ответа
+        if response_data.get('Success', False):
+            message = f"Запрос на отмену платежа {payment_id} успешно отправлен. Статус: {response_data.get('Status')}"
+            log_payment(f"SUCCESS: {message}")
+            
+            # 5. Обновление статуса в нашей БД (по ответу, если он есть)
+            try:
+                payment_record = TBankPayment.objects.get(payment_id=payment_id)
+                old_status = payment_record.status
+                if 'Status' in response_data:
+                    payment_record.status = response_data['Status']
+                    payment_record.save()
+                    log_payment(f"Статус платежа {payment_id} в БД обновлён с {old_status} на {response_data['Status']} (по ответу Cancel).")
+            except TBankPayment.DoesNotExist:
+                log_payment(f"WARNING: Платёж с PaymentId={payment_id} не найден в БД при отмене.")
+            
+            return {
+                'success': True, 
+                'message': message,
+                'response_data': response_data
+            }
+        else:
+            error_code = response_data.get('ErrorCode', 'Unknown')
+            error_message = response_data.get('Message', 'Неизвестная ошибка')
+            details = response_data.get('Details', '')
+            full_error = f"Ошибка отмены платежа {payment_id}: {error_code} - {error_message}. Детали: {details}"
+            log_payment(f"ERROR: {full_error}")
+            return {'success': False, 'error': full_error}
+
+    except requests.exceptions.RequestException as e:
+        error_msg = f"Ошибка сети при отмене платежа {payment_id}: {e}"
+        log_payment(f"NETWORK ERROR: {error_msg}")
+        logger.error(error_msg)
+        return {'success': False, 'error': 'Ошибка соединения с платёжной системой при отмене.'}
+    except TBankPayment.DoesNotExist:
+        error_msg = f"Платёж с PaymentId={payment_id} не найден в БД для отмены."
+        log_payment(f"NOT FOUND ERROR: {error_msg}")
+        return {'success': False, 'error': error_msg}
+    except Exception as e:
+        error_msg = f"Неожиданная ошибка при отмене платежа {payment_id}: {e}"
+        log_payment(f"UNEXPECTED ERROR: {error_msg}")
+        logger.error(error_msg, exc_info=True)
+        return {'success': False, 'error': 'Произошла внутренняя ошибка при отмене платежа.'}
+
 
 
 def handle_notification(data: dict) -> dict:
@@ -427,33 +509,31 @@ def handle_notification(data: dict) -> dict:
         log_message = f"Статус платежа {payment_id} обновлён с {old_status} на {status}."
         log_payment(log_message)
 
-        # 6. Обработка успешного платежа (CONFIRMED)
+        # 6. Обработка статусов
         if status == 'CONFIRMED':
-            # Проверка, чтобы не обрабатывать повторно
+            # --- Платёж подтверждён ---
             if not payment.user_search_history_record:
-                from django.contrib.auth import get_user_model
-                from .models import UserSearchCount, UserSearchCountHistory # Импортируем здесь, чтобы избежать циклических импортов
-                User = get_user_model()
+                # Начисляем поиски
                 try:
-                    user = User.objects.get(id=payment.user.id)
-                except User.DoesNotExist:
+                    user = get_user_model().objects.get(id=payment.user.id)
+                except get_user_model().DoesNotExist:
                     log_payment(f"Пользователь {payment.user.id} не найден для подтверждения платежа {payment_id}.")
-                    return {'success': True, 'message': 'Пользователь не найден.'} # Возвращаем успех, так как уведомление обработано
+                    return {'success': True, 'message': 'Пользователь не найден.'}
 
-                # --- Обновление UserSearchCount ---
+
                 search_count_obj, created = UserSearchCount.objects.get_or_create(user=user)
                 search_count_obj.add_count += payment.subscription.search_count
-                # Убедимся, что available_count пересчитывается
                 search_count_obj.available_count = search_count_obj.add_count - search_count_obj.reduce_count
                 search_count_obj.save()
 
-                # --- Создание записи в UserSearchCountHistory ---
-                # TODO: Определить правильный 'section', если он важен. Пока используем 'payment'.
+
+
+
                 history_record = UserSearchCountHistory.objects.create(
                     user=user,
                     add_count=payment.subscription.search_count,
                     reduce_count=0,
-                    section='payment' # Или другой раздел, если нужно
+                    section='payment'
                 )
                 payment.user_search_history_record = history_record
                 payment.save()
@@ -464,14 +544,81 @@ def handle_notification(data: dict) -> dict:
                 log_payment(f"Платёж {payment_id} уже был обработан ранее.")
                 return {'success': True, 'message': 'Платёж уже обработан.'}
 
-        # Для других статусов (AUTHORIZED, REJECTED и т.д.) просто логируем
+        elif status == 'AUTHORIZED' and old_status == 'CONFIRMED':
+            # --- Отмена платежа банком после подтверждения ---
+            if payment.user_search_history_record:
+                try:
+                    user = get_user_model().objects.get(id=payment.user.id)
+                except get_user_model().DoesNotExist:
+                    log_payment(f"Пользователь {payment.user.id} не найден для отмены платежа {payment_id}.")
+                    return {'success': True, 'message': 'Пользователь не найден.'}
+
+                search_count_obj, created = UserSearchCount.objects.get_or_create(user=user)
+                search_count_obj.add_count -= payment.subscription.search_count
+                search_count_obj.available_count = search_count_obj.add_count - search_count_obj.reduce_count
+                search_count_obj.save()
+
+                cancel_history_record = UserSearchCountHistory.objects.create(
+                    user=user,
+                    add_count=0,
+                    reduce_count=payment.subscription.search_count,
+                    section='payment_cancel'
+                )
+                
+                payment.user_search_history_record = None
+                payment.save()
+
+                log_payment(f"Платёж {payment_id} для пользователя {user} был отменен банком. Снято {payment.subscription.search_count} поисков.")
+                return {'success': True, 'message': 'Платёж отменен банком, поиски возвращены.'}
+            else:
+                log_payment(f"Получено уведомление об отмене платежа {payment_id} банком, но запись об начислении не найдена.")
+                return {'success': True, 'message': 'Платёж отменен банком, но начисление не было зафиксировано.'}
+        
+        elif status == 'REFUNDED':
+            # --- Возврат средств (после вызова Cancel) ---
+            log_payment(f"Получено уведомление о возврате средств по платежу {payment_id}.")
+            
+            if payment.user_search_history_record:
+                try:
+                    user = get_user_model().objects.get(id=payment.user.id)
+                except get_user_model().DoesNotExist:
+                    log_payment(f"Пользователь {payment.user.id} не найден для обработки возврата по платежу {payment_id}.")
+                    return {'success': True, 'message': 'Пользователь не найден для возврата.'}
+
+                try:
+                    search_count_obj = UserSearchCount.objects.get(user=user)
+                    if search_count_obj.add_count >= payment.subscription.search_count:
+                        search_count_obj.add_count -= payment.subscription.search_count
+                    else:
+                        log_payment(f"WARNING: Попытка вернуть больше поисков ({payment.subscription.search_count}), чем доступно ({search_count_obj.add_count}) для пользователя {user}. Установлен add_count в 0.")
+                        search_count_obj.add_count = 0
+                    search_count_obj.available_count = search_count_obj.add_count - search_count_obj.reduce_count
+                    search_count_obj.save()
+                except UserSearchCount.DoesNotExist:
+                    log_payment(f"WARNING: Запись UserSearchCount не найдена для пользователя {user} при возврате по платежу {payment_id}. Создана новая с 0.")
+                    UserSearchCount.objects.create(user=user, add_count=0, reduce_count=0, available_count=0)
+
+                refund_history_record = UserSearchCountHistory.objects.create(
+                    user=user,
+                    add_count=0,
+                    reduce_count=payment.subscription.search_count,
+                    section='payment_refund'
+                )
+                
+                payment.user_search_history_record = None
+                payment.save()
+                
+                log_payment(f"Запись об отмене поисков создана для пользователя {user} по возврату платежа {payment_id}.")
+                return {'success': True, 'message': 'Возврат средств подтвержден, поиски возвращены.'}
+            else:
+                log_payment(f"Получено уведомление о возврате по платежу {payment_id}, но запись о начислении поисков не найдена или уже была отменена.")
+                return {'success': True, 'message': 'Возврат средств подтвержден, начисление поисков отсутствует или уже отменено.'}
+
+        # Для других статусов (NEW, AUTHORIZED, REJECTED и т.д.) просто логируем
         return {'success': True, 'message': f'Статус обновлён на {status}.'}
 
     except Exception as e:
         error_msg = f"Ошибка обработки уведомления: {e}"
         log_payment(error_msg)
-        logger.error(error_msg, exc_info=True) # Лог с трассировкой стека
-        # Даже при внутренней ошибке лучше вернуть "OK", чтобы Т-Банк не спамил повторными уведомлениями.
-        # Но для отладки можно вернуть 500. Выберите подходящий вариант.
-        # return {'success': False, 'error': 'Internal Server Error', 'http_response': HttpResponse('Internal Server Error', status=500)}
+        logger.error(error_msg, exc_info=True)
         return {'success': False, 'error': 'Internal Server Error'}
