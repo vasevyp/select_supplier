@@ -57,6 +57,7 @@ class UserSearchCountHistory(models.Model):
     ("technology", "Технологии"),
     ("logistics", "Логистика"),
     ('payment', 'Оплата'),
+    ('payment_cancel', 'Отмена платежа')
 )
 
     user = models.ForeignKey(
