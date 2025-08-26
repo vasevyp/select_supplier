@@ -11,6 +11,7 @@ from django.conf import settings
 from django.urls import reverse
 from django.utils import timezone
 from django.contrib.auth import get_user_model
+User = get_user_model()
 
 from users.models import Profile
 from .models import TBankPayment, Cart, log_payment, UserSearchCount, UserSearchCountHistory
@@ -18,7 +19,7 @@ from .models import TBankPayment, Cart, log_payment, UserSearchCount, UserSearch
 logger = logging.getLogger(__name__)
 
 # --- Настройки Т-Банка ---
-TBANK_API_URL = getattr(settings, 'TBANK_API_URL', 'https://rest-api-test.tinkoff.ru/v2/').rstrip('/') + '/'
+TBANK_API_URL = getattr(settings, 'TBANK_API_URL', 'https://securepay.tinkoff.ru/v2/').rstrip('/') + '/'
 TBANK_TERMINAL_KEY = getattr(settings, 'TBANK_TERMINAL_KEY', '').strip()
 TBANK_SECRET_KEY = getattr(settings, 'TBANK_SECRET_KEY', '').strip()
 TBANK_SUCCESS_URL = getattr(settings, 'TBANK_SUCCESS_URL', '').rstrip() # Убираем пробелы справа
@@ -374,8 +375,6 @@ def cancel_payment(payment_id: str, user_initiator=None) -> dict:
         logger.error(error_msg, exc_info=True)
         return {'success': False, 'error': 'Произошла внутренняя ошибка при отмене платежа.'}
 
-
-
 def handle_notification(data: dict) -> dict:
     '''Обрабатывает уведомление от Т-Банка.     Возвращает словарь с результатом.'''
     try:
@@ -515,8 +514,8 @@ def handle_notification(data: dict) -> dict:
             if not payment.user_search_history_record:
                 # Начисляем поиски
                 try:
-                    user = get_user_model().objects.get(id=payment.user.id)
-                except get_user_model().DoesNotExist:
+                    user = User.objects.get(id=payment.user.id)
+                except User.DoesNotExist:
                     log_payment(f"Пользователь {payment.user.id} не найден для подтверждения платежа {payment_id}.")
                     return {'success': True, 'message': 'Пользователь не найден.'}
 
@@ -545,11 +544,25 @@ def handle_notification(data: dict) -> dict:
                 return {'success': True, 'message': 'Платёж уже обработан.'}
 
         elif status == 'AUTHORIZED' and old_status == 'CONFIRMED':
+            # ДОПОЛНИТЕЛЬНАЯ ПРОВЕРКА: Запрос к API Т-Банка для уточнения реального статуса
+            try:
+                from .services import get_payment_status  # Смотри эту функцию ниже
+                actual_status = get_payment_status(payment.payment_id)
+                log_payment(f"Проверка реального статуса платежа {payment.payment_id}: {old_status} → {status}. API вернул: {actual_status}")
+                
+                # Если API подтверждает, что платеж CONFIRMED, игнорируем уведомление AUTHORIZED
+                if actual_status == 'CONFIRMED':
+                    log_payment(f"ЛОЖНОЕ уведомление AUTHORIZED для платежа {payment.payment_id} (реальный статус CONFIRMED). Игнорируем.")
+                    return {'success': True, 'message': 'Ложное уведомление об отмене проигнорировано.'}
+            except Exception as e:
+                log_payment(f"Ошибка проверки статуса через API для платежа {payment.payment_id}: {e}")
+                # В случае ошибки API продолжаем стандартную обработку
+
             # --- Отмена платежа банком после подтверждения ---
             if payment.user_search_history_record:
                 try:
-                    user = get_user_model().objects.get(id=payment.user.id)
-                except get_user_model().DoesNotExist:
+                    user= User.objects.get(id=payment.user.id)
+                except User.DoesNotExist:
                     log_payment(f"Пользователь {payment.user.id} не найден для отмены платежа {payment_id}.")
                     return {'success': True, 'message': 'Пользователь не найден.'}
 
@@ -580,8 +593,8 @@ def handle_notification(data: dict) -> dict:
             
             if payment.user_search_history_record:
                 try:
-                    user = get_user_model().objects.get(id=payment.user.id)
-                except get_user_model().DoesNotExist:
+                    user = User.objects.get(id=payment.user.id)
+                except User.DoesNotExist:
                     log_payment(f"Пользователь {payment.user.id} не найден для обработки возврата по платежу {payment_id}.")
                     return {'success': True, 'message': 'Пользователь не найден для возврата.'}
 
@@ -622,3 +635,35 @@ def handle_notification(data: dict) -> dict:
         log_payment(error_msg)
         logger.error(error_msg, exc_info=True)
         return {'success': False, 'error': 'Internal Server Error'}
+    
+
+
+def get_payment_status(payment_id: str) -> str:
+    """
+    Получает реальный статус платежа через метод GetState API Т-Банка.
+    """
+    try:
+        get_state_data = {
+            "TerminalKey": TBANK_TERMINAL_KEY,
+            "PaymentId": str(payment_id),
+        }
+        
+        token = generate_token(get_state_data)
+        get_state_data['Token'] = token
+
+        url = urljoin(TBANK_API_URL, 'GetState')
+        headers = {'Content-Type': 'application/json'}
+        
+        response = requests.post(url, json=get_state_data, headers=headers)
+        response.raise_for_status()
+        response_data = response.json()
+        
+        if response_data.get('Success'):
+            return response_data.get('Status', 'UNKNOWN')
+        else:
+            raise Exception(f"API вернул ошибку: {response_data.get('Message')}")
+            
+    except Exception as e:
+        log_payment(f"Ошибка при получении статуса платежа {payment_id}: {e}")
+        raise
+
