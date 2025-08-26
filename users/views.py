@@ -88,16 +88,16 @@ def login_view(request):
                 # registered_ip = user.profile.registered_ip
                 # current_ip = get_client_ip(request)
 
-                registered_device = user.profile.device_fingerprint
-                current_device = get_device_fingerprint(request)
+                # registered_device = user.profile.device_fingerprint
+                # current_device = get_device_fingerprint(request)
 
-                if registered_device != current_device:
-                    # Ошибка: IP или устройство не совпадают
-                    messages.error(
-                        request,
-                        "Вход заблокирован. Ваше устройство не совпадает с зарегистрированными.",
-                    )
-                    return render(request, "users/login.html", {"form": form})
+                # if registered_device != current_device:
+                #     # Ошибка: IP или устройство не совпадают
+                #     messages.error(
+                #         request,
+                #         "Вход заблокирован. Ваше устройство не совпадает с зарегистрированными.",
+                #     )
+                #     return render(request, "users/login.html", {"form": form})
 
                 # Всё ок — авторизуем
                 login(request, user)
