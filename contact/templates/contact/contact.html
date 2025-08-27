@@ -28,10 +28,10 @@
                             <div class="contact-body">
                                 <p><i class="fa fa-map-marker" aria-hidden="true"></i>
                                     <span>Адрес:</span>
-                                    <span class="add-ln"> 420097, Г КАЗАНЬ, УЛ ЗАСЛОНОВА д.5</span>
+                                    <!-- <span class="add-ln"> 420097, Г КАЗАНЬ, УЛ ЗАСЛОНОВА д.5</span> -->
                                 </p>
                                 <p><i class="fa fa-phone" aria-hidden="true"></i>
-                                    Телефон:<span>+7 999 1559858 </span>
+                                    <!-- Телефон:<span>+7 999 1559858 </span> -->
                                 </p>
                                 <p><i class="fa fa-envelope" aria-hidden="true"></i>
                                     <span><a href="mailto:htmlcss3tutorials@gmail.com">info@vedinfo.online</a></span>
@@ -39,14 +39,14 @@
                             </div>
                         </div>
 
-                        <div class=" col-12 col-md-8 col-lg-6 bg-second1 border">
+                        <div class="my-3 col-12 col-md-8 col-lg-6 bg-second1 border rounded">
                             <div class="py-2">
-                                <h5 class=" heading">Свяжитесь с нами</h5>
+                                <!-- <h5 class=" heading">Свяжитесь с нами</h5> -->
                             </div>
                             <form method="post">
                                 {% csrf_token %}
                                 {{ form.as_p }}
-                                <button type="submit" class="btn bg-blue1 bg-hover1 color-button-text sub-btn">Отправить</button>
+                                <button type="submit" class="mb-2 btn bg-blue1 bg-hover1 color-button-text sub-btn">Отправить сообщение</button>
                             </form>
 
 
