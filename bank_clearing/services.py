@@ -481,7 +481,7 @@ def handle_notification(data: dict) -> dict:
         order_id = data.get('OrderId')
 
         # --- ВРЕМЕННО ДЛЯ ОТЛАДКИ ---
-        log_payment(f"DEBUG NOTIF: PaymentId: {payment_id_str}, Status: {status}, OrderId: {order_id}")
+        log_payment(f"DEBUG NOTIF: PaymentId: {payment_id_str}, Status (из уведомления): {status}, OrderId: {order_id}")
         # ----------------------------
 
         if not payment_id_str or not status:
@@ -500,17 +500,22 @@ def handle_notification(data: dict) -> dict:
             log_payment(error_msg)
             return {'success': False, 'error': error_msg}
 
-        # 5. Обновление статуса
-        old_status = payment.status
-        payment.status = status
-        payment.save()
+        # 5. ЗАПОМНИТЬ старый статус из БД, но НЕ обновлять его пока
+        old_status_db = payment.status # Статус из БД ДО обработки уведомления
+        # НЕ ДЕЛАЕМ: payment.status = status; payment.save() здесь
 
-        log_message = f"Статус платежа {payment_id} обновлён с {old_status} на {status}."
-        log_payment(log_message)
+        log_message_initial = f"Обработка уведомления для платежа {payment_id}. Статус в БД: {old_status_db}. Статус в уведомлении: {status}."
+        log_payment(log_message_initial)
+
 
         # 6. Обработка статусов
         if status == 'CONFIRMED':
             # --- Платёж подтверждён ---
+            # Обновляем статус в БД
+            payment.status = status
+            payment.save()
+            log_payment(f"Статус платежа {payment_id} обновлён с {old_status_db} на {status} (уведомление CONFIRMED).")
+
             if not payment.user_search_history_record:
                 # Начисляем поиски
                 try:
@@ -519,14 +524,10 @@ def handle_notification(data: dict) -> dict:
                     log_payment(f"Пользователь {payment.user.id} не найден для подтверждения платежа {payment_id}.")
                     return {'success': True, 'message': 'Пользователь не найден.'}
 
-
                 search_count_obj, created = UserSearchCount.objects.get_or_create(user=user)
                 search_count_obj.add_count += payment.subscription.search_count
                 search_count_obj.available_count = search_count_obj.add_count - search_count_obj.reduce_count
                 search_count_obj.save()
-
-
-
 
                 history_record = UserSearchCountHistory.objects.create(
                     user=user,
@@ -535,60 +536,80 @@ def handle_notification(data: dict) -> dict:
                     section='payment'
                 )
                 payment.user_search_history_record = history_record
-                payment.save()
+                payment.save() # Сохраняем связь с историей
 
                 log_payment(f"Успешная оплата для пользователя {user}. Добавлено {payment.subscription.search_count} поисков.")
                 return {'success': True, 'message': 'Платёж подтверждён и счёт пополнен.'}
             else:
-                log_payment(f"Платёж {payment_id} уже был обработан ранее.")
+                log_payment(f"Платёж {payment_id} уже был обработан ранее (CONFIRMED).")
                 return {'success': True, 'message': 'Платёж уже обработан.'}
 
-        elif status == 'AUTHORIZED' and old_status == 'CONFIRMED':
+        elif status == 'AUTHORIZED' and old_status_db == 'CONFIRMED':
+            # ПОТЕНЦИАЛЬНО ЛОЖНОЕ уведомление: AUTHORIZED после CONFIRMED
+            log_payment(f"ПОТЕНЦИАЛЬНО ЛОЖНОЕ уведомление AUTHORIZED для платежа {payment_id} (в БД был CONFIRMED). Проверяем реальный статус через API...")
+
             # ДОПОЛНИТЕЛЬНАЯ ПРОВЕРКА: Запрос к API Т-Банка для уточнения реального статуса
             try:
-                from .services import get_payment_status  # Смотри эту функцию ниже
-                actual_status = get_payment_status(payment.payment_id)
-                log_payment(f"Проверка реального статуса платежа {payment.payment_id}: {old_status} → {status}. API вернул: {actual_status}")
+                actual_status = get_payment_status(payment.payment_id) # Вызываем напрямую, так как мы в services.py
+                log_payment(f"Проверка реального статуса платежа {payment.payment_id}: БД={old_status_db}, Уведомление={status}, API вернул: {actual_status}")
                 
-                # Если API подтверждает, что платеж CONFIRMED, игнорируем уведомление AUTHORIZED
+                # Если API подтверждает, что платеж CONFIRMED, ИГНОРИРУЕМ уведомление AUTHORIZED
                 if actual_status == 'CONFIRMED':
-                    log_payment(f"ЛОЖНОЕ уведомление AUTHORIZED для платежа {payment.payment_id} (реальный статус CONFIRMED). Игнорируем.")
+                    log_payment(f"ЛОЖНОЕ уведомление AUTHORIZED для платежа {payment.payment_id} (реальный статус CONFIRMED). Игнорируем. Статус в БД НЕ изменен.")
+                    # НЕ обновляем статус в БД, оставляем CONFIRMED
                     return {'success': True, 'message': 'Ложное уведомление об отмене проигнорировано.'}
+                else:
+                    # Если API вернул что-то другое (например, платеж действительно стал AUTHORIZED по какой-то причине),
+                    # обрабатываем это как обычное уведомление AUTHORIZED (если бы оно пришло вовремя).
+                    # Это маловероятный, но возможный сценарий.
+                    log_payment(f"НЕОЖИДАННЫЙ реальный статус {actual_status} для платежа {payment.payment_id}. Обрабатываем как обычное уведомление AUTHORIZED.")
+                    # Продолжаем выполнение кода ниже, как для обычного AUTHORIZED
+                    # (Хотя в одностадийной схеме переход CONFIRMED -> AUTHORIZED маловероятен без Cancel/Refund)
+                    # Для корректности, обновим статус в БД на тот, что вернул API, если он отличается от уведомления
+                    if actual_status != status:
+                         log_payment(f"WARNING: Статус в уведомлении ({status}) не совпадает со статусом API ({actual_status}). Используем статус API.")
+                         status = actual_status # Используем статус от API для дальнейшей обработки
+                    
             except Exception as e:
                 log_payment(f"Ошибка проверки статуса через API для платежа {payment.payment_id}: {e}")
-                # В случае ошибки API продолжаем стандартную обработку
+                # В случае ошибки API НЕ обновляем статус в БД и НЕ обрабатываем это как отмену.
+                # Лучше проигнорировать потенциально ложное уведомление, чем ошибочно отменить платеж.
+                log_payment(f"Из-за ошибки API уведомление AUTHORIZED для платежа {payment.payment_id} (после CONFIRMED) ИГНОРИРУЕТСЯ. Статус в БД НЕ изменен.")
+                return {'success': True, 'message': f'Уведомление AUTHORIZED проигнорировано из-за ошибки API: {e}'}
+            
+            # Если мы дошли до этой точки, значит либо API вернул не CONFIRMED, либо был какой-то нестандартный сценарий.
+            # Обрабатываем это как обычное уведомление AUTHORIZED.
+            # НО! В одностадийной схеме платеж НЕ МОЖЕТ перейти из CONFIRMED в AUTHORIZED естественным путем.
+            # Это означает, что либо это очень странное уведомление, либо ошибка.
+            # Лучше всего в этом случае залогировать предупреждение и проигнорировать.
+            log_payment(f"ПРЕДУПРЕЖДЕНИЕ: Получено уведомление AUTHORIZED для платежа {payment.payment_id}, который в БД был CONFIRMED. Это нестандартное поведение. Уведомление ИГНОРИРУЕТСЯ.")
+            return {'success': True, 'message': 'Нестандартное уведомление AUTHORIZED проигнорировано.'}
 
-            # --- Отмена платежа банком после подтверждения ---
-            if payment.user_search_history_record:
-                try:
-                    user= User.objects.get(id=payment.user.id)
-                except User.DoesNotExist:
-                    log_payment(f"Пользователь {payment.user.id} не найден для отмены платежа {payment_id}.")
-                    return {'success': True, 'message': 'Пользователь не найден.'}
+            # --- Оригинальная логика отмены (если бы это был стандартный сценарий AUTHORIZED после CONFIRMED) ---
+            # В одностадийной схеме такой переход маловероятен, но если бы он был...
+            # if payment.user_search_history_record:
+            #     # ... (ваша логика отмены)
+            # else:
+            #     # ... (логика если отмена не нужна)
+            # Но мы решили игнорировать это.
 
-                search_count_obj, created = UserSearchCount.objects.get_or_create(user=user)
-                search_count_obj.add_count -= payment.subscription.search_count
-                search_count_obj.available_count = search_count_obj.add_count - search_count_obj.reduce_count
-                search_count_obj.save()
+        elif status == 'AUTHORIZED':
+             # Обычное уведомление AUTHORIZED (например, при переходе NEW -> AUTHORIZED -> CONFIRMED)
+             # или первое уведомление для двухстадийного платежа.
+             # Обновляем статус в БД.
+             payment.status = status
+             payment.save()
+             log_payment(f"Статус платежа {payment_id} обновлён с {old_status_db} на {status} (уведомление AUTHORIZED).")
+             # Дальнейшая логика (например, ожидание CONFIRMED) будет в других уведомлениях.
+             return {'success': True, 'message': f'Статус обновлён на {status}.'}
 
-                cancel_history_record = UserSearchCountHistory.objects.create(
-                    user=user,
-                    add_count=0,
-                    reduce_count=payment.subscription.search_count,
-                    section='payment_cancel'
-                )
-                
-                payment.user_search_history_record = None
-                payment.save()
-
-                log_payment(f"Платёж {payment_id} для пользователя {user} был отменен банком. Снято {payment.subscription.search_count} поисков.")
-                return {'success': True, 'message': 'Платёж отменен банком, поиски возвращены.'}
-            else:
-                log_payment(f"Получено уведомление об отмене платежа {payment_id} банком, но запись об начислении не найдена.")
-                return {'success': True, 'message': 'Платёж отменен банком, но начисление не было зафиксировано.'}
-        
         elif status == 'REFUNDED':
             # --- Возврат средств (после вызова Cancel) ---
+            # Обновляем статус в БД
+            payment.status = status
+            payment.save()
+            log_payment(f"Статус платежа {payment_id} обновлён с {old_status_db} на {status} (уведомление REFUNDED).")
+
             log_payment(f"Получено уведомление о возврате средств по платежу {payment_id}.")
             
             if payment.user_search_history_record:
@@ -619,7 +640,7 @@ def handle_notification(data: dict) -> dict:
                 )
                 
                 payment.user_search_history_record = None
-                payment.save()
+                payment.save() # Сохраняем обнуление связи с историей
                 
                 log_payment(f"Запись об отмене поисков создана для пользователя {user} по возврату платежа {payment_id}.")
                 return {'success': True, 'message': 'Возврат средств подтвержден, поиски возвращены.'}
@@ -627,14 +648,19 @@ def handle_notification(data: dict) -> dict:
                 log_payment(f"Получено уведомление о возврате по платежу {payment_id}, но запись о начислении поисков не найдена или уже была отменена.")
                 return {'success': True, 'message': 'Возврат средств подтвержден, начисление поисков отсутствует или уже отменено.'}
 
-        # Для других статусов (NEW, AUTHORIZED, REJECTED и т.д.) просто логируем
-        return {'success': True, 'message': f'Статус обновлён на {status}.'}
+        # Для других статусов (NEW, REJECTED, DEADLINE_EXPIRED и т.д.) просто обновляем статус и логируем
+        else:
+            payment.status = status
+            payment.save()
+            log_payment(f"Статус платежа {payment_id} обновлён с {old_status_db} на {status} (уведомление {status}).")
+            return {'success': True, 'message': f'Статус обновлён на {status}.'}
 
     except Exception as e:
         error_msg = f"Ошибка обработки уведомления: {e}"
         log_payment(error_msg)
         logger.error(error_msg, exc_info=True)
         return {'success': False, 'error': 'Internal Server Error'}
+
     
 
 
