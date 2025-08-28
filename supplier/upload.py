@@ -177,7 +177,7 @@ def _generic_upload_view(request, config_key):
                 excel_file = request.FILES["excel_file"]
                 logger.info(f"{log_prefix} - Начало загрузки файла: {excel_file.name}")
 
-                wb = openpyxl.load_workbook(excel_file)
+                wb = openpyxl.load_workbook(excel_file, read_only=True)
                 ws = wb.active
 
                 # Передаем request в process_excel_file
