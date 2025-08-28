@@ -22,11 +22,11 @@
     <h5>Требования к файлу:</h5>
      <ul>
         <!-- <li>Файл должен быть в формате XLSX</li> -->
-        <li><strong>Первая строка - заголовки:</strong> id, index, country, category, name, website, description, product, contact, description_ru, product_ru, email, tn_ved, price, price_date, created_date, updated_date
+        <li><strong>Обязательные заголовки - первая строка:</strong> id, index, country, category, name, website, description, product, contact, description_ru, product_ru, email, tn_ved, price, price_date, created_date, updated_date
 </li>
-        <li><strong>Обязательные поля:</strong> index, country, category, name, website, description, product, contact, description_ru, product_ru, email</li>
-        <!-- <li>Длина полей product и product_ru не должна превышать {{ max_length }} символов</li> -->
-        <li><strong>Дата </strong>должна быть в формате YYYY-MM-DD</li>
+        <li><strong>Обязательные поля - не должны быть пустыми:</strong> index, country, category, name, website, description, product, contact, description_ru, product_ru, email</li>
+       <li><strong>Внимание!</strong> Строки, в которых будут пустые Обязательные поля НЕ будут ЗАГРУЖЕНЫ.</li>
+        <!-- <li><strong>Дата </strong>должна быть в формате YYYY-MM-DD</li> -->
     </ul>
 </div>
 {% endblock %}

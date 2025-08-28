@@ -85,10 +85,13 @@ class UploadExcelForm(forms.Form):
         help_text='Поддерживается только формат .xlsx',
         widget=forms.FileInput(attrs={'accept': '.xlsx'})
     )
+
     def clean_excel_file(self):
         file = self.cleaned_data['excel_file']
-        if file.size > 90 * 1024 * 1024:  # 90 MB
-            raise forms.ValidationError("Файл слишком большой (максимум 90MB)")
+        if not file.name.endswith('.xlsx'):
+            raise forms.ValidationError("Файл должен быть в формате .xlsx")
+        if file.size > 100 * 1024 * 1024:  # 100 MB, увеличен лимит
+            raise forms.ValidationError("Файл слишком большой (максимум 100MB)")
         return file
 
     
