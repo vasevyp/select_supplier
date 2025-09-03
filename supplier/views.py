@@ -1,24 +1,42 @@
 """supplier app views"""
 
-import logging
+# import logging
+# import threading
+# import json
 # from openpyxl import load_workbook
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from django.views import View
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+
+# from django.views import View
+# from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.views.generic import ListView, DetailView
+from django.db import transaction, IntegrityError
 from django.db.models import Q
 from django.contrib.postgres.search import SearchVector, SearchQuery
-from django.contrib.auth.decorators import login_required  
-from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
+from django.utils import timezone
+from django.contrib.auth import get_user_model
 
-from django.views.decorators.http import require_POST
+# from django.views.decorators.http import require_POST
 
-from customer_account.models import SearchResult, SearchResultTechnology, SearchResultLogistic
+from customer_account.models import (
+    SearchResult,
+    SearchResultTechnology,
+    SearchResultLogistic,
+)
 from bank_clearing.models import UserSearchCount, UserSearchCountHistory
-from .forms import ImportForm, SupplierSearchForm, SupplierSearchForm2
-from .models import Supplier, Country, Category, CategoryTechnology, CategoryLogistic, Technology, Logistic
+from .forms import SupplierSearchForm, SupplierSearchForm2
+from .models import (
+    Supplier,
+    Country,
+    Category,
+    CategoryTechnology,
+    CategoryLogistic,
+    Technology,
+    Logistic,
+)
 
+User = get_user_model()
 
 
 class Category_list(ListView):
@@ -43,384 +61,280 @@ class Supplier_list(ListView):
 
 
 class SupplierDetailView(DetailView):
+    """Детальная информация по поставщику"""
+
     model = Supplier
     template_name = "supplier/detail.html"
     context_object_name = "supplier"
 
 
-def supplier_detail(request, pk):
-    """Детальная информация по поставщику"""
-    supplier = Supplier.objects.get(pk=pk)
-    return render(request, "supplier/detail.html", {"supplier": supplier})
-
 class TechnologyDetailView(DetailView):
+    """Детальная информация по поставщику"""
+
     model = Technology
     template_name = "technology/technology_detail.html"
     context_object_name = "supplier"
 
 
-def technology_detail(request, pk):
-    """Детальная информация по поставщику"""
-    supplier = Technology.objects.get(pk=pk)
-    return render(request, "technology/technology_detail.html", {"supplier": supplier})
-
 class LogisticDetailView(DetailView):
+    """Детальная информация по поставщику"""
+
     model = Logistic
     template_name = "logistic/logistic_detail.html"
     context_object_name = "supplier"
 
+# Блок поиска
+# ****************************************
+# Словарь для маппинга типов поиска
+SEARCH_CONFIG = {
+    "supplier": {
+        "model": Supplier,
+        "category_model": Category,
+        "search_result_model": SearchResult,
+        "template": "supplier/supplier_search.html",
+        "section": "goods",
+        "category_param": "category",
+    },
+    "technology": {
+        "model": Technology,
+        "category_model": CategoryTechnology,
+        "search_result_model": SearchResultTechnology,
+        "template": "technology/technology_search.html",
+        "section": "technology",
+        "category_param": "category_technology",
+    },
+    "logistic": {
+        "model": Logistic,
+        "category_model": CategoryLogistic,
+        "search_result_model": SearchResultLogistic,
+        "template": "logistic/logistic_search.html",
+        "section": "logistics",
+        "category_param": "category_logistic",
+    },
+}
 
-def logistic_detail(request, pk):
-    """Детальная информация по поставщику"""
-    supplier = Logistic.objects.get(pk=pk)
-    return render(request, "logistic/logistic_detail.html", {"supplier": supplier})
+
+def get_or_create_user_search_count(user):
+    """Получение или создание счетчика поиска пользователя с обработкой конкурентности"""
+    try:
+        # Пытаемся получить существующий счетчик
+        return UserSearchCount.objects.get(user=user)
+    except UserSearchCount.DoesNotExist:
+        try:
+            # Пытаемся создать новый счетчик
+            return UserSearchCount.objects.create(
+                user=user, add_count=0, reduce_count=0
+            )
+        except IntegrityError:
+            # Если возникла ошибка уникальности (другой поток уже создал запись),
+            # получаем существующий счетчик
+            return UserSearchCount.objects.get(user=user)
 
 
+def update_user_search_count_and_history(user, section):
+    """Обновление счетчика поиска пользователя и создание записи в истории"""
+    try:
+        with transaction.atomic():
+            # Получаем и блокируем счетчик для обновления
+            counter = UserSearchCount.objects.select_for_update().get(user=user)
+
+            # Проверяем доступность поиска
+            if counter.available_count >= 1:
+                # Увеличиваем счетчик использованных поисков
+                counter.reduce_count += 1
+                # Сохраняем - это автоматически пересчитает available_count
+                counter.save()
+
+                # Создаем запись в истории поиска
+                UserSearchCountHistory.objects.create(
+                    user=user, add_count=0, reduce_count=1, section=section
+                )
+
+                return counter
+            else:
+                return None
+    except UserSearchCount.DoesNotExist:
+        return None
 
 
-@login_required 
+def perform_search(search_type, request_data, user):
+    """Универсальная функция поиска с оптимизациями"""
+    config = SEARCH_CONFIG[search_type]
+
+    category_id = request_data.get(config["category_param"])
+    country_id = request_data.get("country")
+    language = request_data.get("language")
+    product = request_data.get("product")
+    query = product.strip() if product else ""
+
+    # Проверка обязательных параметров
+    if not country_id or not category_id:
+        return {
+            "results": [],
+            "message404": "ВНИМАНИЕ! Сделайте выбор страны и категории!",
+            "select_except": 0,
+            "count": 0,
+        }
+
+    try:
+        # Используем select_related для оптимизации запросов
+        category = config["category_model"].objects.select_related().get(id=category_id)
+        country = Country.objects.select_related().get(id=country_id)
+
+        # Определяем поле поиска
+        search_field = "product_ru" if language == "ru" else "product"
+
+        # Выполняем поиск с оптимизацией
+        results = (
+            config["model"]
+            .objects.annotate(search=SearchVector(search_field))
+            .filter(
+                Q(country=country) & Q(category=category) & Q(search=SearchQuery(query))
+            )
+            .order_by("-id")
+        )
+
+        result_count = results.count()
+
+        if result_count > 0:
+            # Пакетное сохранение результатов поиска (оптимизация)
+            for item in results:
+                config["search_result_model"].objects.get_or_create(
+                    user_id=user.id,
+                    supplier_name_id=item.id,
+                    defaults={"supplier_email": item.email, "product": query},
+                )
+
+            # Обновляем счетчик поиска и создаем запись в истории
+            updated_counter = update_user_search_count_and_history(
+                user, config["section"]
+            )
+            if updated_counter is None:
+                return {
+                    "results": [],
+                    "message404": "",
+                    "select_except": 0,
+                    "available_message": "Ваш остаток по подписке равен 0. Поиск недоступен.",
+                    "count": result_count,
+                }
+
+            return {
+                "results": results,
+                "message404": "",
+                "select_except": 0,
+                "count": result_count,
+            }
+        else:
+            return {
+                "results": [],
+                "message404": "",
+                "select_except": "Вернитесь к форме выбора и повторите поиск.",
+                "count": 0,
+            }
+
+    except (config["category_model"].DoesNotExist, Country.DoesNotExist):
+        return {
+            "results": [],
+            "message404": "Неверные параметры поиска",
+            "select_except": "Вернитесь к форме выбора и повторите поиск.",
+            "count": 0,
+        }
+    except Exception as e:
+        return {
+            "results": [],
+            "message404": "Произошла ошибка при поиске",
+            "select_except": "Попробуйте повторить поиск позже.",
+            "count": 0,
+        }
+
+
+@login_required
 def supplier_selection(request):
-    """Выбор полных данных по поставщику за все периоды Полнотекстовый поиск"""
-            
-    form = SupplierSearchForm
-    results = []
-    language=''
-    select_except=0
-    product=''
-    message404=''
-    available_message=''
-    # print('Start Supplier')
-    n_user=UserSearchCount.objects.get(user=request.user)
-    if not n_user:
-        UserSearchCount.objects.create(user=request.user, add_count=0, reduce_count=0)
-
-    if UserSearchCount.objects.get(user=request.user).available_count >= 1:
-           # print('OK available_count', UserSearchCount.objects.get(user=request.user).available_count)
-        if request.method == "POST":
-            category_id = request.POST.get("category")
-            country_id = request.POST.get("country")
-            language = request.POST.get("language")
-            product = request.POST.get("product")        
-            query = product.strip()       
-
-            # Определяем, по какому полю искать
-            if language == "ru":
-                search_field = "product_ru"
-                search_query = SearchQuery(query)  # Создаем SearchQuery
-                
-            else:
-                search_field = "product"
-                search_query = SearchQuery(query)  # Создаем SearchQuery
-                
-            # Создаем SearchQuery
-            # search_query = SearchQuery(query)
-
-            # Используем динамический SearchVector
-            if not country_id or not category_id:
-                message404='ВНИМАНИЕ! Сделайте выбор страны и категории!'
-                # print('Except Results =')
-            else:
-                category=Category.objects.get(id=category_id)
-                country=Country.objects.get(id=country_id)
-                results = Supplier.objects.annotate(search=SearchVector(search_field)).filter(
-                Q(country=country) & Q(category=category) & Q(search=search_query)
-            ).order_by('-id')     
-                if results:
-                    print('Resultcount== ',results.count())
-                    for i in results:
-                        SearchResult.objects.get_or_create(
-                            user_id = request.user.id,
-                            supplier_name_id = i.id,
-                            supplier_email=i.email,
-                            product = query
-                        )
-                        # print('NEW Res==', request.user.id, query, i.product, i.name, i.email)
-
-                    # Если поиск успешен (request не пустой)         
-                    # Обновляем счетчик Подписки
-                    counter, created = UserSearchCount.objects.get_or_create(user=request.user)
-                    counter.reduce_count += 1
-                    counter.save()
-                        
-                    # Записываем историю Подписки
-                    UserSearchCountHistory.objects.create(
-                            user=request.user,
-                            add_count=0,
-                            reduce_count=1,
-                            section="goods"
-                        )
-                else:
-                    select_except = "Вернитесь к форме выбора и повторите поиск."
-    else:
-        available_message='Ваш остаток по подписке равен 0. Поиск недоступен.'        
-
-    count = Supplier.objects.all().count()
-    available_count = UserSearchCount.objects.get(user=request.user).available_count
-    # paginator = Paginator(results, 20)  # Show 25 contacts per page
-    # page_number = request.GET.get("page")
-    # page_obj = paginator.get_page(page_number)
-    # try:
-    #     page_obj = paginator.get_page(page_number)
-    # except PageNotAnInteger:
-    #     page_obj = paginator.page(1)
-    # except EmptyPage:
-    #     page_obj = paginator.page(paginator.num_pages)
-
-    return render(
-        request,
-        "supplier/supplier_search.html",
-        {
-            # 'objects':objects,
-            # "page_obj": page_obj,
-            "language": language,
-            "product": product,
-            "count": count,
-            "items": results,
-            "select_except": select_except,
-            "form": form,
-            'message404': message404,
-            'available_count': available_count,
-            'available_message': available_message,
-        },
-    )
+    """Выбор полных данных по поставщику товаров за все периоды Полнотекстовый поиск"""
+    return _generic_selection_view(request, "supplier")
 
 
-
+@login_required
 def technology_selection(request):
-    """Выбор из базы полных данных по поставщику за все периоды Полнотекстовый поиск"""
+    """Выбор из базы полных данных по поставщику технологий за все периоды Полнотекстовый поиск"""
+    return _generic_selection_view(request, "technology")
 
-    form = SupplierSearchForm
-    results = []
-    language=''
-    # search_result=''
-    select_except=0
-    product=''
-    message404=''
-    available_message=''
-    if UserSearchCount.objects.get(user=request.user).available_count >= 1:
-        # print('OK available_count', UserSearchCount.objects.get(user=request.user).available_count)
-        if request.method == "POST":
-            category_id = request.POST.get("category_technology")
-            country_id = request.POST.get("country")
-            language = request.POST.get("language")
-            product = request.POST.get("product")        
-            query = product.strip()
-           
-            # Определяем, по какому полю искать
-            if language == "ru":
-                search_field = "product_ru"
-                search_query = SearchQuery(query)  # Создаем SearchQuery
-                
-            else:
-                search_field = "product"
-                search_query = SearchQuery(query)  # Создаем SearchQuery
-                
-            # Создаем SearchQuery
-            # search_query = SearchQuery(query)
 
-            # Используем динамический SearchVector
-            if not country_id or not category_id:
-                message404='ВНИМАНИЕ! Сделайте выбор страны и категории!'
-                # print('Except Results =')
-            else:
-                category=CategoryTechnology.objects.get(id=category_id)
-                country=Country.objects.get(id=country_id)
-                results = Technology.objects.annotate(search=SearchVector(search_field)).filter(
-                Q(country=country) & Q(category=category) & Q(search=search_query)
-            ).order_by('-id')    
-                if results:
-                    for i in results:
-                        SearchResultTechnology.objects.get_or_create(
-                            user_id = request.user.id,
-                            supplier_name_id = i.id,
-                            supplier_email=i.email,
-                            product = query
-                        )
-                    # Если поиск успешен (request не пустой)            
-                    # Обновляем счетчик Подписки
-                    counter, created = UserSearchCount.objects.get_or_create(user=request.user)
-                    counter.reduce_count += 1
-                    counter.save()
-                    
-                    # Записываем историю Подписки
-                    UserSearchCountHistory.objects.create(
-                        user=request.user,
-                        add_count=0,
-                        reduce_count=1,
-                        section="technology"
-                    )    
-                else:        
-                    select_except = "Вернитесь к форме выбора и повторите поиск."
-    else:
-        available_message='Ваш остаток по подписке равен 0. Поиск недоступен.'   
-
-    count = Technology.objects.all().count()
-    available_count = UserSearchCount.objects.get(user=request.user).available_count
-    # paginator = Paginator(results, 20)  # Show 25 contacts per page
-    # page_number = request.GET.get("page")
-    # page_obj = paginator.get_page(page_number)
-
-    return render(
-        request,
-        "technology/technology_search.html",
-        {
-            # 'objects':objects,
-            # "page_obj": page_obj,
-            "language": language,
-            "product": product,
-            "count": count,
-            "items": results,
-            "select_except": select_except,
-            "form": form,
-            'message404': message404,
-            'available_count': available_count,
-            'available_message': available_message,
-        },
-    )
-
+@login_required
 def logistic_selection(request):
-    """Выбор из базы полных данных по поставщику за все периоды Полнотекстовый поиск"""
+    """Выбор из базы полных данных по поставщику услуг логистики за все периоды Полнотекстовый поиск"""
+    return _generic_selection_view(request, "logistic")
 
+
+def _generic_selection_view(request, search_type):
+    """Универсальная функция для обработки запросов поиска"""
+    config = SEARCH_CONFIG[search_type]
     form = SupplierSearchForm
     results = []
-    language=''
-    # search_result=''
-    select_except=0
-    product=''
-    message404=''
-    available_message=''
-    if UserSearchCount.objects.get(user=request.user).available_count >= 1:
-        # print('OK available_count', UserSearchCount.objects.get(user=request.user).available_count)
+    language = ""
+    select_except = 0
+    product = ""
+    message404 = ""
+    available_message = ""
+    count = 0
+
+    # Получаем счетчик пользователя
+    user_counter = get_or_create_user_search_count(request.user)
+
+    # Проверяем доступность поиска
+    has_search_quota = user_counter.available_count >= 1
+
+    if has_search_quota:
         if request.method == "POST":
-            category_id = request.POST.get("category_logistic")
-            country_id = request.POST.get("country")
-            language = request.POST.get("language")
-            product = request.POST.get("product")        
-            query = product.strip()
-            
-            # Определяем, по какому полю искать
-            if language == "ru":
-                search_field = "product_ru"
-                search_query = SearchQuery(query)  # Создаем SearchQuery
-                
-            else:
-                search_field = "product"
-                search_query = SearchQuery(query)  # Создаем SearchQuery
-                
-            # Создаем SearchQuery
-            # search_query = SearchQuery(query)
+            # Извлекаем данные из запроса
+            request_data = {
+                "category": request.POST.get("category"),
+                "category_technology": request.POST.get("category_technology"),
+                "category_logistic": request.POST.get("category_logistic"),
+                "country": request.POST.get("country"),
+                "language": request.POST.get("language"),
+                "product": request.POST.get("product"),
+            }
 
-            # Используем динамический SearchVector
-            if not country_id or not category_id:
-                message404='ВНИМАНИЕ! Сделайте выбор страны и категории!'
-                # print('Except Results =')
-            else:
-                category=CategoryLogistic.objects.get(id=category_id)
-                country=Country.objects.get(id=country_id)
-                results = Logistic.objects.annotate(search=SearchVector(search_field)).filter(
-                Q(country=country) & Q(category=category) & Q(search=search_query)
-            ).order_by('-id')    
-                if results:
-                    # print('results OK', category, country)
-                    for i in results:
-                        SearchResultLogistic.objects.get_or_create(
-                            user_id = request.user.id,
-                            supplier_name_id = i.id,
-                            supplier_email=i.email,
-                            product = query
-                        )
-                    # Если поиск успешен (request не пустой)
-                    # Обновляем счетчик Подписки
-                    counter, created = UserSearchCount.objects.get_or_create(user=request.user)
-                    counter.reduce_count += 1
-                    counter.save()
-                    
-                    # Записываем историю Подписки
-                    UserSearchCountHistory.objects.create(
-                        user=request.user,
-                        add_count=0,
-                        reduce_count=1,
-                        section="logistics"
-                    )    
-                else:        
-                    select_except = "Вернитесь к форме выбора и повторите поиск."
+            language = request.POST.get("language", "")
+            product = request.POST.get("product", "")
 
+            # Выполняем поиск
+            search_result = perform_search(search_type, request_data, request.user)
+            results = search_result["results"]
+            message404 = search_result["message404"]
+            select_except = search_result["select_except"]
+            count = search_result["count"]
+            available_message = search_result.get("available_message", "")
     else:
-        available_message='Ваш остаток по подписке равен 0. Поиск недоступен.'  
+        available_message = "Ваш остаток по подписке равен 0. Поиск недоступен."
+        # Получаем общее количество для отображения
+        count = config["model"].objects.count()
 
-    count = Logistic.objects.all().count()  
-    available_count = UserSearchCount.objects.get(user=request.user).available_count
-    # paginator = Paginator(results, 20)  # Show 25 contacts per page
-    # page_number = request.GET.get("page")
-    # page_obj = paginator.get_page(page_number)
+    # Если не было POST запроса, показываем общее количество
+    if count == 0 and request.method != "POST":
+        count = config["model"].objects.count()
+
+    # Получаем актуальное значение available_count для отображения
+    try:
+        current_counter = UserSearchCount.objects.get(user=request.user)
+        available_count = current_counter.available_count
+    except UserSearchCount.DoesNotExist:
+        available_count = 0
 
     return render(
         request,
-        "logistic/logistic_search.html",
+        config["template"],
         {
-            # 'objects':objects,
-            # "page_obj": page_obj,
             "language": language,
             "product": product,
             "count": count,
             "items": results,
             "select_except": select_except,
             "form": form,
-            'message404': message404,
-            'available_count': available_count,
-            'available_message': available_message,
+            "message404": message404,
+            "available_count": available_count,
+            "available_message": available_message,
         },
     )
-
-"""
-from django.db.models import Q
-
-class SearchAPI(APIView):
-    def get(self, request, search_text, format=None, **kwargs):
-        Model.objects.filter(Q(search_tags__contains=search_text) | Q(auto_tags__contains=search_text) 
-"""
-
-
-
-# def supplier_selection(request):
-#     form = SupplierSearchForm(request.GET or None)  # Инициализация формы с GET-данными
-#     items_list = Supplier.objects.none()
-#     product = ''
-#     language = ''
-#     select_except = None
-#     count = Supplier.objects.all().count()
-
-#     # Обрабатываем GET-запрос вместо POST
-#     if request.method == "GET" and any(k in request.GET for k in ['country', 'language', 'product']):
-#         country = request.GET.get("country")
-#         language = request.GET.get("language")
-#         product = request.GET.get("product", "").strip()
-
-#         if country and language and product:
-#             try:
-#                 if language == 'ru':
-#                     items = Supplier.objects.filter(country=country, product_ru__icontains=product)
-#                 else:
-#                     items = Supplier.objects.filter(country=country, product__icontains=product)
-
-#                 items = items.order_by('-id')
-#                 items_list = items
-
-#                 if not items.exists():
-#                     select_except = 'Ничего не найдено. Попробуйте изменить критерии поиска.'
-
-#             except Exception as e:
-#                 select_except = f'Ошибка поиска: {str(e)}'
-
-#     paginator = Paginator(items_list, 20)
-#     page_number = request.GET.get('page')
-#     page_obj = paginator.get_page(page_number)
-
-#     return render(request, "supplier/supplier_search.html", {
-#         'page_obj': page_obj,
-#         'language': language,
-#         'product': product,
-#         'count': count,
-#         'select_except': select_except,
-#         'form': form
-#     })
+# ****************************************

@@ -137,6 +137,7 @@ CRISPY_TEMPLATE_PACK = "bootstrap5"  # или 'bootstrap5', в зависимо�
 # CAPTCHA_CHALLENGE_FUNCT = 'captcha.helpers.random_char_challenge'
 CAPTCHA_CHALLENGE_FUNCT = 'captcha.helpers.word_challenge'
 
+
 # Настройки Celery
 CELERY_IMPORTS = ('customer_account.tasks',)
 
