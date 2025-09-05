@@ -157,8 +157,98 @@ def update_user_search_count_and_history(user, section):
         return None
 
 
+# def perform_search(search_type, request_data, user):
+#     """Универсальная функция поиска с оптимизациями"""
+#     config = SEARCH_CONFIG[search_type]
+
+#     category_id = request_data.get(config["category_param"])
+#     country_id = request_data.get("country")
+#     language = request_data.get("language")
+#     product = request_data.get("product")
+#     query = product.strip() if product else ""
+
+#     # Проверка обязательных параметров
+#     if not country_id or not category_id:
+#         return {
+#             "results": [],
+#             "message404": "ВНИМАНИЕ! Сделайте выбор страны и категории!",
+#             "select_except": 0,
+#             "count": 0,
+#         }
+
+#     try:
+#         # Используем select_related для оптимизации запросов
+#         category = config["category_model"].objects.select_related().get(id=category_id)
+#         country = Country.objects.select_related().get(id=country_id)
+
+#         # Определяем поле поиска
+#         search_field = "product_ru" if language == "ru" else "product"
+
+#         # Выполняем поиск с оптимизацией
+#         results = (
+#             config["model"]
+#             .objects.annotate(search=SearchVector(search_field))
+#             .filter(
+#                 Q(country=country) & Q(category=category) & Q(search=SearchQuery(query))
+#             )
+#             .order_by("-id")
+#         )
+
+#         result_count = results.count()
+
+#         if result_count > 0:
+#             # Пакетное сохранение результатов поиска (оптимизация)
+#             for item in results:
+#                 config["search_result_model"].objects.get_or_create(
+#                     user_id=user.id,
+#                     supplier_name_id=item.id,
+#                     defaults={"supplier_email": item.email, "product": query},
+#                 )
+
+#             # Обновляем счетчик поиска и создаем запись в истории
+#             updated_counter = update_user_search_count_and_history(
+#                 user, config["section"]
+#             )
+#             if updated_counter is None:
+#                 return {
+#                     "results": [],
+#                     "message404": "",
+#                     "select_except": 0,
+#                     "available_message": "Ваш остаток по подписке равен 0. Поиск недоступен.",
+#                     "count": result_count,
+#                 }
+
+#             return {
+#                 "results": results,
+#                 "message404": "",
+#                 "select_except": 0,
+#                 "count": result_count,
+#             }
+#         else:
+#             return {
+#                 "results": [],
+#                 "message404": "",
+#                 "select_except": "Вернитесь к форме выбора и повторите поиск.",
+#                 "count": 0,
+#             }
+
+#     except (config["category_model"].DoesNotExist, Country.DoesNotExist):
+#         return {
+#             "results": [],
+#             "message404": "Неверные параметры поиска",
+#             "select_except": "Вернитесь к форме выбора и повторите поиск.",
+#             "count": 0,
+#         }
+#     except Exception as e:
+#         return {
+#             "results": [],
+#             "message404": "Произошла ошибка при поиске",
+#             "select_except": "Попробуйте повторить поиск позже.",
+#             "count": 0,
+#         }
+
 def perform_search(search_type, request_data, user):
-    """Универсальная функция поиска с оптимизациями"""
+    """Универсальная функция поиска с оптимизациями (4 варианта поиска)"""
     config = SEARCH_CONFIG[search_type]
 
     category_id = request_data.get(config["category_param"])
@@ -167,32 +257,36 @@ def perform_search(search_type, request_data, user):
     product = request_data.get("product")
     query = product.strip() if product else ""
 
-    # Проверка обязательных параметров
-    if not country_id or not category_id:
+    # Проверка обязательного параметра product
+    if not query:
         return {
             "results": [],
-            "message404": "ВНИМАНИЕ! Сделайте выбор страны и категории!",
+            "message404": "ВНИМАНИЕ! Введите наименование продукта для поиска!",
             "select_except": 0,
             "count": 0,
         }
 
     try:
-        # Используем select_related для оптимизации запросов
-        category = config["category_model"].objects.select_related().get(id=category_id)
-        country = Country.objects.select_related().get(id=country_id)
-
         # Определяем поле поиска
         search_field = "product_ru" if language == "ru" else "product"
 
+        # Начинаем строить запрос
+        base_query = config["model"].objects.annotate(search=SearchVector(search_field))
+        
+        # Добавляем фильтр по текстовому поиску
+        search_filter = Q(search=SearchQuery(query))
+        
+        # Добавляем фильтры в зависимости от заполненных полей
+        if country_id:
+            country = Country.objects.select_related().get(id=country_id)
+            search_filter &= Q(country=country)
+        
+        if category_id:
+            category = config["category_model"].objects.select_related().get(id=category_id)
+            search_filter &= Q(category=category)
+        
         # Выполняем поиск с оптимизацией
-        results = (
-            config["model"]
-            .objects.annotate(search=SearchVector(search_field))
-            .filter(
-                Q(country=country) & Q(category=category) & Q(search=SearchQuery(query))
-            )
-            .order_by("-id")
-        )
+        results = base_query.filter(search_filter).order_by("-id")
 
         result_count = results.count()
 
@@ -228,7 +322,7 @@ def perform_search(search_type, request_data, user):
             return {
                 "results": [],
                 "message404": "",
-                "select_except": "Вернитесь к форме выбора и повторите поиск.",
+                "select_except": "По вашему запросу поставщиков не найдено. Попробуйте изменить параметры поиска.",
                 "count": 0,
             }
 
@@ -236,7 +330,7 @@ def perform_search(search_type, request_data, user):
         return {
             "results": [],
             "message404": "Неверные параметры поиска",
-            "select_except": "Вернитесь к форме выбора и повторите поиск.",
+            "select_except": "Попробуйте выбрать другие параметры поиска.",
             "count": 0,
         }
     except Exception as e:
@@ -246,7 +340,6 @@ def perform_search(search_type, request_data, user):
             "select_except": "Попробуйте повторить поиск позже.",
             "count": 0,
         }
-
 
 @login_required
 def supplier_selection(request):
