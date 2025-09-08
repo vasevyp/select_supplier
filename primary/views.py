@@ -86,6 +86,7 @@ DEMO_SEARCH_CONFIG = {
     },
 }
 
+# ***********1***************************
 
 # def perform_demo_search(search_type, request_data):
 #     """Универсальная функция демопоиска"""
@@ -156,8 +157,85 @@ DEMO_SEARCH_CONFIG = {
 #             "count": 0,
 #         }
 
+# ***********12***************************
+
+# def perform_demo_search(search_type, request_data):
+#     """Универсальная функция демопоиска (4 варианта поиска)"""
+#     config = DEMO_SEARCH_CONFIG[search_type]
+
+#     category_id = request_data.get("category")
+#     country_id = request_data.get("country")
+#     language = request_data.get("language")
+#     product = request_data.get("product")
+#     query = product.strip() if product else ""
+
+#     # Проверка обязательного параметра product
+#     if not query:
+#         return {
+#             "results": [],
+#             "message404": "ВНИМАНИЕ! Введите наименование продукта для поиска!",
+#             "select_except": 0,
+#             "count": 0,
+#         }
+
+#     try:
+#         # Определяем поле поиска
+#         search_field = "product_ru" if language == "ru" else "product"
+
+#         # Начинаем строить запрос
+#         base_query = config["model"].objects.annotate(search=SearchVector(search_field))
+        
+#         # Добавляем фильтр по текстовому поиску
+#         search_filter = Q(search=SearchQuery(query))
+        
+#         # Добавляем фильтры в зависимости от заполненных полей
+#         if country_id:
+#             country = Country.objects.select_related().get(id=country_id)
+#             search_filter &= Q(country=country)
+        
+#         if category_id:
+#             category = config["category_model"].objects.select_related().get(id=category_id)
+#             search_filter &= Q(category=category)
+        
+#         # Выполняем поиск с оптимизацией
+#         results = base_query.filter(search_filter).order_by("-id")
+
+#         result_count = results.count()
+
+#         if result_count > 0:
+#             return {
+#                 "results": results,
+#                 "message404": "",
+#                 "select_except": 0,
+#                 "count": result_count,
+#             }
+#         else:
+#             return {
+#                 "results": [],
+#                 "message404": "",
+#                 "select_except": "По вашему запросу поставщиков не найдено. Попробуйте изменить параметры поиска.",
+#                 "count": 0,
+#             }
+
+#     except (config["category_model"].DoesNotExist, Country.DoesNotExist):
+#         return {
+#             "results": [],
+#             "message404": "Неверные параметры поиска",
+#             "select_except": "Попробуйте выбрать другие параметры поиска.",
+#             "count": 0,
+#         }
+#     except Exception as e:
+#         return {
+#             "results": [],
+#             "message404": "Произошла ошибка при поиске",
+#             "select_except": "Попробуйте повторить поиск позже.",
+#             "count": 0,
+#         }
+    
+# ***********123***************************
+
 def perform_demo_search(search_type, request_data):
-    """Универсальная функция демопоиска (4 варианта поиска)"""
+    """Универсальная функция демопоиска"""
     config = DEMO_SEARCH_CONFIG[search_type]
 
     category_id = request_data.get("category")
@@ -179,11 +257,14 @@ def perform_demo_search(search_type, request_data):
         # Определяем поле поиска
         search_field = "product_ru" if language == "ru" else "product"
 
+        # Создаем точный поиск по отдельным словам
+        search_query = SearchQuery(query, config='russian' if language == "ru" else 'english')
+
         # Начинаем строить запрос
         base_query = config["model"].objects.annotate(search=SearchVector(search_field))
         
         # Добавляем фильтр по текстовому поиску
-        search_filter = Q(search=SearchQuery(query))
+        search_filter = Q(search=search_query)
         
         # Добавляем фильтры в зависимости от заполненных полей
         if country_id:
@@ -228,6 +309,7 @@ def perform_demo_search(search_type, request_data):
             "select_except": "Попробуйте повторить поиск позже.",
             "count": 0,
         }
+
 def _generic_demo_selection_view(request, search_type):
     """Универсальная функция для обработки запросов демопоиска"""
     config = DEMO_SEARCH_CONFIG[search_type]
