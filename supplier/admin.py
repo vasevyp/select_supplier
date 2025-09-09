@@ -13,7 +13,7 @@ class CountryAdmin(ImportExportModelAdmin):
         "mode",
         "country",
     )
-    list_per_page = 20
+    list_per_page = 100
 
 
 @admin.register(Category)
@@ -21,42 +21,42 @@ class CategoryAdmin(ImportExportModelAdmin):
     list_display = ("category", "code", "index", "created_date")
     search_fields = ("category",)
     ordering = ("category",)
-    list_per_page = 20
+    list_per_page = 100
 
 @admin.register(CategoryTechnology)
 class CategoryTechnologyAdmin(ImportExportModelAdmin):
     list_display = ("category", "code", "index", "created_date")
     search_fields = ("category",)
     ordering = ("category",)
-    list_per_page = 20
+    list_per_page = 100
 @admin.register(CategoryLogistic)
 class CategoryLogisticAdmin(ImportExportModelAdmin):
     list_display = ("category", "code", "index", "created_date")
     search_fields = ("category",)
     ordering = ("category",)
-    list_per_page = 20    
+    list_per_page = 100    
 
 @admin.register(Supplier)
 class SupplierAdmin(ImportExportModelAdmin):
     # readonly_fields = ('name','website')
-    list_display = ("name", "country", "category", "index", "id","created_date")
+    list_display = ("name", "country", "category", "index", "id", "data_source", "created_date")
     search_fields = ("name", "product", "product_ru")
     list_filter = ("country", "category")
     save_on_top = True
-    list_per_page = 50
+    list_per_page = 100
 
 @admin.register(Technology)
 class TechnologyAdmin(ImportExportModelAdmin):
-    list_display = ("name", "country", "category", "index", "id","created_date")
+    list_display = ("name", "country", "category", "index", "id", "data_source", "created_date")
     search_fields = ("name", "product", "product_ru")
     list_filter = ("country", "category")
     save_on_top = True
-    list_per_page = 50
+    list_per_page = 100
 
 @admin.register(Logistic)
 class LogisticAdmin(ImportExportModelAdmin):
-    list_display = ("name", "country", "category", "index", "id","created_date")
+    list_display = ("name", "country", "category", "index", "id","data_source", "created_date")
     search_fields = ("name", "product", "product_ru")
     list_filter = ("country", "category")
     save_on_top = True
-    list_per_page = 50        
+    list_per_page = 100        

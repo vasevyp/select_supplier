@@ -51,11 +51,12 @@ FIELD_MAPPING = {
     'description_ru': 9,
     'product_ru': 10,
     'email': 11,
-    'tn_ved': 12,
-    'price': 13,
-    'price_date': 14,
-    'created_date': 15,
-    'updated_date': 16,
+    'data_source':12,
+    'tn_ved': 13,
+    'price': 14,
+    'price_date': 15,
+    'created_date': 16,
+    'updated_date': 17,
 }
 
 def parse_date(date_str):
@@ -99,7 +100,7 @@ def process_excel_file(ws, model_class, config_key, request): # Добавлен
     headers = [cell.value for cell in ws[1]]
     required_headers = [
         "id", "index", "country", "category", "name", "website", "description",
-        "product", "contact", "description_ru", "product_ru", "email", "tn_ved",
+        "product", "contact", "description_ru", "product_ru", "email", "data_source", "tn_ved",
         "price", "price_date", "created_date", "updated_date",
         # "search_vector_product", "search_vector_product_ru", # Эти поля обычно заполняются в БД
     ]

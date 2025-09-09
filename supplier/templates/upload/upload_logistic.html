@@ -9,23 +9,26 @@
             <div class="alert alert-{{ message.tags }}">{{ message }}</div>
         {% endfor %}
     {% endif %} -->
-    
+
     <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}  
+        {% csrf_token %}
         {{form}}
         <button type="submit" class="btn btn-primary my-3">Загрузить</button>
     </form>
-    <div >
-    <a class="text-decoration-none fw-bold" href="{% url 'upload_logistic' %}">Загрузить ещё один файл</a>
-</div>
+    <div>
+        <a class="text-decoration-none fw-bold" href="{% url 'upload_logistic' %}">Загрузить ещё один файл</a>
+    </div>
     <hr>
     <h5>Требования к файлу:</h5>
-     <ul>
+    <ul>
         <!-- <li>Файл должен быть в формате XLSX</li> -->
-        <li><strong>Обязательные заголовки - первая строка:</strong> id, index, country, category, name, website, description, product, contact, description_ru, product_ru, email, tn_ved, price, price_date, created_date, updated_date
-</li>
-        <li><strong>Обязательные поля - не должны быть пустыми:</strong> index, country, category, name, website, description, product, contact, description_ru, product_ru, email</li>
-       <li><strong>Внимание!</strong> Строки, в которых будут пустые Обязательные поля НЕ будут ЗАГРУЖЕНЫ.</li>
+        <li><strong>Обязательные заголовки - первая строка:</strong> id, index, country, category, name, website,
+            description, product, contact, description_ru, product_ru, email, data_source, tn_ved, price, price_date, created_date,
+            updated_date
+        </li>
+        <li><strong>Обязательные поля - не должны быть пустыми:</strong> index, country, category, name, website,
+            description, product, contact, description_ru, product_ru, email</li>
+        <li><strong>Внимание!</strong> Строки, в которых будут пустые Обязательные поля НЕ будут ЗАГРУЖЕНЫ.</li>
         <!-- <li><strong>Дата </strong>должна быть в формате YYYY-MM-DD</li> -->
     </ul>
 </div>
