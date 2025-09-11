@@ -11,6 +11,7 @@ from django.db.models import Subquery, OuterRef, F, Prefetch
 
 
 from users.models import Profile
+from bank_clearing.models import UserSearchCount, UserSearchCountHistory, SubscriptionRates
 from .models import (
     SearchResult,
     MailSendList,
@@ -26,7 +27,7 @@ from .forms import (
     SearchResultLogisticForm,
 )
 from .tasks import send_supplier_email
-from bank_clearing.models import UserSearchCount, UserSearchCountHistory
+
 
 # from django.utils.html import strip_tags
 
@@ -332,14 +333,23 @@ def customer_mail(request):
 
 
 # отображение данных в Личном Кабинете
-
 def dashbord(request):
     """Главная страница Личного кабинета"""
-    user_subscribe=UserSearchCount.objects.get(user=request.user).available_count
-    user_unique_request= UserSearchCount.objects.get(user=request.user).reduce_count
+    # Получаем данные поисковых запросов пользователя
     user_request = SearchResult.objects.filter(user_id=request.user.id)
-    phone = Profile.objects.get(user_id=request.user.id).phone
-    # Отображаем список отправленных электронных писем и последних ответов поставщиков для текущего пользователя.
+    
+    # Получаем данные пользователя
+    user_search_count = UserSearchCount.objects.get(user=request.user)
+    user_subscribe = user_search_count.available_count
+    user_unique_request = user_search_count.reduce_count
+    
+    # Получаем телефон пользователя
+    try:
+        phone = Profile.objects.get(user_id=request.user.id).phone
+    except Profile.DoesNotExist:
+        phone = None
+    
+    # Отображаем список отправленных электронных писем и последних ответов поставщиков
     latest_responses = SupplierResponse.objects.filter(
         user=request.user,
         original_mail=OuterRef("email_base"),
@@ -361,21 +371,61 @@ def dashbord(request):
     response_data = []
     for sent_email in sent_emails:
         latest_response = responses.get(sent_email.response_id)
-
         response_data.append({"sent_email": sent_email, "response": latest_response})
+
+    # Получаем последнюю оплаченную подписку
+    try:
+        # Ищем последнюю запись с оплатой
+        last_payment = UserSearchCountHistory.objects.filter(
+            user=request.user,
+            section='payment'
+        ).latest('created_at')
+        
+        # Находим соответствующий тарифный план по количеству поисков
+        try:
+            subscription_plan = SubscriptionRates.objects.get(
+                search_count=last_payment.add_count,
+                is_active=True
+            )
+        except SubscriptionRates.DoesNotExist:
+            subscription_plan = None
+    except UserSearchCountHistory.DoesNotExist:
+        last_payment = None
+        subscription_plan = None
+
+    # Получаем историю оплаченных подписок
+    subscription_history = UserSearchCountHistory.objects.filter(
+        user=request.user,
+        section='payment'
+    ).order_by('-created_at')
+
+    # Для каждой записи в истории находим соответствующий тарифный план
+    for history in subscription_history:
+        try:
+            history.plan = SubscriptionRates.objects.get(
+                search_count=history.add_count,
+                is_active=True
+            )
+        except SubscriptionRates.DoesNotExist:
+            history.plan = None
+
+    # Вычисляем общие показатели
+    total_requests = user_unique_request + user_subscribe
 
     context = {
         "user_request": user_request,
-        "count": user_request.count,
-        # "unique_request": user_request.distinct("product").count,
-        'unique_request': user_unique_request,
+        "count": user_request.count(),
+        "unique_request": user_unique_request,
         "user_phone": phone,
         "response_data": response_data,
-        'user_subscribe': user_subscribe,
+        "user_subscribe": user_subscribe,
+        "total_requests": total_requests,
+        "last_payment": last_payment,
+        "subscription_plan": subscription_plan,
+        "subscription_history": subscription_history,
     }
     
     return render(request, "account/dashbord.html", context)
-
 
 
 # Подписка

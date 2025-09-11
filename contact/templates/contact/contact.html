@@ -12,10 +12,10 @@
 
 
 {% block content %}
-<div class=" col-12 mb-3">
+<div class=" col-12 me-2 mb-3">
     <!-- <p class="mt-3 color-dark1 fs-4 bg-second1 text-center fw-medium">VEDINFO.ONLINE</p> -->
 
-    <div class=" my-1 color-second-text">в стадии разработки</div>
+    <div class="text-center my-1 color-second-text">в стадии разработки</div>
     <section class="py-1">
         <div class="container ">
             <div class="row">
@@ -27,11 +27,11 @@
                             </div>
                             <div class="contact-body">
                                 <p><i class="fa fa-map-marker" aria-hidden="true"></i>
-                                    <span>Адрес:</span>
+                                    <span>Адрес:</span> ...
                                     <!-- <span class="add-ln"> 420097, Г КАЗАНЬ, УЛ ЗАСЛОНОВА д.5</span> -->
                                 </p>
                                 <p><i class="fa fa-phone" aria-hidden="true"></i>
-                                    <!-- Телефон:<span>+7 999 1559858 </span> -->
+                                    <!-- Телефон:<span>+7 999 1559858 </span> -->+7 ...
                                 </p>
                                 <p><i class="fa fa-envelope" aria-hidden="true"></i>
                                     <span><a href="mailto:htmlcss3tutorials@gmail.com">info@vedinfo.online</a></span>
@@ -39,15 +39,22 @@
                             </div>
                         </div>
 
-                        <div class="my-3 col-12 col-md-8 col-lg-6 bg-second1 border rounded">
+                        <div class="my-3 col-12 col-md-8 col-lg-6 ">
+                            <div class="bg-second1 border rounded">
                             <div class="py-2">
-                                <!-- <h5 class=" heading">Свяжитесь с нами</h5> -->
+                                <h5 class="mx-3 heading">Свяжитесь с нами</h5>
                             </div>
-                            <form method="post">
+                            <form method="post" class ="mx-3">
                                 {% csrf_token %}
-                                {{ form.as_p }}
+                                <!-- {{ form.as_p }} -->
+                                  Ваше имя: {{form.name}}
+                                  Ваш Email: {{form.email}}
+                                  Тема обращения: {{form.subject}}
+                                  Сообщение: {{form.message}}
+                                <div class="my-3">{{form.captcha}}</div>
                                 <button type="submit" class="mb-2 btn bg-blue1 bg-hover1 color-button-text sub-btn">Отправить сообщение</button>
                             </form>
+                            </div>
 
 
                         </div>

@@ -92,6 +92,23 @@ body {
     margin-bottom: 100px !important;
 }
 
+/***Личный кабинет****/
+/* .list-group-item.active,
+.list-group-item.active:hover,
+.list-group-item.active:focus {
+    background-color: var(--blue1, #1e3a8a) !important;
+    color: white !important;
+    border-color: var(--blue1, #1e3a8a) !important;
+} */
+/* .list-group-item.active,
+.list-group-item.active:hover,
+.list-group-item.active:focus {
+    z-index: 2;
+    color: #FFFFFF;;
+    background-color: #065dbb !important;
+    border-color: #2980B9 !important;
+} */
+
 /*customer_account/templates/mail/supplier_response.html*/
  /* .table th {
         background-color: #343a40;

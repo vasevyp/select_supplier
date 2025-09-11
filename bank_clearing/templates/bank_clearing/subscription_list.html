@@ -24,7 +24,7 @@
                     <form method="post" action="{% url 'bank_clearing:add_subscription_to_cart' %}">
                         {% csrf_token %}
                         <input type="hidden" name="subscription_id" value="{{ subscription.id }}">
-                        <button type="submit" class="btn btn-primary btn-block">
+                        <button type="submit" class="btn btn bg-blue1 color-button-text bg-hover1 btn-block">
                             Выбрать тариф
                         </button>
                     </form>

@@ -1,168 +1,403 @@
 {% extends 'base.html' %}
-
 {% load static %}
 {% load django_bootstrap5 %}
 
-
 {% block title %}
-{{ block.super }}: Profile
+{{ block.super }}: Личный кабинет
 {% endblock %}
 
-
 {% block content %}
-
-<!-- Begin Page Content -->
-<div class="container-fluid">
-
-    <!-- Page Heading -->
-    <div class="d-sm-flex align-items-center justify-content-between mb-4 fw-bold">
-        <h1 class="h3 mb-0 text-gray-800">Личный кабинет</h1>
-        <div>{{request.user.first_name}} {{request.user.last_name}}</div>
-        <div>email: {{request.user.email}}</div>
-        <div> Телефон: {{user_phone}}</div>
-
-    </div>
-    <p>Содержание страницы будет определено позднее.</p>
-    <div class="d-flex my-3">
-     
-        <!-- <label class="mr-3">Сделано уникальных запросов: {{unique_request}} </label>
-        <label class=" mx-3">Найдено поставщиков: {{count}}</label> -->
-        <div class="mx-3">Доступно запросов: <b>{{user_subscribe}}</b> </div>
-        <div>
-            <a class=" text-decoration-none mx-3" href="{% url 'bank_cleaning:subscription_list' %}">Пополнить подписку</a>
+<!-- Верхний раздел с информацией о пользователе -->
+<div class="card shadow mb-4">
+    <div class="card-body p-4">
+        <div class="row align-items-center">
+            <div class="col-md-9 mb-3 mb-md-0">
+                <h2 class="h4 mb-1 fw-bold text-primary"> <span class="text-muted"> Добро пожаловать,</span> {{ request.user.first_name }} {{ request.user.last_name }}</h2>
+                <div class="d-flex flex-wrap gap-3 text-muted">
+                    <div><i class="fas fa-envelope me-1"></i> {{ request.user.email }}</div>
+                    <div><i class="fas fa-phone me-1"></i> {{ user_phone|default:"Не указан" }}</div>
+                </div>
+            </div>
+            <div class="col-md-3 text-md-end">
+                <div class="bg-light border rounded p-3">
+                    <div class="d-flex align-items-center justify-content-between">
+                            <span class="text-muted small">Доступно запросов </span>
+                            <span class="h5 fw-bold color-dark1">{{ user_subscribe }}</span>
+                                            </div>
+                </div>
+            </div>
         </div>
     </div>
-    <nav class="navbar navbar-expand-lg navbar-light">
-        <div class="container-fluid">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li><a class="me-3 btn bg-hover1 border" href="#supplier_response">Ответы
-                        поставщика</a></li>
-                        
-                <li class="nav-item"><a class="mx-3 btn  bg-hover1 border" href="#send_request">Запросы
-                        поставщику</a></li>
+</div>
 
-                <li class="nav-item"><a class="mx-3 btn  bg-hover1 border" href="#supplier_list">Мои
-                        поставщики</a></li>
-
-
-                <li><a class="mx-3 btn bg-hover1 border" href="{% url 'customer_request' %}">Новый
-                        запрос поставщикам</a></li>
-            </ul>
+<!-- Нижний раздел: меню и контент -->
+<div class="row">
+    <!-- Левое меню -->
+    <div class="col-lg-3 mb-4 mb-lg-0">
+        <div class="card shadow sticky-top" style="top: 1rem; bottom: 1rem;">
+            <div class="list-group list-group-flush">
+                <a href="#supplier_responses" class="list-group-item list-group-item-action active bg-blue1 text-white d-flex align-items-center py-3" data-bs-toggle="tab">
+                    <i class="fas fa-comments me-2 color-dark1"></i>
+                    Ответы поставщиков
+                </a>
+                <a href="#subscription_status" class="list-group-item list-group-item-action d-flex align-items-center py-3" data-bs-toggle="tab">
+                    <i class="fas fa-shield-alt me-2 text-success"></i>
+                    Состояние подписки
+                </a>
+                <a href="#subscription_history" class="list-group-item list-group-item-action d-flex align-items-center py-3" data-bs-toggle="tab">
+                    <i class="fas fa-history me-2 text-info"></i>
+                    История подписки
+                </a>
+                <div class="text-center py-2 fw-bold bg-second1">Отобранные поставщики:</div>
+                <a href="#selected_suppliers" class="list-group-item list-group-item-action d-flex align-items-center py-3" data-bs-toggle="tab">
+                    <i class="fas fa-industry me-2 text-warning"></i>
+                    поставщики товаров
+                </a>
+                <a href="#technology_suppliers" class="list-group-item list-group-item-action d-flex align-items-center py-3" data-bs-toggle="tab">
+                    <i class="fas fa-star me-2 text-warning"></i>
+                    поставщики технологий
+                </a>
+                <a href="#logistic_suppliers" class="list-group-item list-group-item-action d-flex align-items-center py-3" data-bs-toggle="tab">
+                    <i class="fas fa-road me-2 text-warning"></i>
+                    поставщики логистики
+                </a>
+            </div>
         </div>
-    </nav>
+    </div>
 
-    <h3 class=" mt-5" id="supplier_response">Ответы поставщиков на отправленные запросы</h3>
-    <div>
-   
-
-    {% if response_data %}
-    <div class="table-responsive">
-        <table class="table table-bordered table-hover">
-            <thead class="thead-dark">
-                <tr>
-                    <th>Продукт</th>
-                    <th>Email поставщика</th>
-                    <th>Дата запроса</th>
-                    <th>Дата ответа</th>
-                    <th>Ответ поставщика</th>
-                    <th>Email ответившего</th>
-                    <th>Email ID</th>
-                    <!-- <th>Вложение</th> -->
-                </tr>
-            </thead>
-            <tbody style="font-size: 12px;">
-                {% for item in response_data %}
-                <tr>
-
-                    <td>{{ item.sent_email.product }}</td>
-                    <td>{{ item.sent_email.email }}</td>
-                    <td>{{ item.sent_email.sended_at|date:"d.m.Y H:i" }}</td>
-
-                    {% if item.response %}
-                    <td>{{ item.response.received_at|date:"d.m.Y H:i" }}</td>
-                    <td>
-                        <a href="{% url 'supplier_response_detail' item.response.id %}">
-
-                            {{ item.response.message|striptags|truncatechars:50 }}
-                            <!--striptags убирает html tags из сообщения-->
-
-                        </a>
-                    </td>
-                    <td>{{ item.response.email }}</td>
-                    <td>{{ item.response.id }}</td>
-                    <!-- <td>
-                        {% if item.response.attachment %}
-                        <a href="{{ item.response.attachment.url }}" download class="btn btn-sm btn-outline-primary">
-                            <i class="fas fa-download"></i> Скачать
-                        </a>
+    <!-- Правый контент -->
+    <div class="col-lg-9">
+        <div class="tab-content">
+            <!-- Ответы поставщиков -->
+            <div class="tab-pane fade show active" id="supplier_responses">
+                <div class="card shadow">
+                    <div class="card-header bg-blue1 text-white d-flex justify-content-between align-items-center">
+                        <h3 class="h5 mb-0">Ответы поставщиков на отправленные запросы</h3>
+                        <span class=" badge bg-white color-dark1 rounded-pill">{{ response_data|length }}</span>
+                    </div>
+                    <div class="card-body">
+                        {% if response_data %}
+                        <div class="table-responsive">
+                            <table class="table table-hover table-striped align-middle">
+                                <thead class="bg-blue1 text-white">
+                                    <tr>
+                                        <th>Продукт</th>
+                                        <th>Email поставщика</th>
+                                        <th>Дата запроса</th>
+                                        <th>Дата ответа</th>
+                                        <th>Ответ поставщика</th>
+                                        <th>Детали</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in response_data %}
+                                    <tr>
+                                        <td>{{ item.sent_email.product }}</td>
+                                        <td>{{ item.sent_email.email }}</td>
+                                        <td>{{ item.sent_email.sended_at|date:"d.m.Y H:i" }}</td>
+                                        {% if item.response %}
+                                        <td>{{ item.response.received_at|date:"d.m.Y H:i" }}</td>
+                                        <td>
+                                            <div class="text-truncate" style="max-width: 200px;">
+                                                {{ item.response.message|striptags|truncatechars:50 }}
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <a href="{% url 'supplier_response_detail' item.response.id %}" 
+                                               class="btn bg-blue1 bg-hover1 color-button-text btn-sm" 
+                                               title="Просмотреть детали">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                        </td>
+                                        {% else %}
+                                        <td class="text-muted">-</td>
+                                        <td class="text-center text-muted">Нет ответа</td>
+                                        <td>-</td>
+                                        {% endif %}
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
                         {% else %}
-                        -
+                        <div class="text-center py-5">
+                            <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                            <h5>Нет ответов от поставщиков</h5>
+                            <p class="text-muted">Вы еще не получили ответы от поставщиков.</p>
+                            <a href="{% url 'supplier_selection' %}" class="btn bg-blue1 bg-hover1 color-button-text mt-2">
+                                <i class="fas fa-search me-2"></i>Найти поставщиков
+                            </a>
+                        </div>
                         {% endif %}
-                    </td> -->
-                    {% else %}
-                    <td class="text-muted">-</td>
-                    <td class="text-center text-muted">Нет ответа</td>
-                    <td class="text-muted">-</td>
-                    <td>-</td>
-                    {% endif %}
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Отобранные поставщики -->
+            <div class="tab-pane fade" id="selected_suppliers">
+                <div class="card shadow">
+                    <div class="card-header bg-blue1 text-white d-flex justify-content-between align-items-center">
+                        <h3 class="h5 mb-0">Мои отобранные поставщики товаров</h3>
+                        <span class="badge bg-white color-dark1 rounded-pill">0</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="text-center py-5">
+                            <h4 class="text-danger">Требуется определить что такое отобранные поставщики</h4>
+                            <i class="fas fa-star fa-2x text-success mb-3"></i>
+                            <h5>У вас пока нет отобранных поставщиков</h5>
+                            <p class="text-muted">Начните поиск поставщиков, чтобы добавить их в избранное.</p>
+                            <a href="{% url 'supplier_selection' %}" class="btn bg-blue1 bg-hover1 color-button-text mt-2">
+                                <i class="fas fa-search me-2"></i>Найти поставщиков
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="technology_suppliers">
+                <div class="card shadow">
+                    <div class="card-header bg-blue1 text-white d-flex justify-content-between align-items-center">
+                        <h3 class="h5 mb-0">Мои отобранные поставщики технологий</h3>
+                        <span class="badge bg-white color-dark1 rounded-pill">0</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="text-center py-5">
+                            <h4 class="text-danger">Требуется определить что такое отобранные поставщики</h4>
+                            <i class="fas fa-star fa-2x text-success mb-3"></i>
+                            <h5>У вас пока нет отобранных поставщиков</h5>
+                            <p class="text-muted">Начните поиск поставщиков, чтобы добавить их в избранное.</p>
+                            <a href="{% url 'technology_selection' %}" class="btn bg-blue1 bg-hover1 color-button-text mt-2">
+                                <i class="fas fa-search me-2"></i>Найти поставщиков
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="logistic_suppliers">
+                <div class="card shadow">
+                    <div class="card-header bg-blue1 text-white d-flex justify-content-between align-items-center">
+                        <h3 class="h5 mb-0">Мои отобранные поставщики логистики</h3>
+                        <span class="badge bg-white color-dark1 rounded-pill">0</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="text-center py-5">
+                            <h4 class="text-danger">Требуется определить что такое отобранные поставщики</h4>
+                            <i class="fas fa-star fa-2x text-success mb-3"></i>
+                            <h5>У вас пока нет отобранных поставщиков</h5>
+                            <p class="text-muted">Начните поиск поставщиков, чтобы добавить их в избранное.</p>
+                            <a href="{% url 'logistic_selection' %}" class="btn bg-blue1 bg-hover1 color-button-text mt-2">
+                                <i class="fas fa-search me-2"></i>Найти поставщиков
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Состояние подписки -->
+            <div class="tab-pane fade" id="subscription_status">
+                <div class="card shadow">
+                    <div class="card-header bg-blue1 text-white">
+                        <h3 class="h5 mb-0">Текущее состояние подписки</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <!-- Последняя оформленная подписка -->
+                            <div class="col-md-6 mb-4">
+                                <div class="card border-blue1 h-100">
+                                    <div class="card-header bg-blue1 text-white">
+                                        <h4 class="h6 mb-0">Последняя оформленная подписка</h4>
+                                    </div>
+                                    <div class="card-body">
+                                        {% if last_payment %}
+                                        <ul class="list-unstyled">
+                                            <li class="mb-2 d-flex">
+                                                <span class="fw-bold me-2">Тариф:</span> 
+                                                <span>
+                                                    {% if subscription_plan %}
+                                                        {{ subscription_plan.name }}
+                                                    {% else %}
+                                                        Не указан
+                                                    {% endif %}
+                                                </span>
+                                            </li>
+                                            <li class="mb-2 d-flex">
+                                                <span class="fw-bold me-2">Поисков:</span> 
+                                                <span>{{ last_payment.add_count }}</span>
+                                            </li>
+                                            <li class="mb-2 d-flex">
+                                                <span class="fw-bold me-2">Стоимость:</span> 
+                                                <span>
+                                                    {% if subscription_plan %}
+                                                        {{ subscription_plan.price }} руб.
+                                                    {% else %}
+                                                        Не указана
+                                                    {% endif %}
+                                                </span>
+                                            </li>
+                                            <li class="mb-2 d-flex">
+                                                <span class="fw-bold me-2">Дата оплаты:</span> 
+                                                <span>{{ last_payment.created_at|date:"d.m.Y H:i" }}</span>
+                                            </li>
+                                        </ul>
+                                        {% else %}
+                                        <div class="text-center py-3">
+                                            <i class="fas fa-exclamation-circle fa-2x text-muted mb-3"></i>
+                                            <p class="text-muted">У вас еще нет оформленных подписок</p>
+                                            <a href="{% url 'bank_cleaning:subscription_list' %}" class="btn bg-blue1 bg-hover1 color-button-text mt-2">
+                                                <i class="fas fa-plus me-1"></i> Оформить подписку
+                                            </a>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Состояние по подписке -->
+                            <div class="col-md-6">
+                                <div class="card border-blue1 h-100">
+                                    <div class="card-header bg-blue1 text-white">
+                                        <h4 class="h6 mb-0">Состояние по подписке</h4>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between mb-3 py-2 border-bottom">
+                                            <span class="fw-bold">Подписано запросов:</span>
+                                            <span class="text-primary fw-bold">{{ total_requests }}</span>
+                                        </div>
+                                        
+                                        <div class="d-flex justify-content-between mb-3 py-2 border-bottom">
+                                            <span class="fw-bold">Использовано запросов:</span>
+                                            <span class="text-danger fw-bold">{{ unique_request }}</span>
+                                        </div>
+                                        
+                                        <div class="d-flex justify-content-between mb-3 py-2 border-bottom">
+                                            <span class="fw-bold">Доступно запросов:</span>
+                                            <span class="text-success fw-bold">{{ user_subscribe }}</span>
+                                        </div>
+                                        
+                                        {% if user_subscribe is 0 %}
+                                        <div class="text-center py-3">
+                                            <a href="{% url 'bank_cleaning:subscription_list' %}" class="btn bg-blue1 bg-hover1 color-button-text">
+                                                <i class="fas fa-plus me-1"></i> Оформить подписку
+                                            </a>
+                                        </div>
+                                        {% else %}
+                                        <div class="alert alert-info small mt-3 mb-0">
+                                            <i class="fas fa-info-circle me-1"></i> 
+                                            Подписка обновляется при пополнении
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- История подписки -->
+            <div class="tab-pane fade" id="subscription_history">
+                <div class="card shadow">
+                    <div class="card-header bg-blue1 text-white d-flex justify-content-between align-items-center">
+                        <h3 class="h5 mb-0">История подписки</h3>
+                    </div>
+                    <div class="card-body">
+                        {% if subscription_history %}
+                        <div class="table-responsive">
+                            <table class="table table-hover table-striped align-middle">
+                                <thead class="bg-blue1 text-white">
+                                    <tr>
+                                        <th>Дата оплаты</th>
+                                        <th>Тарифный план</th>
+                                        <th>Поисков</th>
+                                        <th>Стоимость</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for history in subscription_history %}
+                                    <tr>
+                                        <td>{{ history.created_at|date:"d.m.Y" }}</td>
+                                        <td>
+                                            {% if history.plan %}
+                                                {{ history.plan.name }}
+                                            {% else %}
+                                                Не указан
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ history.add_count }}</td>
+                                        <td>
+                                            {% if history.plan %}
+                                                {{ history.plan.price }} руб.
+                                            {% else %}
+                                                Не указана
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        {% else %}
+                        <div class="text-center py-5">
+                            <i class="fas fa-history fa-3x text-muted mb-3"></i>
+                            <h5>История подписки пуста</h5>
+                            <p class="text-muted">Вы еще не оформляли подписку.</p>
+                            <a href="{% url 'bank_cleaning:subscription_list' %}" class="btn bg-blue1 bg-hover1 color-button-text mt-2">
+                                <i class="fas fa-plus me-2"></i>Оформить подписку
+                            </a>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    {% else %}
-    <div class="alert alert-info">
-        <h4>Нет отправленных запросов</h4>
-        <p>Вы еще не отправляли запросы поставщикам.</p>
-        <a href="{% url 'supplier_selection' %}" class="btn btn-primary">Найти поставщиков</a>
-    </div>
-    {% endif %}
 </div>
-    <h3 class=" mt-5" id="send_request">Отправленные запросы поставщикам</h3>
-    {% if results %}
+{% endblock %}
 
-    <table class="table table-striped demotable ">
-        <thead style="position: sticky;
-top: -1px;
-z-index:1;background: #9d9e9e; font-size:14px">
-            <tr>
-                <th scope="col">User</th>
-                <th scope="col" class="d-none d-md-table-cell">Email</th>
-                <th scope="col" class="d-none d-md-table-cell">Продукт</th>
-                <th scope="col" class="d-none d-md-table-cell">Сообщение</th>
-                <th scope="col" class="d-none d-md-table-cell">Отправлен</th>
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Инициализация табов
+        const tabTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tab"]'));
+        tabTriggerList.forEach(function (triggerEl) {
+            const tabTrigger = new bootstrap.Tab(triggerEl);
+            triggerEl.addEventListener('click', function (event) {
+                event.preventDefault();
+                tabTrigger.show();
+            });
+        });
+        
+        // Обработка активного таба при загрузке страницы
+        const activeTab = document.querySelector('.list-group-item.active');
+        if (activeTab) {
+            activeTab.classList.add('bg-blue1', 'text-white');
+        }
+        
+        // Обработка переключения табов
+        document.querySelectorAll('[data-bs-toggle="tab"]').forEach(tab => {
+            tab.addEventListener('shown.bs.tab', function (event) {
+                // Удаляем bg-blue1 из всех пунктов меню
+                document.querySelectorAll('.list-group-item').forEach(item => {
+                    item.classList.remove('bg-blue1', 'text-white');
+                });
+                // Добавляем bg-blue1 к активному пункту меню
+                event.target.classList.add('bg-blue1', 'text-white');
+            });
+        });
 
-
-            </tr>
-        </thead>
-        <tbody style="font-size:12px">
-            {% for item in results %}
-            <tr>
-                
-
-
-                <td class="d-none d-md-table-cell">{{item.user}}</td>
-                <td class="d-none d-md-table-cell">{{item.email}}</td>
-                <td class="d-none d-md-table-cell">{{item.product}}</td>
-                <td class="d-none d-md-table-cell">{{item.message}}</td>
-                <td class="d-none d-md-table-cell">{{item.sended_at}}</td>
-
-
-
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    {% else %}
-    <div class="alert alert-info">
-        <h4>Нет отправленных запросов</h4>
-        <p>Вы еще не отправляли запросы поставщикам.</p>
-        <a href="{% url 'supplier_selection' %}" class="btn btn-primary">Найти поставщиков</a>
-    </div>
-    {% endif %}
-
-
-    <h3 class=" mt-5" id="supplier_list">Мои отобранные поставщики</h3>
-</div>
-<!-- End of Main Content -->
+        // Мобильное меню
+        if (window.innerWidth < 992) {
+            const menuItems = document.querySelectorAll('.list-group-item');
+            menuItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    document.querySelector('.sticky-top').classList.add('d-none');
+                    setTimeout(() => {
+                        document.querySelector('.sticky-top').classList.remove('d-none');
+                    }, 500);
+                });
+            });
+        }
+    });
+</script>
 {% endblock %}
