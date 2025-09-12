@@ -190,6 +190,9 @@ def update_user_search_count_and_history(user, section):
 #         result_count = results.count()
 
 #         if result_count > 0:
+#             # Приводим товар к нижнему регистру для сохранения
+#             normalized_product = query.lower()
+            
 #             # Сохранение результатов поиска - только уникальные комбинации
 #             successfully_processed = 0
 #             already_exists = 0
@@ -202,7 +205,7 @@ def update_user_search_count_and_history(user, section):
 #                     if len(email) > 254:
 #                         email = email[:254]
                     
-#                     product_name = query
+#                     product_name = normalized_product  # Используем нормализованное имя
 #                     if len(product_name) > 255:
 #                         product_name = product_name[:255]
 
@@ -331,6 +334,8 @@ def perform_search(search_type, request_data, user):
         result_count = results.count()
 
         if result_count > 0:
+            # Приводим товар к нижнему регистру для сохранения
+            normalized_product = query.lower()
             # Сохранение результатов поиска - только уникальные комбинации
             successfully_processed = 0
             already_exists = 0
@@ -343,7 +348,7 @@ def perform_search(search_type, request_data, user):
                     if len(email) > 254:
                         email = email[:254]
                     
-                    product_name = query
+                    product_name = normalized_product  # Используем нормализованное имя
                     if len(product_name) > 255:
                         product_name = product_name[:255]
 
@@ -418,6 +423,7 @@ def perform_search(search_type, request_data, user):
             "select_except": "Попробуйте повторить поиск позже.",
             "count": 0,
         }
+# *******************************************************************    
 
 @login_required
 def supplier_selection(request):
