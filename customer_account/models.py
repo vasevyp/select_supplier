@@ -19,6 +19,7 @@ class SearchResult(models.Model):
         """Help Supplier data"""
         verbose_name = 'Поставщика в выборке'
         verbose_name_plural = 'Выборка поставщиков'
+        unique_together = ('user', 'supplier_name', 'product')  # Добавляем уникальность
     def __str__(self):
         return self.product
 class SearchResultTechnology(models.Model):
@@ -33,6 +34,7 @@ class SearchResultTechnology(models.Model):
         """Help Supplier data"""
         verbose_name = 'Технология в выборке'
         verbose_name_plural = 'Выборка Технологий'
+        unique_together = ('user', 'supplier_name', 'product')  # Добавляем уникальность
     def __str__(self):
         return self.product
 class SearchResultLogistic(models.Model):
@@ -47,6 +49,7 @@ class SearchResultLogistic(models.Model):
         """Help Supplier data"""
         verbose_name = 'Логистика в выборке'
         verbose_name_plural = 'Выборка Логистики'
+        unique_together = ('user', 'supplier_name', 'product')  # Добавляем уникальность
     def __str__(self):
         return self.product   
 

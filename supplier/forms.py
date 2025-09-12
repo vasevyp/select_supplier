@@ -1,3 +1,4 @@
+# supplier/forms.py
 from django import forms
 from django.core.exceptions import ValidationError
 
@@ -58,26 +59,6 @@ class SupplierSearchForm(forms.Form):
         label='Язык'
     )
     product = forms.CharField(label='Наименование продукта')
-
-# forms.py
-class SupplierSearchForm2(forms.Form):
-    COUNTRY_CHOICES = [
-        ('Россия', 'Россия'),
-        ('Китай', 'Китай'),
-        ('Германия', 'Германия'),
-        # Добавьте другие страны
-    ]
-
-    LANGUAGE_CHOICES = [
-        ('ru', 'Русский'),
-        ('en', 'Английский'),
-    ]
-
-    country = forms.ChoiceField(choices=COUNTRY_CHOICES, label='Страна')
-    language = forms.ChoiceField(choices=LANGUAGE_CHOICES, label='Язык поиска')
-    query = forms.CharField(label='Наименование товара')
-
-
 
 class UploadExcelForm(forms.Form):
     excel_file = forms.FileField(

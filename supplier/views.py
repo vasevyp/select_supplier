@@ -1,14 +1,6 @@
 """supplier app views"""
-
-# import logging
-# import threading
-# import json
-# from openpyxl import load_workbook
 from django.shortcuts import render, redirect
 from django.contrib import messages
-
-# from django.views import View
-# from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.views.generic import ListView, DetailView
 from django.db import transaction, IntegrityError
 from django.db.models import Q
@@ -25,7 +17,7 @@ from customer_account.models import (
     SearchResultLogistic,
 )
 from bank_clearing.models import UserSearchCount, UserSearchCountHistory
-from .forms import SupplierSearchForm, SupplierSearchForm2
+from .forms import SupplierSearchForm
 from .models import (
     Supplier,
     Country,
@@ -43,21 +35,21 @@ class Category_list(ListView):
     model = Category
     template_name = "supplier/category_list.html"
     context_object_name = "items"
-    paginate_by = 10  # add this
+    paginate_by = 50  # add this
 
 
 class Country_list(ListView):
     model = Country
     template_name = "supplier/country_list.html"
     context_object_name = "items"
-    paginate_by = 10  # add this
+    paginate_by = 50  # add this
 
 
 class Supplier_list(ListView):
     model = Supplier
     template_name = "supplier/supplier_list.html"
     context_object_name = "items"
-    paginate_by = 10  # add this
+    paginate_by = 100  # add this
 
 
 class SupplierDetailView(DetailView):
@@ -157,10 +149,9 @@ def update_user_search_count_and_history(user, section):
     except UserSearchCount.DoesNotExist:
         return None
 
-# *******************1*****************************
-
+# *******************1 поиск по продукту, стране, категории*****************************
 # def perform_search(search_type, request_data, user):
-#     """Универсальная функция поиска с оптимизациями"""
+#     """Универсальная функция поиска с оптимизациями (по 3-м параметрам) и сохранением результата поиска как уникального"""
 #     config = SEARCH_CONFIG[search_type]
 
 #     category_id = request_data.get(config["category_param"])
@@ -199,13 +190,49 @@ def update_user_search_count_and_history(user, section):
 #         result_count = results.count()
 
 #         if result_count > 0:
-#             # Пакетное сохранение результатов поиска (оптимизация)
+#             # Сохранение результатов поиска - только уникальные комбинации
+#             successfully_processed = 0
+#             already_exists = 0
+#             errors = []
+            
 #             for item in results:
-#                 config["search_result_model"].objects.get_or_create(
-#                     user_id=user.id,
-#                     supplier_name_id=item.id,
-#                     defaults={"supplier_email": item.email, "product": query},
-#                 )
+#                 try:
+#                     # Подготавливаем данные с обработкой ограничений
+#                     email = item.email or ""
+#                     if len(email) > 254:
+#                         email = email[:254]
+                    
+#                     product_name = query
+#                     if len(product_name) > 255:
+#                         product_name = product_name[:255]
+
+#                     # Создаем или получаем существующую запись
+#                     search_result, created = config["search_result_model"].objects.get_or_create(
+#                         user_id=user.id,
+#                         supplier_name_id=item.id,
+#                         product=product_name,
+#                         defaults={
+#                             'supplier_email': email,
+#                         }
+#                     )
+                    
+#                     if created:
+#                         successfully_processed += 1
+#                     else:
+#                         # Если запись уже существует, обновляем email
+#                         if search_result.supplier_email != email:
+#                             search_result.supplier_email = email
+#                             search_result.save()
+#                         already_exists += 1
+                        
+#                 except Exception as e:
+#                     errors.append((item.id, item.name, str(e)))
+
+#             # Логирование для отладки (можно удалить в production)
+#             print(f"Новых записей создано: {successfully_processed}")
+#             print(f"Уже существующих записей: {already_exists}")
+#             if errors:
+#                 print(f"Ошибок: {len(errors)}")
 
 #             # Обновляем счетчик поиска и создаем запись в истории
 #             updated_counter = update_user_search_count_and_history(
@@ -213,7 +240,7 @@ def update_user_search_count_and_history(user, section):
 #             )
 #             if updated_counter is None:
 #                 return {
-#                     "results": [],
+#                     "results": results,
 #                     "message404": "",
 #                     "select_except": 0,
 #                     "available_message": "Ваш остаток по подписке равен 0. Поиск недоступен.",
@@ -242,6 +269,8 @@ def update_user_search_count_and_history(user, section):
 #             "count": 0,
 #         }
 #     except Exception as e:
+#         error_msg = f"Критическая ошибка в perform_search: {str(e)}"
+#         print(error_msg)
 #         return {
 #             "results": [],
 #             "message404": "Произошла ошибка при поиске",
@@ -249,105 +278,10 @@ def update_user_search_count_and_history(user, section):
 #             "count": 0,
 #         }
 
-# *******************1-2*****************************
 
-# def perform_search(search_type, request_data, user):
-#     """Универсальная функция поиска с оптимизациями (4 варианта поиска)"""
-#     config = SEARCH_CONFIG[search_type]
-
-#     category_id = request_data.get(config["category_param"])
-#     country_id = request_data.get("country")
-#     language = request_data.get("language")
-#     product = request_data.get("product")
-#     query = product.strip() if product else ""
-
-#     # Проверка обязательного параметра product
-#     if not query:
-#         return {
-#             "results": [],
-#             "message404": "ВНИМАНИЕ! Введите наименование продукта для поиска!",
-#             "select_except": 0,
-#             "count": 0,
-#         }
-
-#     try:
-#         # Определяем поле поиска
-#         search_field = "product_ru" if language == "ru" else "product"
-
-#         # Начинаем строить запрос
-#         base_query = config["model"].objects.annotate(search=SearchVector(search_field))
-
-#         # Добавляем фильтр по текстовому поиску
-#         search_filter = Q(search=SearchQuery(query))
-
-#         # Добавляем фильтры в зависимости от заполненных полей
-#         if country_id:
-#             country = Country.objects.select_related().get(id=country_id)
-#             search_filter &= Q(country=country)
-
-#         if category_id:
-#             category = config["category_model"].objects.select_related().get(id=category_id)
-#             search_filter &= Q(category=category)
-
-#         # Выполняем поиск с оптимизацией
-#         results = base_query.filter(search_filter).order_by("-id")
-
-#         result_count = results.count()
-
-#         if result_count > 0:
-#             # Пакетное сохранение результатов поиска (оптимизация)
-#             for item in results:
-#                 config["search_result_model"].objects.get_or_create(
-#                     user_id=user.id,
-#                     supplier_name_id=item.id,
-#                     defaults={"supplier_email": item.email, "product": query},
-#                 )
-
-#             # Обновляем счетчик поиска и создаем запись в истории
-#             updated_counter = update_user_search_count_and_history(
-#                 user, config["section"]
-#             )
-#             if updated_counter is None:
-#                 return {
-#                     "results": [],
-#                     "message404": "",
-#                     "select_except": 0,
-#                     "available_message": "Ваш остаток по подписке равен 0. Поиск недоступен.",
-#                     "count": result_count,
-#                 }
-
-#             return {
-#                 "results": results,
-#                 "message404": "",
-#                 "select_except": 0,
-#                 "count": result_count,
-#             }
-#         else:
-#             return {
-#                 "results": [],
-#                 "message404": "",
-#                 "select_except": "По вашему запросу поставщиков не найдено. Попробуйте изменить параметры поиска.",
-#                 "count": 0,
-#             }
-
-#     except (config["category_model"].DoesNotExist, Country.DoesNotExist):
-#         return {
-#             "results": [],
-#             "message404": "Неверные параметры поиска",
-#             "select_except": "Попробуйте выбрать другие параметры поиска.",
-#             "count": 0,
-#         }
-#     except Exception as e:
-#         return {
-#             "results": [],
-#             "message404": "Произошла ошибка при поиске",
-#             "select_except": "Попробуйте повторить поиск позже.",
-#             "count": 0,
-#         }
-
-# *******************1-2-3*****************************
+# *******************2 поиск по продукту, можно без страны и без категории *****************************
 def perform_search(search_type, request_data, user):
-    """Универсальная функция поиска с оптимизациями"""
+    """Универсальная функция поиска с оптимизациями (в любой комбинации) и сохранением результата поиска как уникального"""
     config = SEARCH_CONFIG[search_type]
 
     category_id = request_data.get(config["category_param"])
@@ -369,8 +303,7 @@ def perform_search(search_type, request_data, user):
         # Определяем поле поиска
         search_field = "product_ru" if language == "ru" else "product"
 
-        # Создаем точный поиск по отдельным словам (не частичный)
-        # Используем plainto_tsquery для поиска по целым словам
+        # Создаем точный поиск по отдельным словам
         search_query = SearchQuery(
             query, config="russian" if language == "ru" else "english"
         )
@@ -398,13 +331,49 @@ def perform_search(search_type, request_data, user):
         result_count = results.count()
 
         if result_count > 0:
-            # Пакетное сохранение результатов поиска (оптимизация)
+            # Сохранение результатов поиска - только уникальные комбинации
+            successfully_processed = 0
+            already_exists = 0
+            errors = []
+            
             for item in results:
-                config["search_result_model"].objects.get_or_create(
-                    user_id=user.id,
-                    supplier_name_id=item.id,
-                    defaults={"supplier_email": item.email, "product": query},
-                )
+                try:
+                    # Подготавливаем данные с обработкой ограничений
+                    email = item.email or ""
+                    if len(email) > 254:
+                        email = email[:254]
+                    
+                    product_name = query
+                    if len(product_name) > 255:
+                        product_name = product_name[:255]
+
+                    # Создаем или получаем существующую запись
+                    search_result, created = config["search_result_model"].objects.get_or_create(
+                        user_id=user.id,
+                        supplier_name_id=item.id,
+                        product=product_name,
+                        defaults={
+                            'supplier_email': email,
+                        }
+                    )
+                    
+                    if created:
+                        successfully_processed += 1
+                    else:
+                        # Если запись уже существует, обновляем email
+                        if search_result.supplier_email != email:
+                            search_result.supplier_email = email
+                            search_result.save()
+                        already_exists += 1
+                        
+                except Exception as e:
+                    errors.append((item.id, item.name, str(e)))
+
+            # Логирование для отладки (можно удалить в production)
+            print(f"Новых записей создано: {successfully_processed}")
+            print(f"Уже существующих записей: {already_exists}")
+            if errors:
+                print(f"Ошибок: {len(errors)}")
 
             # Обновляем счетчик поиска и создаем запись в истории
             updated_counter = update_user_search_count_and_history(
@@ -412,7 +381,7 @@ def perform_search(search_type, request_data, user):
             )
             if updated_counter is None:
                 return {
-                    "results": [],
+                    "results": results,
                     "message404": "",
                     "select_except": 0,
                     "available_message": "Ваш остаток по подписке равен 0. Поиск недоступен.",
@@ -441,13 +410,14 @@ def perform_search(search_type, request_data, user):
             "count": 0,
         }
     except Exception as e:
+        error_msg = f"Критическая ошибка в perform_search: {str(e)}"
+        print(error_msg)
         return {
             "results": [],
             "message404": "Произошла ошибка при поиске",
             "select_except": "Попробуйте повторить поиск позже.",
             "count": 0,
         }
-
 
 @login_required
 def supplier_selection(request):
