@@ -15,7 +15,7 @@ from supplier.models import (
 from supplier.forms import SupplierSearchForm
 from bank_clearing.models import SubscriptionRates
 
-from .models import SupplierDemo, TechnologyDemo, LogisticDemo, MainPage
+from .models import SupplierDemo, TechnologyDemo, LogisticDemo, MainPage, PolicyPage, ConsentPage
 
 
 def first_page(request):
@@ -47,7 +47,12 @@ def primary(request):
 
 
 def privacy_policy(request):
-    return render(request, "primary/privacy_policy.html")
+    policy_data= PolicyPage.objects.all()
+    return render(request, "law/privacy_policy.html", {'policy_data': policy_data})
+
+def consent_policy(request):
+    consent_data= ConsentPage.objects.all()
+    return render(request, "law/consent_policy.html", {'consent_data': consent_data})
 
 
 def tariffs_page(request):

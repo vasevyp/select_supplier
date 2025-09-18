@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block title %}
+{{ block.super }}:политика
+{% endblock %}
+
+{% block content %}
+
+
+<div class="my-3 mx-3">
+    <div ><a href="{% url 'register' %}"> Вернуться к регистрации</a></div>
+
+{% for policy in consent_data %}
+{% autoescape off %}
+  
+
+<h1> {{policy.title}} </h1>
+<div>
+{{policy.text}}
+</div>
+{% endautoescape %} 
+
+{% endfor %}
+</div>
+
+{% endblock %}

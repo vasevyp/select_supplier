@@ -1,7 +1,7 @@
 
 from django.urls import path
 
-from .views import first_page, primary, privacy_policy, tariffs_page, \
+from .views import first_page, primary, privacy_policy, consent_policy, tariffs_page, \
     info_page, supplier_search_demo, technology_search_demo, logistic_search_demo, \
         SupplierDemoDetailView, TechnologyDemoDetailView, LogisticDemoDetailView
 
@@ -9,7 +9,8 @@ from .views import first_page, primary, privacy_policy, tariffs_page, \
 urlpatterns = [
     path('', first_page, name='start'),
     path('main', primary, name='main'),
-    path('policy', privacy_policy, name='policy'),
+    path('policy-page', privacy_policy, name='policy'),
+    path('consent-page', consent_policy, name='consent'),
     path('tariffs/', tariffs_page, name='tariffs_page'),
     path('info-page', info_page, name='info_page'),
     path('supplier-search-demo', supplier_search_demo, name='supplier_search_demo'),

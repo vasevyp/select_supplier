@@ -10,6 +10,7 @@
 
 
 {% block content %}
+
 <div class="container col-12 margin-mb100">
     <!-- <div class="vedinfo-logo">VEDINFO.ONLINE</div>
     <div class="text-center color-second-text">Мир без границ — расчеты без ошибок</div> -->
@@ -21,16 +22,17 @@
     <div class="text-center my-3 color-second-text">раздел находится в стадии разработки</div>
 
    
-        <h5>Приложение имеет следующие вырианты подписки: </h5>
-        <div class="container mt-5">
+    
+        <div class="container mt-3">
+                <h5 class="my-4">Приложение имеет следующие вырианты подписки: </h5>
    
     {% if subscriptions %}
     <div class="row">
         {% for subscription in subscriptions %}
-        <div class="col-md-4 mb-4">
-            <div class="card h-100">
-                <div class="card-body bg-second1">
-                    <h5 class="card-title">{{ subscription.name }}</h5>
+        <div class="col-md-4 mb-4 ">
+            <div class="card h-100 bg-tarrif" >
+                <div class="card-body ">
+                    <h5 class="card-title ">{{ subscription.name }}</h5>
                     <p class="card-text">
                         <strong>Поисков: {{ subscription.search_count }} </strong><br>
                         Стоимость: <span class="h4">{{ subscription.price }} ₽</span>

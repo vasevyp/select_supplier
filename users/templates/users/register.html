@@ -35,7 +35,7 @@
       {{ form.email }}
       {{ form.email.errors }}
     </div>
-     <div>
+    <div>
       {{ form.phone.label_tag }}
       {{ form.phone }}
       {{ form.phone.errors }}
@@ -79,11 +79,13 @@
       {{ form.address.errors }}
     </div> -->
 
-   
-     <div class="my-3">{{form.captcha}}</div>
 
-    <p>Регистрируясь на сайте, пользователь соглашается с настоящей <a href="{% url 'policy' %}" target="_blank">Политикой конфиденциальности</a> и принимает на себя
-      указанные в нём права и обязанности, связанные с использованием и функционированием сайта</p>
+    <div class="my-3">{{form.captcha}}</div>
+
+    <p>Регистрируясь на сайте, пользователь дает <a href="{% url 'consent' %}" target="_blank">Согласие на обработку
+        персональных данных</a> и соглашается с настоящей <a href="{% url 'policy' %}" target="_blank">Политикой
+        конфиденциальности</a>, принимает на себя
+      указанные в ней права и обязанности, связанные с использованием и функционированием сайта</p>
 
     <button class="btn bg-blue1 color-button-text bg-hover1 my-3" type="submit">Зарегистрироваться</button>
   </form>

@@ -156,3 +156,30 @@ class MainPage(models.Model):
 
     def __str__(self):
         return self.name
+
+class PolicyPage(models.Model):
+    title = models.CharField(max_length=255, verbose_name='Заголовок')
+    text = HTMLField(verbose_name='Текст политики')  
+
+    class Meta:
+        """Help main text data"""
+        verbose_name = 'Политика конфиденциальности'
+        verbose_name_plural = 'Политика конфиденциальности'
+       
+
+    def __str__(self):
+        return self.title
+    
+class ConsentPage(models.Model):
+    title = models.CharField(max_length=255, verbose_name='Заголовок')
+    text = HTMLField(verbose_name='Текст согласия на обработку персональных данных')  
+
+    class Meta:
+        """Help main text data"""
+        verbose_name = 'Согласие на обработку персональных данных'
+        verbose_name_plural = 'Согласие на обработку персональных данных'
+       
+
+    def __str__(self):
+        return self.title    
+          
