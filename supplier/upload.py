@@ -144,7 +144,13 @@ def process_excel_file(ws, model_class, config_key, request): # Добавлен
                 elif field_name in ['price_date', 'created_date', 'updated_date']:
                     data_dict[field_name] = parse_date(raw_value)
                 else: # Остальные поля - строки
-                    data_dict[field_name] = str(raw_value) if raw_value is not None else ""
+                    # Преобразуем в строку, если значение не None
+                    str_value = str(raw_value) if raw_value is not None else ""
+                    # Применяем strip() к полям country и category
+                    if field_name in ['country', 'category']:
+                        data_dict[field_name] = str_value.strip()
+                    else:
+                        data_dict[field_name] = str_value
 
             # Создаем экземпляр модели
             item = model_class(**data_dict)
