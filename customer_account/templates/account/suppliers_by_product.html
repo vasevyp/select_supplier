@@ -1,0 +1,63 @@
+<!-- customer_account/templates/account/suppliers_by_product.html -->
+{% extends 'base.html' %} 
+{% load static %}
+{% load django_bootstrap5 %}
+
+{% block title %}
+    {{ title }}
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>{{ title }}</h2>
+    
+    {% if suppliers %}
+        <table class="table table-striped demotable">
+            <thead style="position: sticky; top: -1px; z-index:1;background: #9d9e9e; font-size:14px">
+                <tr>
+                    <th>Наименование компании</th>
+                    <th>Email</th>
+                    <th>ID</th>
+                    <!-- Добавьте другие поля из модели Supplier, если нужно -->
+                </tr>
+            </thead>
+            <tbody>
+                {% for supplier in suppliers %}
+                <tr>
+                    {% if section_type == 'goods' %}
+                    <td>
+                     <a href="{% url 'supplier_detail' pk=supplier.supplier_name__id %}" target="_blank">
+                        
+                        {{ supplier.supplier_name__name }}
+                    </a></td>
+                    {% elif section_type == 'technology' %}
+                    <td>
+                    <a href="{% url 'technology_detail' pk=supplier.supplier_name__id %}" target="_blank">
+                        
+                        {{ supplier.supplier_name__name }}
+                    </a></td>
+                    {% elif section_type == 'logistic' %}
+                        <td>
+                     <a href="{% url 'logistic_detail' pk=supplier.supplier_name__id %}" target="_blank">
+                        
+                         {{ supplier.supplier_name__name }}
+                    </a></td>
+                    {% else %}
+                        <td>             
+                        
+                         {{ supplier.supplier_name__name }}
+                        </td>
+                    {% endif %}
+                    <!-- <td>{{ supplier.supplier_name__name }}</td> -->
+                    <td>{{ supplier.supplier_email }}</td>
+                    <td>{{ supplier.supplier_name__id }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Для {{ section_type }} "{{ product_name }}" не найдено поставщиков в ваших результатах поиска.</p>
+    {% endif %}
+   
+</div>
+{% endblock %}

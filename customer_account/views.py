@@ -7,7 +7,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.utils.text import slugify
-from django.db.models import Subquery, OuterRef, F, Prefetch
+from django.db.models import Subquery, OuterRef, Count, F, Prefetch
 
 
 from users.models import Profile
@@ -337,6 +337,41 @@ def dashbord(request):
     """Главная страница Личного кабинета"""
     # Получаем данные поисковых запросов пользователя
     user_request = SearchResult.objects.filter(user_id=request.user.id)
+
+    # Агрегируем результаты: продукт, количество уникальных поставщиков, количество записей
+    # Используем supplier_name_id для подсчета уникальных поставщиков
+    aggregated_goods_data = (
+        SearchResult.objects.filter(user_id=request.user.id)
+        .values('product') # Группируем по продукту
+        .annotate(
+            supplier_count=Count('supplier_name', distinct=True), # Количество уникальных поставщиков
+            total_searches=Count('id') # Общее количество поисков по этому продукту (опционально)
+        )
+        .order_by('-supplier_count', 'product') # Сортируем, например, по количеству поставщиков убыв.,
+        # затем по названию
+    )
+
+    aggregated_technology_data = (
+        SearchResultTechnology.objects.filter(user_id=request.user.id)
+        .values('product') # Группируем по продукту
+        .annotate(
+            supplier_count=Count('supplier_name', distinct=True), # Количество уникальных поставщиков
+            total_searches=Count('id') # Общее количество поисков по этому продукту (опционально)
+        )
+        .order_by('-supplier_count', 'product') # Сортируем, например, по количеству поставщиков убыв.,
+        # затем по названию
+    )
+
+    aggregated_logistic_data = (
+        SearchResultLogistic.objects.filter(user_id=request.user.id)
+        .values('product') # Группируем по продукту
+        .annotate(
+            supplier_count=Count('supplier_name', distinct=True), # Количество уникальных поставщиков
+            total_searches=Count('id') # Общее количество поисков по этому продукту (опционально)
+        )
+        .order_by('-supplier_count', 'product') # Сортируем, например, по количеству поставщиков убыв.,
+        # затем по названию
+    )
     
     # Получаем данные пользователя
     user_search_count = UserSearchCount.objects.get(user=request.user)
@@ -413,8 +448,10 @@ def dashbord(request):
     total_requests = user_unique_request + user_subscribe
 
     context = {
-        "user_request": user_request,
-        "count": user_request.count(),
+        "aggregated_goods_data": aggregated_goods_data,
+        "aggregated_technology_data": aggregated_technology_data,
+        "aggregated_logistic_data": aggregated_logistic_data,
+        "cogunt": user_request.count(),
         "unique_request": user_unique_request,
         "user_phone": phone,
         "response_data": response_data,
@@ -426,6 +463,77 @@ def dashbord(request):
     }
     
     return render(request, "account/dashbord.html", context)
+
+
+
+@login_required
+def suppliers_by_product_goods(request, product_name):
+    """
+    Представление для отображения списка поставщиков товаров по конкретному продукту для текущего пользователя.
+    """
+    user = request.user
+    # Получаем уникальные поставщики по продукту для пользователя из SearchResult
+    suppliers = (
+        SearchResult.objects.filter(user=user, product=product_name)
+        .select_related('supplier_name') # Оптимизируем запрос к модели Supplier
+        .values('supplier_name__name', 'supplier_name__id', 'supplier_email') # Выбираем нужные поля
+        .distinct() # Убираем дубликаты, если были разные email или поиски для одного поставщика
+        .order_by('supplier_name__name') # Сортируем по названию поставщика
+    )
+
+    context = {
+        'suppliers': suppliers,
+        'product_name': product_name,
+        'title': f'Поставщики товара "{product_name}"',
+        'section_type': 'goods' # Передаем тип для шаблона, если нужно
+    }
+    return render(request, 'account/suppliers_by_product.html', context)
+
+@login_required
+def suppliers_by_product_technology(request, product_name):
+    """
+    Представление для отображения списка поставщиков технологий по конкретной технологии для текущего пользователя.
+    """
+    user = request.user
+    # Получаем уникальные поставщики по технологии для пользователя из SearchResultTechnology
+    suppliers = (
+        SearchResultTechnology.objects.filter(user=user, product=product_name)
+        .select_related('supplier_name') # Оптимизируем запрос к модели Supplier
+        .values('supplier_name__name', 'supplier_name__id', 'supplier_email') # Выбираем нужные поля
+        .distinct() # Убираем дубликаты
+        .order_by('supplier_name__name') # Сортируем по названию поставщика
+    )
+
+    context = {
+        'suppliers': suppliers,
+        'product_name': product_name,
+        'title': f'Поставщики технологии "{product_name}"',
+        'section_type': 'technology' # Передаем тип для шаблона, если нужно
+    }
+    return render(request, 'account/suppliers_by_product.html', context)
+
+@login_required
+def suppliers_by_product_logistic(request, product_name):
+    """
+    Представление для отображения списка поставщиков логистики по конкретной услуге для текущего пользователя.
+    """
+    user = request.user
+    # Получаем уникальные поставщики по логистике для пользователя из SearchResultLogistic
+    suppliers = (
+        SearchResultLogistic.objects.filter(user=user, product=product_name)
+        .select_related('supplier_name') # Оптимизируем запрос к модели Supplier
+        .values('supplier_name__name', 'supplier_name__id', 'supplier_email') # Выбираем нужные поля
+        .distinct() # Убираем дубликаты
+        .order_by('supplier_name__name') # Сортируем по названию поставщика
+    )
+
+    context = {
+        'suppliers': suppliers,
+        'product_name': product_name,
+        'title': f'Поставщики логистикой услуги "{product_name}"',
+        'section_type': 'logistic' # Передаем тип для шаблона, если нужно
+    }
+    return render(request, 'account/suppliers_by_product.html', context)
 
 
 # Подписка

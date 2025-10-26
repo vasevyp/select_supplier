@@ -14,7 +14,8 @@
     <div class="card-body p-4">
         <div class="row align-items-center">
             <div class="col-md-9 mb-3 mb-md-0">
-                <h2 class="h4 mb-1 fw-bold text-primary"> <span class="text-muted"> Добро пожаловать,</span> {{ request.user.first_name }} {{ request.user.last_name }}</h2>
+                <h2 class="h4 mb-1 fw-bold text-primary"> <span class="text-muted"> Добро пожаловать,</span> 
+                    {{request.user.first_name }} {{ request.user.last_name }}</h2>
                 <div class="d-flex flex-wrap gap-3 text-muted">
                     <div><i class="fas fa-envelope me-1"></i> {{ request.user.email }}</div>
                     <div><i class="fas fa-phone me-1"></i> {{ user_phone|default:"Не указан" }}</div>
@@ -23,9 +24,9 @@
             <div class="col-md-3 text-md-end">
                 <div class="bg-light border rounded p-3">
                     <div class="d-flex align-items-center justify-content-between">
-                            <span class="text-muted small">Доступно запросов </span>
-                            <span class="h5 fw-bold color-dark1">{{ user_subscribe }}</span>
-                                            </div>
+                        <span class="text-muted small">Доступно запросов </span>
+                        <span class="h5 fw-bold color-dark1">{{ user_subscribe }}</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -38,28 +39,35 @@
     <div class="col-lg-3 mb-4 mb-lg-0">
         <div class="card shadow sticky-top" style="top: 1rem; bottom: 1rem;">
             <div class="list-group list-group-flush">
-                <a href="#supplier_responses" class="list-group-item list-group-item-action active bg-blue1 text-white d-flex align-items-center py-3" data-bs-toggle="tab">
+                <a href="#supplier_responses"
+                    class="list-group-item list-group-item-action active bg-blue1 text-white d-flex align-items-center py-3"
+                    data-bs-toggle="tab">
                     <i class="fas fa-comments me-2 color-dark1"></i>
                     Ответы поставщиков
                 </a>
-                <a href="#subscription_status" class="list-group-item list-group-item-action d-flex align-items-center py-3" data-bs-toggle="tab">
+                <a href="#subscription_status"
+                    class="list-group-item list-group-item-action d-flex align-items-center py-3" data-bs-toggle="tab">
                     <i class="fas fa-shield-alt me-2 text-success"></i>
                     Состояние подписки
                 </a>
-                <a href="#subscription_history" class="list-group-item list-group-item-action d-flex align-items-center py-3" data-bs-toggle="tab">
+                <a href="#subscription_history"
+                    class="list-group-item list-group-item-action d-flex align-items-center py-3" data-bs-toggle="tab">
                     <i class="fas fa-history me-2 text-info"></i>
                     История подписки
                 </a>
                 <div class="text-center py-2 fw-bold bg-second1">Отобранные поставщики:</div>
-                <a href="#selected_suppliers" class="list-group-item list-group-item-action d-flex align-items-center py-3" data-bs-toggle="tab">
+                <a href="#selected_suppliers"
+                    class="list-group-item list-group-item-action d-flex align-items-center py-3" data-bs-toggle="tab">
                     <i class="fas fa-industry me-2 text-warning"></i>
                     поставщики товаров
                 </a>
-                <a href="#technology_suppliers" class="list-group-item list-group-item-action d-flex align-items-center py-3" data-bs-toggle="tab">
+                <a href="#technology_suppliers"
+                    class="list-group-item list-group-item-action d-flex align-items-center py-3" data-bs-toggle="tab">
                     <i class="fas fa-star me-2 text-warning"></i>
                     поставщики технологий
                 </a>
-                <a href="#logistic_suppliers" class="list-group-item list-group-item-action d-flex align-items-center py-3" data-bs-toggle="tab">
+                <a href="#logistic_suppliers"
+                    class="list-group-item list-group-item-action d-flex align-items-center py-3" data-bs-toggle="tab">
                     <i class="fas fa-road me-2 text-warning"></i>
                     поставщики логистики
                 </a>
@@ -105,9 +113,9 @@
                                             </div>
                                         </td>
                                         <td>
-                                            <a href="{% url 'supplier_response_detail' item.response.id %}" 
-                                               class="btn bg-blue1 bg-hover1 color-button-text btn-sm" 
-                                               title="Просмотреть детали">
+                                            <a href="{% url 'supplier_response_detail' item.response.id %}"
+                                                class="btn bg-blue1 bg-hover1 color-button-text btn-sm"
+                                                title="Просмотреть детали">
                                                 <i class="fas fa-eye"></i>
                                             </a>
                                         </td>
@@ -126,7 +134,8 @@
                             <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
                             <h5>Нет ответов от поставщиков</h5>
                             <p class="text-muted">Вы еще не получили ответы от поставщиков.</p>
-                            <a href="{% url 'supplier_selection' %}" class="btn bg-blue1 bg-hover1 color-button-text mt-2">
+                            <a href="{% url 'supplier_selection' %}"
+                                class="btn bg-blue1 bg-hover1 color-button-text mt-2">
                                 <i class="fas fa-search me-2"></i>Найти поставщиков
                             </a>
                         </div>
@@ -139,18 +148,50 @@
             <div class="tab-pane fade" id="selected_suppliers">
                 <div class="card shadow">
                     <div class="card-header bg-blue1 text-white d-flex justify-content-between align-items-center">
-                        <h3 class="h5 mb-0">Мои отобранные поставщики товаров</h3>
-                        <span class="badge bg-white color-dark1 rounded-pill">0</span>
+                        <h3 class="h5 mb-0">Мои отобранные товары</h3>
+                        <span class="badge bg-white color-dark1 rounded-pill">{{aggregated_goods_data.count}}</span>
                     </div>
                     <div class="card-body">
-                        <div class="text-center py-5">
-                            <h4 class="text-danger">Требуется определить что такое отобранные поставщики</h4>
-                            <i class="fas fa-star fa-2x text-success mb-3"></i>
+                        <div class=" py-1">
+                            {% if aggregated_goods_data %}
+                            <table class="table table-striped demotable ">
+                                <thead style="position: sticky;
+top: -1px;
+z-index:1;background: #9d9e9e; font-size:14px">
+                                    <tr>
+                                        <th>Продукт</th>
+                                        <th>Количество поставщиков</th>
+                                        <th class="text-center">Посмотреть список поставщиков</th> <!-- Для кнопки/иконки просмотра -->
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in aggregated_goods_data %}
+                                    <tr>
+                                        <td>{{ item.product }}</td>
+                                        <td>{{ item.supplier_count }}</td>
+                                        <td class="text-center">
+                                            <!-- Ссылка на отдельную страницу со списком поставщиков -->
+                                            <a href="{% url 'suppliers_by_product_goods' product_name=item.product %}" target="_blank">
+                                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-check2-circle" viewBox="0 0 16 16">
+  <path d="M2.5 8a5.5 5.5 0 0 1 8.25-4.764.5.5 0 0 0 .5-.866A6.5 6.5 0 1 0 14.5 8a.5.5 0 0 0-1 0 5.5 5.5 0 1 1-11 0z"/>
+  <path d="M15.354 3.354a.5.5 0 0 0-.708-.708L8 9.293 5.354 6.646a.5.5 0 1 0-.708.708l3 3a.5.5 0 0 0 .708 0l7-7z"/>
+</svg></a>
+                                            <!-- Или использовать JavaScript для открытия модального окна -->
+                                            <!-- <button onclick="showSuppliers('{{ item.product }}')">Просмотреть</button> -->
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                            {% else %}
                             <h5>У вас пока нет отобранных поставщиков</h5>
                             <p class="text-muted">Начните поиск поставщиков, чтобы добавить их в избранное.</p>
-                            <a href="{% url 'supplier_selection' %}" class="btn bg-blue1 bg-hover1 color-button-text mt-2">
+                            <a href="{% url 'supplier_selection' %}"
+                                class="btn bg-blue1 bg-hover1 color-button-text mt-2">
                                 <i class="fas fa-search me-2"></i>Найти поставщиков
                             </a>
+                            {% endif %}
+
                         </div>
                     </div>
                 </div>
@@ -159,18 +200,50 @@
             <div class="tab-pane fade" id="technology_suppliers">
                 <div class="card shadow">
                     <div class="card-header bg-blue1 text-white d-flex justify-content-between align-items-center">
-                        <h3 class="h5 mb-0">Мои отобранные поставщики технологий</h3>
-                        <span class="badge bg-white color-dark1 rounded-pill">0</span>
+                        <h3 class="h5 mb-0">Мои отобранные технологии</h3>
+                        <span class="badge bg-white color-dark1 rounded-pill">{{aggregated_technology_data.count}}</span>
                     </div>
                     <div class="card-body">
-                        <div class="text-center py-5">
-                            <h4 class="text-danger">Требуется определить что такое отобранные поставщики</h4>
-                            <i class="fas fa-star fa-2x text-success mb-3"></i>
+                        <div class=" py-1">
+                            {% if aggregated_technology_data %}
+                            <table class="table table-striped demotable ">
+                                <thead style="position: sticky;
+top: -1px;
+z-index:1;background: #9d9e9e; font-size:14px">
+                                    <tr>
+                                        <th>Технология</th>
+                                        <th>Количество поставщиков</th>
+                                        <th class="text-center">Посмотреть список поставщиков</th> <!-- Для кнопки/иконки просмотра -->
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in aggregated_technology_data %}
+                                    <tr>
+                                        <td>{{ item.product }}</td>
+                                        <td>{{ item.supplier_count }}</td>
+                                        <td class="text-center">
+                                            <!-- Ссылка на отдельную страницу со списком поставщиков -->
+                                            <a href="{% url 'suppliers_by_product_technology' product_name=item.product %}" target="_blank">
+                                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-check2-circle" viewBox="0 0 16 16">
+  <path d="M2.5 8a5.5 5.5 0 0 1 8.25-4.764.5.5 0 0 0 .5-.866A6.5 6.5 0 1 0 14.5 8a.5.5 0 0 0-1 0 5.5 5.5 0 1 1-11 0z"/>
+  <path d="M15.354 3.354a.5.5 0 0 0-.708-.708L8 9.293 5.354 6.646a.5.5 0 1 0-.708.708l3 3a.5.5 0 0 0 .708 0l7-7z"/>
+</svg></a>
+                                            <!-- Или использовать JavaScript для открытия модального окна -->
+                                            <!-- <button onclick="showSuppliers('{{ item.product }}')">Просмотреть</button> -->
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                            {% else %}
                             <h5>У вас пока нет отобранных поставщиков</h5>
                             <p class="text-muted">Начните поиск поставщиков, чтобы добавить их в избранное.</p>
-                            <a href="{% url 'technology_selection' %}" class="btn bg-blue1 bg-hover1 color-button-text mt-2">
+                            <a href="{% url 'technology_selection' %}"
+                                class="btn bg-blue1 bg-hover1 color-button-text mt-2">
                                 <i class="fas fa-search me-2"></i>Найти поставщиков
                             </a>
+                            {% endif %}
+
                         </div>
                     </div>
                 </div>
@@ -179,18 +252,49 @@
             <div class="tab-pane fade" id="logistic_suppliers">
                 <div class="card shadow">
                     <div class="card-header bg-blue1 text-white d-flex justify-content-between align-items-center">
-                        <h3 class="h5 mb-0">Мои отобранные поставщики логистики</h3>
-                        <span class="badge bg-white color-dark1 rounded-pill">0</span>
+                        <h3 class="h5 mb-0">Мои отобранные услуги логистики</h3>
+                        <span class="badge bg-white color-dark1 rounded-pill">{{aggregated_logistic_data.count}}</span>
                     </div>
-                    <div class="card-body">
-                        <div class="text-center py-5">
-                            <h4 class="text-danger">Требуется определить что такое отобранные поставщики</h4>
-                            <i class="fas fa-star fa-2x text-success mb-3"></i>
+                   <div class="card-body">
+                        <div class=" py-1">
+                            {% if aggregated_logistic_data %}
+                            <table class="table table-striped demotable ">
+                                <thead style="position: sticky;
+top: -1px;
+z-index:1;background: #9d9e9e; font-size:14px">
+                                    <tr>
+                                        <th>Услуга логистики</th>
+                                        <th>Количество поставщиков</th>
+                                        <th class="text-center">Посмотреть список поставщиков</th> <!-- Для кнопки/иконки просмотра -->
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in aggregated_logistic_data %}
+                                    <tr>
+                                        <td>{{ item.product }}</td>
+                                        <td>{{ item.supplier_count }}</td>
+                                        <td class="text-center">
+                                            <!-- Ссылка на отдельную страницу со списком поставщиков -->
+                                            <a href="{% url 'suppliers_by_product_logistic' product_name=item.product %}" target="_blank">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-check2-circle" viewBox="0 0 16 16">
+  <path d="M2.5 8a5.5 5.5 0 0 1 8.25-4.764.5.5 0 0 0 .5-.866A6.5 6.5 0 1 0 14.5 8a.5.5 0 0 0-1 0 5.5 5.5 0 1 1-11 0z"/>
+  <path d="M15.354 3.354a.5.5 0 0 0-.708-.708L8 9.293 5.354 6.646a.5.5 0 1 0-.708.708l3 3a.5.5 0 0 0 .708 0l7-7z"/>
+</svg></a>
+                                           
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                            {% else %}
                             <h5>У вас пока нет отобранных поставщиков</h5>
                             <p class="text-muted">Начните поиск поставщиков, чтобы добавить их в избранное.</p>
-                            <a href="{% url 'logistic_selection' %}" class="btn bg-blue1 bg-hover1 color-button-text mt-2">
+                            <a href="{% url 'logistic_selection' %}"
+                                class="btn bg-blue1 bg-hover1 color-button-text mt-2">
                                 <i class="fas fa-search me-2"></i>Найти поставщиков
                             </a>
+                            {% endif %}
+
                         </div>
                     </div>
                 </div>
@@ -214,31 +318,31 @@
                                         {% if last_payment %}
                                         <ul class="list-unstyled">
                                             <li class="mb-2 d-flex">
-                                                <span class="fw-bold me-2">Тариф:</span> 
+                                                <span class="fw-bold me-2">Тариф:</span>
                                                 <span>
                                                     {% if subscription_plan %}
-                                                        {{ subscription_plan.name }}
+                                                    {{ subscription_plan.name }}
                                                     {% else %}
-                                                        Не указан
+                                                    Не указан
                                                     {% endif %}
                                                 </span>
                                             </li>
                                             <li class="mb-2 d-flex">
-                                                <span class="fw-bold me-2">Поисков:</span> 
+                                                <span class="fw-bold me-2">Поисков:</span>
                                                 <span>{{ last_payment.add_count }}</span>
                                             </li>
                                             <li class="mb-2 d-flex">
-                                                <span class="fw-bold me-2">Стоимость:</span> 
+                                                <span class="fw-bold me-2">Стоимость:</span>
                                                 <span>
                                                     {% if subscription_plan %}
-                                                        {{ subscription_plan.price }} руб.
+                                                    {{ subscription_plan.price }} руб.
                                                     {% else %}
-                                                        Не указана
+                                                    Не указана
                                                     {% endif %}
                                                 </span>
                                             </li>
                                             <li class="mb-2 d-flex">
-                                                <span class="fw-bold me-2">Дата оплаты:</span> 
+                                                <span class="fw-bold me-2">Дата оплаты:</span>
                                                 <span>{{ last_payment.created_at|date:"d.m.Y H:i" }}</span>
                                             </li>
                                         </ul>
@@ -246,7 +350,8 @@
                                         <div class="text-center py-3">
                                             <i class="fas fa-exclamation-circle fa-2x text-muted mb-3"></i>
                                             <p class="text-muted">У вас еще нет оформленных подписок</p>
-                                            <a href="{% url 'bank_cleaning:subscription_list' %}" class="btn bg-blue1 bg-hover1 color-button-text mt-2">
+                                            <a href="{% url 'bank_cleaning:subscription_list' %}"
+                                                class="btn bg-blue1 bg-hover1 color-button-text mt-2">
                                                 <i class="fas fa-plus me-1"></i> Оформить подписку
                                             </a>
                                         </div>
@@ -254,7 +359,7 @@
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <!-- Состояние по подписке -->
                             <div class="col-md-6">
                                 <div class="card border-blue1 h-100">
@@ -266,26 +371,27 @@
                                             <span class="fw-bold">Подписано запросов:</span>
                                             <span class="text-primary fw-bold">{{ total_requests }}</span>
                                         </div>
-                                        
+
                                         <div class="d-flex justify-content-between mb-3 py-2 border-bottom">
                                             <span class="fw-bold">Использовано запросов:</span>
                                             <span class="text-danger fw-bold">{{ unique_request }}</span>
                                         </div>
-                                        
+
                                         <div class="d-flex justify-content-between mb-3 py-2 border-bottom">
                                             <span class="fw-bold">Доступно запросов:</span>
                                             <span class="text-success fw-bold">{{ user_subscribe }}</span>
                                         </div>
-                                        
+
                                         {% if user_subscribe is 0 %}
                                         <div class="text-center py-3">
-                                            <a href="{% url 'bank_cleaning:subscription_list' %}" class="btn bg-blue1 bg-hover1 color-button-text">
+                                            <a href="{% url 'bank_cleaning:subscription_list' %}"
+                                                class="btn bg-blue1 bg-hover1 color-button-text">
                                                 <i class="fas fa-plus me-1"></i> Оформить подписку
                                             </a>
                                         </div>
                                         {% else %}
                                         <div class="alert alert-info small mt-3 mb-0">
-                                            <i class="fas fa-info-circle me-1"></i> 
+                                            <i class="fas fa-info-circle me-1"></i>
                                             Подписка обновляется при пополнении
                                         </div>
                                         {% endif %}
@@ -321,17 +427,17 @@
                                         <td>{{ history.created_at|date:"d.m.Y" }}</td>
                                         <td>
                                             {% if history.plan %}
-                                                {{ history.plan.name }}
+                                            {{ history.plan.name }}
                                             {% else %}
-                                                Не указан
+                                            Не указан
                                             {% endif %}
                                         </td>
                                         <td>{{ history.add_count }}</td>
                                         <td>
                                             {% if history.plan %}
-                                                {{ history.plan.price }} руб.
+                                            {{ history.plan.price }} руб.
                                             {% else %}
-                                                Не указана
+                                            Не указана
                                             {% endif %}
                                         </td>
                                     </tr>
@@ -344,7 +450,8 @@
                             <i class="fas fa-history fa-3x text-muted mb-3"></i>
                             <h5>История подписки пуста</h5>
                             <p class="text-muted">Вы еще не оформляли подписку.</p>
-                            <a href="{% url 'bank_cleaning:subscription_list' %}" class="btn bg-blue1 bg-hover1 color-button-text mt-2">
+                            <a href="{% url 'bank_cleaning:subscription_list' %}"
+                                class="btn bg-blue1 bg-hover1 color-button-text mt-2">
                                 <i class="fas fa-plus me-2"></i>Оформить подписку
                             </a>
                         </div>
@@ -359,7 +466,7 @@
 
 {% block scripts %}
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         // Инициализация табов
         const tabTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tab"]'));
         tabTriggerList.forEach(function (triggerEl) {
@@ -369,13 +476,13 @@
                 tabTrigger.show();
             });
         });
-        
+
         // Обработка активного таба при загрузке страницы
         const activeTab = document.querySelector('.list-group-item.active');
         if (activeTab) {
             activeTab.classList.add('bg-blue1', 'text-white');
         }
-        
+
         // Обработка переключения табов
         document.querySelectorAll('[data-bs-toggle="tab"]').forEach(tab => {
             tab.addEventListener('shown.bs.tab', function (event) {
@@ -392,7 +499,7 @@
         if (window.innerWidth < 992) {
             const menuItems = document.querySelectorAll('.list-group-item');
             menuItems.forEach(item => {
-                item.addEventListener('click', function() {
+                item.addEventListener('click', function () {
                     document.querySelector('.sticky-top').classList.add('d-none');
                     setTimeout(() => {
                         document.querySelector('.sticky-top').classList.remove('d-none');
