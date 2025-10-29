@@ -345,6 +345,7 @@ def dashbord(request):
         .values('product') # Группируем по продукту
         .annotate(
             supplier_count=Count('supplier_name', distinct=True), # Количество уникальных поставщиков
+            country_count=Count('country', distinct=True), # Количество уникальных стран
             total_searches=Count('id') # Общее количество поисков по этому продукту (опционально)
         )
         .order_by('-supplier_count', 'product') # Сортируем, например, по количеству поставщиков убыв.,
@@ -356,6 +357,7 @@ def dashbord(request):
         .values('product') # Группируем по продукту
         .annotate(
             supplier_count=Count('supplier_name', distinct=True), # Количество уникальных поставщиков
+            country_count=Count('country', distinct=True), # Количество уникальных стран
             total_searches=Count('id') # Общее количество поисков по этому продукту (опционально)
         )
         .order_by('-supplier_count', 'product') # Сортируем, например, по количеству поставщиков убыв.,
@@ -367,6 +369,7 @@ def dashbord(request):
         .values('product') # Группируем по продукту
         .annotate(
             supplier_count=Count('supplier_name', distinct=True), # Количество уникальных поставщиков
+            country_count=Count('country', distinct=True), # Количество уникальных стран
             total_searches=Count('id') # Общее количество поисков по этому продукту (опционально)
         )
         .order_by('-supplier_count', 'product') # Сортируем, например, по количеству поставщиков убыв.,
@@ -476,7 +479,7 @@ def suppliers_by_product_goods(request, product_name):
     suppliers = (
         SearchResult.objects.filter(user=user, product=product_name)
         .select_related('supplier_name') # Оптимизируем запрос к модели Supplier
-        .values('supplier_name__name', 'supplier_name__id', 'supplier_email') # Выбираем нужные поля
+        .values('supplier_name__name', 'supplier_name__id', 'supplier_email', 'country', 'category') # Выбираем нужные поля
         .distinct() # Убираем дубликаты, если были разные email или поиски для одного поставщика
         .order_by('supplier_name__name') # Сортируем по названию поставщика
     )
@@ -499,7 +502,7 @@ def suppliers_by_product_technology(request, product_name):
     suppliers = (
         SearchResultTechnology.objects.filter(user=user, product=product_name)
         .select_related('supplier_name') # Оптимизируем запрос к модели Supplier
-        .values('supplier_name__name', 'supplier_name__id', 'supplier_email') # Выбираем нужные поля
+        .values('supplier_name__name', 'supplier_name__id', 'supplier_email', 'country', 'category') # Выбираем нужные поля
         .distinct() # Убираем дубликаты
         .order_by('supplier_name__name') # Сортируем по названию поставщика
     )
@@ -522,7 +525,7 @@ def suppliers_by_product_logistic(request, product_name):
     suppliers = (
         SearchResultLogistic.objects.filter(user=user, product=product_name)
         .select_related('supplier_name') # Оптимизируем запрос к модели Supplier
-        .values('supplier_name__name', 'supplier_name__id', 'supplier_email') # Выбираем нужные поля
+        .values('supplier_name__name', 'supplier_name__id', 'supplier_email', 'country',  'category') # Выбираем нужные поля
         .distinct() # Убираем дубликаты
         .order_by('supplier_name__name') # Сортируем по названию поставщика
     )

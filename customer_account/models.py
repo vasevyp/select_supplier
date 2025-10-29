@@ -2,9 +2,6 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.postgres.fields import ArrayField
 from supplier.models import Supplier, Technology, Logistic
-# from django.contrib.auth import get_user_model
-
-# User = get_user_model()
 
 
 class SearchResult(models.Model):
@@ -13,6 +10,8 @@ class SearchResult(models.Model):
     supplier_name  = models.ForeignKey(Supplier, on_delete=models.CASCADE,  verbose_name='Наименование компании')
     supplier_email = models.EmailField(verbose_name='Email')
     product = models.CharField(max_length=255, verbose_name='Запрос')
+    country = models.CharField(max_length=255, verbose_name='Страна') # Новое поле
+    category = models.CharField(max_length=255, verbose_name='Категория') # Новое поле
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -20,6 +19,13 @@ class SearchResult(models.Model):
         verbose_name = 'Поставщика в выборке'
         verbose_name_plural = 'Выборка поставщиков'
         unique_together = ('user', 'supplier_name', 'product')  # Добавляем уникальность
+        # Добавим индексы для новых полей и для ускорения фильтрации по user и product
+        indexes = [
+            models.Index(fields=['user', 'product']),
+            models.Index(fields=['country']),
+            models.Index(fields=['category']),
+        ]
+
     def __str__(self):
         return self.product
 class SearchResultTechnology(models.Model):
@@ -28,6 +34,8 @@ class SearchResultTechnology(models.Model):
     supplier_name  = models.ForeignKey(Technology, on_delete=models.CASCADE,  verbose_name='Наименование компании')
     supplier_email = models.EmailField(verbose_name='Email')
     product = models.CharField(max_length=255, verbose_name='Запрос')
+    country = models.CharField(max_length=255, verbose_name='Страна') # Новое поле
+    category = models.CharField(max_length=255, verbose_name='Категория') # Новое поле
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -35,6 +43,12 @@ class SearchResultTechnology(models.Model):
         verbose_name = 'Технология в выборке'
         verbose_name_plural = 'Выборка Технологий'
         unique_together = ('user', 'supplier_name', 'product')  # Добавляем уникальность
+        # Добавим индексы для новых полей и для ускорения фильтрации по user и product
+        indexes = [
+            models.Index(fields=['user', 'product']),
+            models.Index(fields=['country']),
+            models.Index(fields=['category']),
+        ]
     def __str__(self):
         return self.product
 class SearchResultLogistic(models.Model):
@@ -43,6 +57,9 @@ class SearchResultLogistic(models.Model):
     supplier_name  = models.ForeignKey(Logistic, on_delete=models.CASCADE,  verbose_name='Наименование компании')
     supplier_email = models.EmailField(verbose_name='Email')
     product = models.CharField(max_length=255, verbose_name='Запрос')
+    country = models.CharField(max_length=255, verbose_name='Страна') # Новое поле
+    category = models.CharField(max_length=255, verbose_name='Категория') # Новое поле
+
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -50,6 +67,12 @@ class SearchResultLogistic(models.Model):
         verbose_name = 'Логистика в выборке'
         verbose_name_plural = 'Выборка Логистики'
         unique_together = ('user', 'supplier_name', 'product')  # Добавляем уникальность
+        # Добавим индексы для новых полей и для ускорения фильтрации по user и product
+        indexes = [
+            models.Index(fields=['user', 'product']),
+            models.Index(fields=['country']),
+            models.Index(fields=['category']),
+        ]
     def __str__(self):
         return self.product   
 
@@ -141,6 +164,8 @@ class MailSendList(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Пользователь')    
     product = models.CharField(max_length=255, verbose_name='Предмет запроса')
     name = models.CharField(max_length=254, verbose_name='Наименование компании')
+    country = models.CharField(max_length=255, verbose_name='Страна', blank=True) # Новое поле
+    category = models.CharField(max_length=255, verbose_name='Категория', blank=True) # Новое поле
     section = models.CharField(max_length=20, verbose_name='Раздел') 
 
     def __str__(self):

@@ -5,29 +5,29 @@ from .models import SearchResult, MailSendList, SendedEmailSave, SupplierRespons
 @admin.register(SearchResult)
 class SearchResultAdmin(admin.ModelAdmin):
     # readonly_fields = ('name','website')
-    list_display = ("user", "supplier_name", "supplier_email", "product", "created_at")
-    search_fields = ("user__username", "supplier_name", "supplier_email", "product",)
+    list_display = ("supplier_name", "product", "user", 'country', 'category',  "supplier_email", "created_at")
+    search_fields = ("user__username", "supplier_name__name", "supplier_email", "product",)
     list_filter = ("user",  "product")
     save_on_top = True
-    list_per_page = 20
+    list_per_page = 100
 
 @admin.register(SearchResultTechnology)
 class SearchResultTechnologyAdmin(admin.ModelAdmin):
     # readonly_fields = ('name','website')
-    list_display = ("user", "supplier_name", "supplier_email", "product", "created_at")
-    search_fields = ("user__username", "supplier_name", "supplier_email", "product",)
+    list_display = ("supplier_name", "product", "user", 'country', 'category',  "supplier_email", "created_at")
+    search_fields = ("user__username", "supplier_name__name", "supplier_email", "product",)
     list_filter = ("user",  "product")
     save_on_top = True
-    list_per_page = 20
+    list_per_page = 100
 
 @admin.register(SearchResultLogistic)
 class SearchResultLogisticAdmin(admin.ModelAdmin):
     # readonly_fields = ('name','website')
-    list_display = ("user", "supplier_name", "supplier_email", "product", "created_at")
-    search_fields = ("user__username", "supplier_name", "supplier_email", "product",)
+    list_display = ("supplier_name", "product", "user", 'country', 'category',  "supplier_email", "created_at")
+    search_fields = ("user__username", "supplier_name__name", "supplier_email", "product",)
     list_filter = ("user",  "product")
     save_on_top = True
-    list_per_page = 20    
+    list_per_page = 100    
 
 
 @admin.register(MailSendList)
@@ -37,7 +37,7 @@ class MailSendListAdmin(admin.ModelAdmin):
     search_fields = ("user", "product",)
     list_filter = ("user",  "product")
     save_on_top = True
-    list_per_page = 20
+    list_per_page = 100
 
 @admin.register(SendedEmailSave)
 class SendedEmailSaveAdmin(admin.ModelAdmin):
@@ -46,7 +46,7 @@ class SendedEmailSaveAdmin(admin.ModelAdmin):
     search_fields = ("user", "product",)
     list_filter = ("user",  "product")
     save_on_top = True
-    list_per_page = 20    
+    list_per_page = 100    
 
 
 @admin.register(SupplierResponse)
@@ -54,6 +54,8 @@ class SupplierResponseAdmin(admin.ModelAdmin):
     list_display = ('user', 'product', 'email', 'original_mail', 'date')
     search_fields = ('product', 'email')
     list_filter = ('date', 'user')
+    save_on_top = True
+    list_per_page = 100 
 
 # @admin.register(UserSearchCount)
 # class UserSearchCountAdmin(admin.ModelAdmin):

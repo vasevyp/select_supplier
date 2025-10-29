@@ -14,7 +14,7 @@
     <div class="card-body p-4">
         <div class="row align-items-center">
             <div class="col-md-9 mb-3 mb-md-0">
-                <h2 class="h4 mb-1 fw-bold text-primary"> <span class="text-muted"> Добро пожаловать,</span> 
+                <h2 class="h4 mb-1 fw-bold text-primary"> <span class="text-muted"> Добро пожаловать,</span>
                     {{request.user.first_name }} {{ request.user.last_name }}</h2>
                 <div class="d-flex flex-wrap gap-3 text-muted">
                     <div><i class="fas fa-envelope me-1"></i> {{ request.user.email }}</div>
@@ -160,8 +160,10 @@ top: -1px;
 z-index:1;background: #9d9e9e; font-size:14px">
                                     <tr>
                                         <th>Продукт</th>
-                                        <th>Количество поставщиков</th>
-                                        <th class="text-center">Посмотреть список поставщиков</th> <!-- Для кнопки/иконки просмотра -->
+                                        <th>Всего поставщиков</th>
+                                        <th>Всего стран</th>
+                                        <th class="text-center">Смотреть поставщиков</th>
+                                        <!-- Для кнопки/иконки просмотра -->
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -169,13 +171,18 @@ z-index:1;background: #9d9e9e; font-size:14px">
                                     <tr>
                                         <td>{{ item.product }}</td>
                                         <td>{{ item.supplier_count }}</td>
+                                        <td>{{ item.country_count }}</td>
                                         <td class="text-center">
                                             <!-- Ссылка на отдельную страницу со списком поставщиков -->
-                                            <a href="{% url 'suppliers_by_product_goods' product_name=item.product %}" target="_blank">
-                                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-check2-circle" viewBox="0 0 16 16">
-  <path d="M2.5 8a5.5 5.5 0 0 1 8.25-4.764.5.5 0 0 0 .5-.866A6.5 6.5 0 1 0 14.5 8a.5.5 0 0 0-1 0 5.5 5.5 0 1 1-11 0z"/>
-  <path d="M15.354 3.354a.5.5 0 0 0-.708-.708L8 9.293 5.354 6.646a.5.5 0 1 0-.708.708l3 3a.5.5 0 0 0 .708 0l7-7z"/>
-</svg></a>
+                                            <a href="{% url 'suppliers_by_product_goods' product_name=item.product %}"
+                                                target="_blank">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                    fill="currentColor" class="bi bi-check2-circle" viewBox="0 0 16 16">
+                                                    <path
+                                                        d="M2.5 8a5.5 5.5 0 0 1 8.25-4.764.5.5 0 0 0 .5-.866A6.5 6.5 0 1 0 14.5 8a.5.5 0 0 0-1 0 5.5 5.5 0 1 1-11 0z" />
+                                                    <path
+                                                        d="M15.354 3.354a.5.5 0 0 0-.708-.708L8 9.293 5.354 6.646a.5.5 0 1 0-.708.708l3 3a.5.5 0 0 0 .708 0l7-7z" />
+                                                </svg></a>
                                             <!-- Или использовать JavaScript для открытия модального окна -->
                                             <!-- <button onclick="showSuppliers('{{ item.product }}')">Просмотреть</button> -->
                                         </td>
@@ -201,7 +208,8 @@ z-index:1;background: #9d9e9e; font-size:14px">
                 <div class="card shadow">
                     <div class="card-header bg-blue1 text-white d-flex justify-content-between align-items-center">
                         <h3 class="h5 mb-0">Мои отобранные технологии</h3>
-                        <span class="badge bg-white color-dark1 rounded-pill">{{aggregated_technology_data.count}}</span>
+                        <span
+                            class="badge bg-white color-dark1 rounded-pill">{{aggregated_technology_data.count}}</span>
                     </div>
                     <div class="card-body">
                         <div class=" py-1">
@@ -212,8 +220,10 @@ top: -1px;
 z-index:1;background: #9d9e9e; font-size:14px">
                                     <tr>
                                         <th>Технология</th>
-                                        <th>Количество поставщиков</th>
-                                        <th class="text-center">Посмотреть список поставщиков</th> <!-- Для кнопки/иконки просмотра -->
+                                        <th>Всего поставщиков</th>
+                                        <th>Всего стран</th>
+                                        <th class="text-center">Смотреть поставщиков</th>
+                                        <!-- Для кнопки/иконки просмотра -->
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -221,13 +231,18 @@ z-index:1;background: #9d9e9e; font-size:14px">
                                     <tr>
                                         <td>{{ item.product }}</td>
                                         <td>{{ item.supplier_count }}</td>
+                                        <td>{{ item.country_count }}</td>
                                         <td class="text-center">
                                             <!-- Ссылка на отдельную страницу со списком поставщиков -->
-                                            <a href="{% url 'suppliers_by_product_technology' product_name=item.product %}" target="_blank">
-                                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-check2-circle" viewBox="0 0 16 16">
-  <path d="M2.5 8a5.5 5.5 0 0 1 8.25-4.764.5.5 0 0 0 .5-.866A6.5 6.5 0 1 0 14.5 8a.5.5 0 0 0-1 0 5.5 5.5 0 1 1-11 0z"/>
-  <path d="M15.354 3.354a.5.5 0 0 0-.708-.708L8 9.293 5.354 6.646a.5.5 0 1 0-.708.708l3 3a.5.5 0 0 0 .708 0l7-7z"/>
-</svg></a>
+                                            <a href="{% url 'suppliers_by_product_technology' product_name=item.product %}"
+                                                target="_blank">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                    fill="currentColor" class="bi bi-check2-circle" viewBox="0 0 16 16">
+                                                    <path
+                                                        d="M2.5 8a5.5 5.5 0 0 1 8.25-4.764.5.5 0 0 0 .5-.866A6.5 6.5 0 1 0 14.5 8a.5.5 0 0 0-1 0 5.5 5.5 0 1 1-11 0z" />
+                                                    <path
+                                                        d="M15.354 3.354a.5.5 0 0 0-.708-.708L8 9.293 5.354 6.646a.5.5 0 1 0-.708.708l3 3a.5.5 0 0 0 .708 0l7-7z" />
+                                                </svg></a>
                                             <!-- Или использовать JavaScript для открытия модального окна -->
                                             <!-- <button onclick="showSuppliers('{{ item.product }}')">Просмотреть</button> -->
                                         </td>
@@ -255,7 +270,7 @@ z-index:1;background: #9d9e9e; font-size:14px">
                         <h3 class="h5 mb-0">Мои отобранные услуги логистики</h3>
                         <span class="badge bg-white color-dark1 rounded-pill">{{aggregated_logistic_data.count}}</span>
                     </div>
-                   <div class="card-body">
+                    <div class="card-body">
                         <div class=" py-1">
                             {% if aggregated_logistic_data %}
                             <table class="table table-striped demotable ">
@@ -264,8 +279,10 @@ top: -1px;
 z-index:1;background: #9d9e9e; font-size:14px">
                                     <tr>
                                         <th>Услуга логистики</th>
-                                        <th>Количество поставщиков</th>
-                                        <th class="text-center">Посмотреть список поставщиков</th> <!-- Для кнопки/иконки просмотра -->
+                                        <th>Всего поставщиков</th>
+                                        <th>Всего стран</th>                                        
+                                        <th class="text-center">Смотреть поставщиков</th>
+                                        <!-- Для кнопки/иконки просмотра -->
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -273,14 +290,19 @@ z-index:1;background: #9d9e9e; font-size:14px">
                                     <tr>
                                         <td>{{ item.product }}</td>
                                         <td>{{ item.supplier_count }}</td>
+                                        <td>{{ item.country_count }}</td>
                                         <td class="text-center">
                                             <!-- Ссылка на отдельную страницу со списком поставщиков -->
-                                            <a href="{% url 'suppliers_by_product_logistic' product_name=item.product %}" target="_blank">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-check2-circle" viewBox="0 0 16 16">
-  <path d="M2.5 8a5.5 5.5 0 0 1 8.25-4.764.5.5 0 0 0 .5-.866A6.5 6.5 0 1 0 14.5 8a.5.5 0 0 0-1 0 5.5 5.5 0 1 1-11 0z"/>
-  <path d="M15.354 3.354a.5.5 0 0 0-.708-.708L8 9.293 5.354 6.646a.5.5 0 1 0-.708.708l3 3a.5.5 0 0 0 .708 0l7-7z"/>
-</svg></a>
-                                           
+                                            <a href="{% url 'suppliers_by_product_logistic' product_name=item.product %}"
+                                                target="_blank">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                    fill="currentColor" class="bi bi-check2-circle" viewBox="0 0 16 16">
+                                                    <path
+                                                        d="M2.5 8a5.5 5.5 0 0 1 8.25-4.764.5.5 0 0 0 .5-.866A6.5 6.5 0 1 0 14.5 8a.5.5 0 0 0-1 0 5.5 5.5 0 1 1-11 0z" />
+                                                    <path
+                                                        d="M15.354 3.354a.5.5 0 0 0-.708-.708L8 9.293 5.354 6.646a.5.5 0 1 0-.708.708l3 3a.5.5 0 0 0 .708 0l7-7z" />
+                                                </svg></a>
+
                                         </td>
                                     </tr>
                                     {% endfor %}

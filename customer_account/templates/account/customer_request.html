@@ -37,13 +37,11 @@
     </form>
 
     {% if results %}
-    <h4>Список для запроса по наименованию: {{ results.0.product }} ( всего позиций: {{results.count}} )</h4>
+    <h4>Список для запроса по наименованию: "{{ results.0.product }}" ( всего позиций: {{results.count}} )</h4>
     <a class="btn bg-blue1 text-decoration-none bg-hover1 color-button-text my-2" type="post"
         href="{% url 'redirect_send_emails' %}" target=_blank>Сделать запрос поставщикам</a>
     <table class="table table-striped demotable ">
-        <thead style="position: sticky;
-top: -1px;
-z-index:1;background: #9d9e9e; font-size:14px">
+        <thead style="position: sticky;top: -1px;z-index:1;background: #9d9e9e; font-size:14px">
             <tr>
                 <th scope="col">Поставщик</th>
 
