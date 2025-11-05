@@ -1,54 +1,35 @@
+<!-- customer_account/templates/account/logistic_request.html -->
 {% extends 'base.html' %}
 
 {% load static %}
 {% load django_bootstrap5 %}
 
-
 {% block title %}
 {{ block.super }}: запросы логистики
 {% endblock %}
 
-
 {% block content %}
 <div class="container col-12 margin-mb100">
 
-    <h2 class=" mt-1">История подбора поставщиков логистических услуг </h2>
-
-    Всего запрошен поиск уникальных логистических услуг: {{unique_request}}. Подобрано позиций поставщиков: {{count}}
-
-
-    <!-- template.html -->
-    <form method="post">
-        <div class="d-flex flex-md-row">
-            <div class=" mt-1 me-2 ">
-                {% csrf_token %}
-                {{ form.as_p }}
-            </div>
-            <div class="ms-2"><button type="submit"
-                    class="btn btn-sm bg-blue1 bg-hover1 color-button-text btn-block">Показать результаты</button></div>
-
-        </div>
-
-
-
+    {% if results %}
+    <h3>Результаты для запроса по логистической услуги: "{{ results.0.product }}" ( всего позиций: {{results.count}} )</h3>
+     <p><i>Доступно выбрать {{ mail_list_limit }} позиций за 1 рассылку.</i> <strong>Выбрано для отправки:</strong> </p>
+   
+    <a class="btn bg-blue1 text-decoration-none bg-hover1 color-button-text my-2 ml-2" type="post"
+        href="{% url 'redirect_send_emails' %}" target=_blank>Сделать запрос поставщикам</a>
+         <form method="post" action="{% url 'clear_mail_send_list' %}" style="display:inline;" onsubmit="return confirm('Вы уверены, что хотите очистить весь список рассылки?');">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-sm btn-outline-danger my-2 ms-md-5">Очистить выборку</button>
     </form>
 
-    {% if results %}
-    <h3>Результаты для запроса: {{ results.0.product }} ( всего позиций: {{results.count}} )</h3>
-    <a class="btn bg-blue1 text-decoration-none bg-hover1 color-button-text my-2" type="post"
-        href="{% url 'redirect_send_emails' %}" target=_blank>Сделать запрос поставщикам</a>
     <table class="table table-striped demotable ">
-        <thead style="position: sticky;
-top: -1px;
-z-index:1;background: #9d9e9e; font-size:14px">
+        <thead style="position: sticky;top: -1px;z-index:1;background: #9d9e9e; font-size:14px">
             <tr>
                 <th scope="col">Поставщик</th>
-
-
+                <th scope="col">Страна</th>
                 <th scope="col" class="d-none d-md-table-cell">Email</th>
                 <th scope="col" class="d-none d-md-table-cell">Дата запроса</th>
-
-
+                <th scope="col">Выбрать для отправки</th>
             </tr>
         </thead>
         <tbody style="font-size:12px">
@@ -56,29 +37,91 @@ z-index:1;background: #9d9e9e; font-size:14px">
             <tr>
                 <th>
                     <a href="{% url 'logistic_detail' item.supplier_name_id %}" target="_blank">
-                        
                         {{ item.supplier_name}}
                     </a>
                 </th>
-
-
+                <td>{{ item.country}}</td>
                 <td class="d-none d-md-table-cell">{{item.supplier_email}}</td>
                 <td class="d-none d-md-table-cell">{{item.created_at}}</td>
-
-
-
+                <td class="text-center">
+                    <input type="checkbox" class="select-supplier-checkbox"
+                           data-supplier-id="{{ item.id }}"
+                           data-section="Логистика"
+                           {% if item.is_selected %}checked{% endif %}>
+                </td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
+    {% else %}
+    <h2 class=" mt-1">История подбора поставщиков логистических услуг </h2>
+    Всего запрошен поиск уникальных логистических услуг: {{unique_request}}. Подобрано позиций поставщиков: {{count}}
 
+    <form method="post">
+        <div class="d-flex flex-md-row flex-wrap">
+            <div class=" mt-1 me-2 mb-2">
+                {% csrf_token %}
+                <div>
+                    {{ form.search_product.label_tag }}
+                    {{ form.search_product }}
+                </div>
+            </div>
+            <div class=" mt-1 me-2 mb-2">
+                <div>
+                    {{ form.search_country.label_tag }}
+                    {{ form.search_country }}
+                </div>
+            </div>
+            <div class="ms-2 mt-1">
+                <button type="submit"
+                        class="btn btn-sm bg-blue1 bg-hover1 color-button-text btn-block">
+                    Показать результаты
+                </button>
+            </div>
+        </div>
+    </form>
     {% endif %}
-
-
-
-
 
 </div>
 
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const checkboxes = document.querySelectorAll('.select-supplier-checkbox');
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            const supplierId = this.getAttribute('data-supplier-id');
+            const section = this.getAttribute('data-section');
+            const action = this.checked ? 'add' : 'remove';
+
+            fetch('{% url "save_selected_suppliers" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': csrfToken,
+                },
+                body: `supplier_id=${supplierId}&action=${action}&section=${section}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.querySelector('p strong').textContent = `Выбрано для отправки: ${data.current_count}`;
+                } else {
+                    this.checked = !this.checked;
+                    alert(data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Ошибка при сохранении выбора:', error);
+                this.checked = !this.checked;
+                alert('Произошла ошибка при сохранении выбора.');
+            });
+        });
+    });
+});
+</script>
+{% endblock extra_js %}
 
 {% endblock %}

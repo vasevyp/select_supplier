@@ -85,7 +85,7 @@
                         <h3 class="h5 mb-0">Ответы поставщиков на отправленные запросы</h3>
                         <span class=" badge bg-white color-dark1 rounded-pill">{{ response_data|length }}</span>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body" style="font-size:12px">
                         {% if response_data %}
                         <div class="table-responsive">
                             <table class="table table-hover table-striped align-middle">
@@ -175,14 +175,17 @@ z-index:1;background: #9d9e9e; font-size:14px">
                                         <td class="text-center">
                                             <!-- Ссылка на отдельную страницу со списком поставщиков -->
                                             <a href="{% url 'suppliers_by_product_goods' product_name=item.product %}"
-                                                target="_blank">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                target="_blank" class="btn bg-blue1 bg-hover1 color-button-text btn-sm"
+                                                title="Просмотреть список">
+                                                <i class="fas fa-eye"></i>
+                                                <!-- <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                                     fill="currentColor" class="bi bi-check2-circle" viewBox="0 0 16 16">
                                                     <path
                                                         d="M2.5 8a5.5 5.5 0 0 1 8.25-4.764.5.5 0 0 0 .5-.866A6.5 6.5 0 1 0 14.5 8a.5.5 0 0 0-1 0 5.5 5.5 0 1 1-11 0z" />
                                                     <path
                                                         d="M15.354 3.354a.5.5 0 0 0-.708-.708L8 9.293 5.354 6.646a.5.5 0 1 0-.708.708l3 3a.5.5 0 0 0 .708 0l7-7z" />
-                                                </svg></a>
+                                                </svg> -->
+                                            </a>
                                             <!-- Или использовать JavaScript для открытия модального окна -->
                                             <!-- <button onclick="showSuppliers('{{ item.product }}')">Просмотреть</button> -->
                                         </td>
@@ -235,14 +238,16 @@ z-index:1;background: #9d9e9e; font-size:14px">
                                         <td class="text-center">
                                             <!-- Ссылка на отдельную страницу со списком поставщиков -->
                                             <a href="{% url 'suppliers_by_product_technology' product_name=item.product %}"
-                                                target="_blank">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                target="_blank" class="btn bg-blue1 bg-hover1 color-button-text btn-sm" title="Просмотреть список">
+                                                <i class="fas fa-eye"></i>
+                                                <!-- <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                                     fill="currentColor" class="bi bi-check2-circle" viewBox="0 0 16 16">
                                                     <path
                                                         d="M2.5 8a5.5 5.5 0 0 1 8.25-4.764.5.5 0 0 0 .5-.866A6.5 6.5 0 1 0 14.5 8a.5.5 0 0 0-1 0 5.5 5.5 0 1 1-11 0z" />
                                                     <path
                                                         d="M15.354 3.354a.5.5 0 0 0-.708-.708L8 9.293 5.354 6.646a.5.5 0 1 0-.708.708l3 3a.5.5 0 0 0 .708 0l7-7z" />
-                                                </svg></a>
+                                                </svg> -->
+                                            </a>
                                             <!-- Или использовать JavaScript для открытия модального окна -->
                                             <!-- <button onclick="showSuppliers('{{ item.product }}')">Просмотреть</button> -->
                                         </td>
@@ -294,14 +299,16 @@ z-index:1;background: #9d9e9e; font-size:14px">
                                         <td class="text-center">
                                             <!-- Ссылка на отдельную страницу со списком поставщиков -->
                                             <a href="{% url 'suppliers_by_product_logistic' product_name=item.product %}"
-                                                target="_blank">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                target="_blank" class="btn bg-blue1 bg-hover1 color-button-text btn-sm" title="Просмотреть список">
+                                                <i class="fas fa-eye"></i>
+                                                <!-- <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                                     fill="currentColor" class="bi bi-check2-circle" viewBox="0 0 16 16">
                                                     <path
                                                         d="M2.5 8a5.5 5.5 0 0 1 8.25-4.764.5.5 0 0 0 .5-.866A6.5 6.5 0 1 0 14.5 8a.5.5 0 0 0-1 0 5.5 5.5 0 1 1-11 0z" />
                                                     <path
                                                         d="M15.354 3.354a.5.5 0 0 0-.708-.708L8 9.293 5.354 6.646a.5.5 0 1 0-.708.708l3 3a.5.5 0 0 0 .708 0l7-7z" />
-                                                </svg></a>
+                                                </svg> -->
+                                            </a>
 
                                         </td>
                                     </tr>
@@ -431,7 +438,7 @@ z-index:1;background: #9d9e9e; font-size:14px">
                     <div class="card-header bg-blue1 text-white d-flex justify-content-between align-items-center">
                         <h3 class="h5 mb-0">История подписки</h3>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body" style="font-size:12px">
                         {% if subscription_history %}
                         <div class="table-responsive">
                             <table class="table table-hover table-striped align-middle">

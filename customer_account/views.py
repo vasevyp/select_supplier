@@ -1,13 +1,19 @@
 import logging
-
-# import html
+# import io
+# from datetime import datetime
+# from openpyxl import Workbook
+from openpyxl.styles import Font, Alignment
+# from openpyxl.utils import get_column_letter
 from bs4 import BeautifulSoup
 from django.contrib import messages
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse # Добавим JsonResponse для AJAX
+from django.views.decorators.http import require_POST # Для POST-представлений
+from django.core.exceptions import ValidationError # Для обработки ошибок модели
 from django.utils.text import slugify
 from django.db.models import Subquery, OuterRef, Count, F, Prefetch
+# from django.db import transaction # Добавим для безопасности
 
 
 from users.models import Profile
@@ -32,7 +38,6 @@ from .tasks import send_supplier_email
 # from django.utils.html import strip_tags
 
 logger = logging.getLogger(__name__)
-
 # Поиск поставщиков
 def customer_request(request):
     """Отображает и обрабатывает запросы клиентов на продукты для текущего пользователя.
@@ -41,37 +46,41 @@ def customer_request(request):
     user = request.user
     results = None
     select_product = ""
+    select_country = ""
+    # Удаляем все записи поставщиков в MailSendList
+    MailSendList.objects.filter(user=user).delete()
 
-    if request.method == "POST":
-        # Сохраняем выбранных поставщиков в MailSendList
-        MailSendList.objects.filter(user=user).delete()
+    if request.method == "POST":        
         form = SearchResultForm(user, request.POST)
         if form.is_valid():
             select_product = form.cleaned_data.get("search_product")
+            select_country = form.cleaned_data.get("search_country")                                   
             results = SearchResult.objects.filter(
-                user=user,
-                product=select_product,
-            )          
-            # Создаем список для отправки запросов
-            for item in results:
-                MailSendList.objects.create(
-                        email=item.supplier_email,
-                        user=item.user,
-                        product=item.product,
-                        name=item.supplier_name,
-                        section="Товары",
-                    )
-
-
+                    user=user,
+                    product=select_product,
+                    country=select_country,
+                    ).select_related('supplier_name') # Оптимизируем запрос
+            
+            # Подготавливаем результаты для отображения с флагом is_selected
+            selected_emails = set(
+                MailSendList.objects.filter(
+                    user=user, section="Товары" # Убедимся, что секция правильная
+                ).values_list('email', flat=True)
+            )
+            for res in results:
+                res.is_selected = res.supplier_email in selected_emails
     else:
         form = SearchResultForm(user)
 
     user_requests = SearchResult.objects.filter(user_id=request.user.id)
+    
+    
     context = {
         "form": form,
         "results": results,
         "count": user_requests.count,
         "unique_request": user_requests.distinct("product").count,
+        "mail_list_limit": 100 # Передаем лимит
     }
     return render(request, "account/customer_request.html", context)
 
@@ -83,37 +92,41 @@ def technology_request(request):
     user = request.user
     results = None
     select_product = ""
+    select_country = ""
+    # Удаляем все записи поставщиков в MailSendList
+    MailSendList.objects.filter(user=user).delete()
 
     if request.method == "POST":
-        # Сохраняем выбранных поставщиков в MailSendList
-        MailSendList.objects.filter(user=user).delete()
         form = SearchResultTechnologyForm(user, request.POST)
         if form.is_valid():
             select_product = form.cleaned_data.get("search_product")
+            select_country = form.cleaned_data.get("search_country")
             results = SearchResultTechnology.objects.filter(
                 user=user,
                 product=select_product,
-            )
+                country=select_country,
+            ).select_related('supplier_name') # Оптимизируем запрос
             
-            # Создаем список для отправки запросов
-            for item in results:
-                MailSendList.objects.create(
-                        email=item.supplier_email,
-                        user=item.user,
-                        product=item.product,
-                        name=item.supplier_name,
-                        section="Технологии",
-                    )
+            # Подготавливаем результаты для отображения с флагом is_selected            
+            selected_emails = set(
+                MailSendList.objects.filter(
+                    user=user, section="Технологии"
+                ).values_list('email', flat=True)
+            )
+            for res in results:
+                res.is_selected = res.supplier_email in selected_emails
 
     else:
         form = SearchResultTechnologyForm(user)
 
     user_requests = SearchResultTechnology.objects.filter(user_id=request.user.id)
+   
     context = {
         "form": form,
         "results": results,
         "count": user_requests.count,
         "unique_request": user_requests.distinct("product").count,
+        "mail_list_limit": 100,
     }
     return render(request, "account/technology_request.html", context)
 
@@ -125,28 +138,28 @@ def logistic_request(request):
     user = request.user
     results = None
     select_product = ""
+    select_country = ""
+    # Удаляем все записи поставщиков в MailSendList
+    MailSendList.objects.filter(user=user).delete()
 
     if request.method == "POST":
-        # Сохраняем выбранных поставщиков в MailSendList
-        MailSendList.objects.filter(user=user).delete()
         form = SearchResultLogisticForm(user, request.POST)
         if form.is_valid():
             select_product = form.cleaned_data.get("search_product")
+            select_country = form.cleaned_data.get("search_country")
             results = SearchResultLogistic.objects.filter(
                 user=user,
                 product=select_product,
+                country=select_country,
+            ).select_related('supplier_name')
+            # Подготавливаем результаты для отображения с флагом is_selected
+            selected_emails = set(
+                MailSendList.objects.filter(
+                    user=user, section="Логистика"
+                ).values_list('email', flat=True)
             )
-            
-            # Создаем список для отправки запросов
-            for item in results:
-                MailSendList.objects.create(
-                        email=item.supplier_email,
-                        user=item.user,
-                        product=item.product,
-                        name=item.supplier_name,
-                        section="Логистика",
-                    )
-
+            for res in results:
+                res.is_selected = res.supplier_email in selected_emails
     else:
         form = SearchResultLogisticForm(user)
 
@@ -156,8 +169,103 @@ def logistic_request(request):
         "results": results,
         "count": user_requests.count,
         "unique_request": user_requests.distinct("product").count,
+        "mail_list_limit": 100,
     }
     return render(request, "account/logistic_request.html", context)
+
+# --- ПРЕДСТАВЛЕНИЕ ДЛЯ СОХРАНЕНИЯ/УДАЛЕНИЯ ВЫБРАННЫХ ПОСТАВЩИКОВ ---
+@require_POST
+@login_required
+def save_selected_suppliers(request):
+    "AJAX-представление для добавления или удаления поставщиков из MailSendList."
+    user = request.user
+    try:
+        supplier_id = int(request.POST.get('supplier_id'))
+        action = request.POST.get('action') # 'add' или 'remove'
+        section = request.POST.get('section') # 'Товары', 'Технологии', 'Логистика'
+
+        # Проверяем, что раздел допустим
+        if section not in ['Товары', 'Технологии', 'Логистика']:
+            return JsonResponse({'success': False, 'message': 'Неверный раздел.'})
+
+        # Определяем модель и поля в зависимости от раздела
+        ModelClass = SearchResult
+        if section == 'Технологии':
+            ModelClass = SearchResultTechnology
+        elif section == 'Логистика':
+            ModelClass = SearchResultLogistic
+
+        # Находим запись в SearchResult (или аналоге)
+        try:
+            search_result = ModelClass.objects.get(id=supplier_id, user=user)
+        except ModelClass.DoesNotExist:
+            return JsonResponse({'success': False, 'message': 'Поставщик не найден или не принадлежит вам.'})
+
+        # Определяем атрибуты для MailSendList
+        email = search_result.supplier_email
+        product = search_result.product
+        name = search_result.supplier_name
+        country = search_result.country
+        category = search_result.category
+
+        if action == 'add':
+            # Проверяем лимит перед добавлением
+            if not MailSendList.can_add_supplier(user):
+                return JsonResponse({'success': False, 'message': 'Превышен лимит в 100 строк для отправки писем.'})
+            # Создаем, если не существует (get_or_create для уникальности)
+            MailSendList.objects.get_or_create(
+                user=user,
+                email=email,
+                product=product,
+                section=section,
+                defaults={
+                    'name': name,
+                    'country': country,
+                    'category': category,
+                }
+            )
+            success_message = f'Поставщик {name} добавлен в список рассылки.'
+        elif action == 'remove':
+            # Удаляем, если существует
+            deleted_count, _ = MailSendList.objects.filter(
+                user=user, email=email, product=product, section=section
+            ).delete()
+            if deleted_count > 0:
+                success_message = f'Поставщик {name} удален из списка рассылки.'
+            else:
+                success_message = f'Поставщик {name} не найден в списке рассылки.'
+        else:
+            return JsonResponse({'success': False, 'message': 'Неверное действие.'})
+
+        # Возвращаем текущее количество и сообщение
+        current_count = MailSendList.get_count_for_user(user)
+        return JsonResponse({'success': True, 'message': success_message, 'current_count': current_count})
+
+    except (ValueError, KeyError):
+        return JsonResponse({'success': False, 'message': 'Неверные данные запроса.'})
+    except ValidationError as e: # Обработка ошибки валидации модели (лимит)
+        return JsonResponse({'success': False, 'message': str(e)})
+    except Exception as e:
+        logger.error(f"Ошибка при сохранении поставщика: {e}")
+        return JsonResponse({'success': False, 'message': 'Произошла внутренняя ошибка.'})
+
+
+# --- ПРЕДСТАВЛЕНИЕ ДЛЯ ОЧИСТКИ СПИСКА ---
+@login_required
+def clear_mail_send_list(request):
+    "Представление для очистки списка MailSendList текущего пользователя."
+    if request.method == 'POST': # Защита от случайных GET-запросов
+        count = MailSendList.objects.filter(user=request.user).delete()[0]
+        messages.success(request, f'Список рассылки очищен. Удалено {count} записей.')
+    else:
+        messages.warning(request, 'Неверный метод запроса.')
+    # Возвращаем пользователя на предыдущую страницу или на одну из страниц поиска
+    # Лучше вернуть на ту страницу, откуда был вызов, но для простоты перенаправим на customer_request
+    referer = request.META.get('HTTP_REFERER')
+    if referer:
+        return redirect(referer)
+    return redirect('customer_request') # или 'technology_request', 'logistic_request' в зависимости от контекста
+
 
 
 # Отправка запроса поставщикам, получение ответов от поставщиков
@@ -169,20 +277,20 @@ def send_supplier_emails(request):
 
     if not suppliers.exists():
         # Перенаправляем на поиск поставщика с сообщением об ошибке
-        messages.warning(request, "Нет поставщиков для рассылки")
-        return redirect("supplier_search")
+        messages.warning(request, "Нет поставщиков для рассылки, выполните выбор поставщиков: Мои запросы/Запросы по ...")
+        return redirect("customer_request")
 
     # Берем первый продукт из выборки
     initial_product = suppliers.first().product
     initial_message = (
         f"Dear Sir,\n\n"
-        f"We are interested in purchasing {initial_product}.\n"
-        "Please provide the following information:\n"
+        f"Our company (NAME) is engaged in (occupation type),\nand we are interested in purchasing {initial_product}s. \n"
+        "Could you please provide the following information:\n"
         "- Product availability,\n"
         "- Cost,\n"
         "- Delivery terms (Incoterms).\n\n"
-        f"Respectfully yours,\n{request.user.get_full_name() or request.user.username} \n\n"
-        "BTW: Please give the answer in the letter, not in the attachment,\nThanks in advance\n"
+        f"Best Regards,\n{request.user.get_full_name() or request.user.username} \n [Your Position]\n\n"
+        "BTW: I'd appreciate your reply via email with the same subject line and not as an attachment.,\nThanks in advance\n"
     )
 
     if request.method == "POST":
@@ -205,7 +313,7 @@ def send_supplier_emails(request):
                     message=message,
                     name=supplier.name,
                 )
-                print("==", supplier.section, "--", supplier.product)
+                print("==", supplier.section, "--",supplier.id, supplier.product)
 
                 SendedEmailSave.objects.create(
                     user=request.user,

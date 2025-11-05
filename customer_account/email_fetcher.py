@@ -1,3 +1,4 @@
+'''сборщик электронной почты'''
 import re
 import email
 import imaplib

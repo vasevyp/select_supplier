@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.postgres.fields import ArrayField
+from django.core.exceptions import ValidationError # Добавим для валидации
 from supplier.models import Supplier, Technology, Logistic
 
 
@@ -75,88 +76,6 @@ class SearchResultLogistic(models.Model):
         ]
     def __str__(self):
         return self.product   
-
-
-
-
-# SECTION_CHOICES = (
-#     ('goods', 'Товары'),
-#     ('technology', 'Технологии'),
-#     ('logistics', 'Логистика'),
-# )
-
-# class UserSearchCount(models.Model):
-#     '''Модель для хранения количества поисковых запросов пользователя. 
-# Отслеживает добавленные, использованные и доступные поисковые запросы для каждого пользователя.'''
-#     user = models.OneToOneField(
-#         User, 
-#         on_delete=models.CASCADE,
-#         related_name='search_count'
-#     )
-#     add_count = models.PositiveIntegerField(
-#         default=0,
-#         verbose_name="Добавленные запросы"
-#     )
-#     reduce_count = models.PositiveIntegerField(
-#         default=0,
-#         verbose_name="Использованные запросы"
-#     )
-#     available_count = models.PositiveIntegerField(
-#         default=0,
-#         verbose_name="Доступные запросы"
-#     )
-#     modified_at = models.DateTimeField(
-#         auto_now=True,
-#         verbose_name="Дата обновления"
-#     )
-
-#     class Meta:
-#         """Help Supplier data"""
-#         verbose_name = 'запись Подписки'
-#         verbose_name_plural = 'Подписка, состояние'
-
-#     def save(self, *args, **kwargs):
-#         self.available_count = self.add_count - self.reduce_count
-#         super().save(*args, **kwargs)
-
-#     def __str__(self):
-#         return f"{self.user.email} | Доступно: {self.available_count}"
-
-# class UserSearchCountHistory(models.Model):
-#     '''Модель для хранения истории изменения количества поисковых запросов пользователя. 
-# Сохраняет информацию о добавленных и использованных запросах, а также о разделе и времени операции.'''
-#     user = models.ForeignKey(
-#         User,
-#         on_delete=models.CASCADE,
-#         related_name='search_history'
-#     )
-#     add_count = models.PositiveIntegerField(
-#         default=0,
-#         verbose_name="Добавленные запросы"
-#     )
-#     reduce_count = models.PositiveIntegerField(
-#         default=0,
-#         verbose_name="Использованные запросы"
-#     )
-#     section = models.CharField(
-#         max_length=20,
-#         choices=SECTION_CHOICES,
-#         blank=True,
-#         null=True,
-#         verbose_name="Раздел"
-#     )
-#     created_at = models.DateTimeField(
-#         auto_now_add=True,
-#         verbose_name="Дата операции"
-#     )
-
-#     class Meta:
-#         """Help Supplier data"""
-#         verbose_name = 'запись истории Подписки'
-#         verbose_name_plural = 'Подписка, история'
-
-#     def __str__(self):
-#         return f"{self.user.email} | {self.created_at}"         
     
 class MailSendList(models.Model):
     '''выборка таблицы адресов для рассылки email, временная таблица на одну рассылку'''
@@ -168,8 +87,38 @@ class MailSendList(models.Model):
     category = models.CharField(max_length=255, verbose_name='Категория', blank=True) # Новое поле
     section = models.CharField(max_length=20, verbose_name='Раздел') 
 
+    # Уникальность для предотвращения дубликатов в списке рассылки для одного пользователя
+    class Meta:
+        """Help data"""
+        verbose_name = 'Выборку для отправки Email'
+        verbose_name_plural = 'Выборки для отправки Email'
+        unique_together = ('user', 'email', 'product', 'section')
+        # Опционально: добавим индекс для ускорения поиска по пользователю
+        indexes = [
+            models.Index(fields=['user']),
+        ]
+
     def __str__(self):
         return self.email
+    
+
+    def clean(self):
+        # Проверка лимита на количество строк для пользователя перед сохранением
+        if not self.pk: # Проверяем только при создании новой записи
+            current_count = MailSendList.objects.filter(user=self.user).count()
+            if current_count >= 100:
+                 raise ValidationError('Превышен лимит в 100 строк для отправки писем.')
+        super().clean()
+
+    @classmethod
+    def get_count_for_user(cls, user):
+        """Вспомогательный метод для получения текущего количества строк в MailSendList для пользователя."""
+        return cls.objects.filter(user=user).count()
+    
+    @classmethod
+    def can_add_supplier(cls, user):
+        """Вспомогательный метод для проверки, можно ли добавить еще одного поставщика."""
+        return cls.get_count_for_user(user) < 100
     
 class SendedEmailSave(models.Model):
     '''хранение отправленных пользователем сообщений поставщику'''
@@ -191,9 +140,9 @@ class SendedEmailSave(models.Model):
         self.email_base = self.email.replace('@', '')
         super().save(*args, **kwargs)
     class Meta:
-        """Help Supplier data"""
-        verbose_name = 'Запрос отправленный'
-        verbose_name_plural = 'Запросы отправленные'
+        """Help  data"""
+        verbose_name = 'Запрос поставщику отправленный'
+        verbose_name_plural = 'Запросы поставщикам отправленные'
 
     def __str__(self):
         return f"{self.user} - {self.email}" 
