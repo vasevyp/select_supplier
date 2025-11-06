@@ -2,7 +2,7 @@ import logging
 # import io
 # from datetime import datetime
 # from openpyxl import Workbook
-from openpyxl.styles import Font, Alignment
+# from openpyxl.styles import Font, Alignment
 # from openpyxl.utils import get_column_letter
 from bs4 import BeautifulSoup
 from django.contrib import messages
@@ -12,7 +12,7 @@ from django.http import HttpResponse, JsonResponse # Добавим JsonResponse
 from django.views.decorators.http import require_POST # Для POST-представлений
 from django.core.exceptions import ValidationError # Для обработки ошибок модели
 from django.utils.text import slugify
-from django.db.models import Subquery, OuterRef, Count, F, Prefetch
+from django.db.models import Subquery, OuterRef, Count, Q, F, Prefetch
 # from django.db import transaction # Добавим для безопасности
 
 
@@ -267,6 +267,90 @@ def clear_mail_send_list(request):
     return redirect('customer_request') # или 'technology_request', 'logistic_request' в зависимости от контекста
 
 
+# Представление для получения стран по продукту при выборке для отправки email
+def get_countries_for_product(request):
+    """Возвращает JSON-список стран для выбранного продукта конкретного пользователя."""
+    if request.method == 'GET' and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        product_id = request.GET.get('product', None)
+        user = request.user
+
+        if product_id:
+            try:
+                # Получаем объект SearchResult по ID и проверяем, что он принадлежит пользователю
+                search_result_obj = SearchResult.objects.get(id=product_id, user=user)
+                product_name = search_result_obj.product
+            except SearchResult.DoesNotExist:
+                return JsonResponse({'countries': []})
+
+            # Теперь получаем уникальные страны для этого продукта и пользователя
+            countries = SearchResult.objects.filter(
+                user=user,
+                product=product_name
+            ).values_list('country', flat=True).distinct()
+            # Сортируем, чтобы список был в алфавитном порядке (по желанию)
+            countries = sorted([c for c in countries if c]) # Исключаем пустые строки
+            return JsonResponse({'countries': countries})
+        else:
+            # Если продукт не выбран, возвращаем пустой список
+            return JsonResponse({'countries': []})
+
+    return JsonResponse({'error': 'Invalid request'}, status=400)
+
+def get_countries_for_technology(request):
+    """Возвращает JSON-список стран для выбранного продукта конкретного пользователя."""
+    if request.method == 'GET' and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        product_id = request.GET.get('product', None)
+        user = request.user
+
+        if product_id:
+            try:
+                # Получаем объект SearchResult по ID и проверяем, что он принадлежит пользователю
+                search_result_obj = SearchResultTechnology.objects.get(id=product_id, user=user)
+                product_name = search_result_obj.product
+            except SearchResultTechnology.DoesNotExist:
+                return JsonResponse({'countries': []})
+
+            # Теперь получаем уникальные страны для этого продукта и пользователя
+            countries = SearchResultTechnology.objects.filter(
+                user=user,
+                product=product_name
+            ).values_list('country', flat=True).distinct()
+            # Сортируем, чтобы список был в алфавитном порядке (по желанию)
+            countries = sorted([c for c in countries if c]) # Исключаем пустые строки
+            return JsonResponse({'countries': countries})
+        else:
+            # Если продукт не выбран, возвращаем пустой список
+            return JsonResponse({'countries': []})
+
+    return JsonResponse({'error': 'Invalid request'}, status=400)
+
+def get_countries_for_logistic(request):
+    """Возвращает JSON-список стран для выбранного продукта конкретного пользователя."""
+    if request.method == 'GET' and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        product_id = request.GET.get('product', None)
+        user = request.user
+
+        if product_id:
+            try:
+                # Получаем объект SearchResult по ID и проверяем, что он принадлежит пользователю
+                search_result_obj = SearchResultLogistic.objects.get(id=product_id, user=user)
+                product_name = search_result_obj.product
+            except SearchResultLogistic.DoesNotExist:
+                return JsonResponse({'countries': []})
+
+            # Теперь получаем уникальные страны для этого продукта и пользователя
+            countries = SearchResultLogistic.objects.filter(
+                user=user,
+                product=product_name
+            ).values_list('country', flat=True).distinct()
+            # Сортируем, чтобы список был в алфавитном порядке (по желанию)
+            countries = sorted([c for c in countries if c]) # Исключаем пустые строки
+            return JsonResponse({'countries': countries})
+        else:
+            # Если продукт не выбран, возвращаем пустой список
+            return JsonResponse({'countries': []})
+
+    return JsonResponse({'error': 'Invalid request'}, status=400)
 
 # Отправка запроса поставщикам, получение ответов от поставщиков
 @login_required
@@ -344,9 +428,11 @@ def redirect_send_emails(request):
     # Проверяем, есть ли записи для текущего пользователя
     if MailSendList.objects.filter(user=request.user).exists():
         return redirect("send_supplier_emails")
-    # else:
-    messages.warning(request, "Сначала выберите поставщиков для рассылки")
-    return redirect("supplier_selection")  # Главная страница выбора поставщиков
+    else:
+        messages.warning(request, "Сначала выберите поставщиков для рассылки")
+        # return redirect("supplier_selection")  # Главная страница выбора поставщиков
+        referer = request.META.get('HTTP_REFERER')
+        return redirect(referer)
 
 
 def email_success(request):

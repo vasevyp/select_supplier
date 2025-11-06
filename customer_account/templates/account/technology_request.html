@@ -61,13 +61,13 @@
         <div class="d-flex flex-md-row flex-wrap">
             <div class=" mt-1 me-2 mb-2">
                 {% csrf_token %}
-                <div>
+                <div id="id_search_product">
                     {{ form.search_product.label_tag }}
                     {{ form.search_product }}
                 </div>
             </div>
             <div class=" mt-1 me-2 mb-2">
-                <div>
+                <div id="id_search_country">
                     {{ form.search_country.label_tag }}
                     {{ form.search_country }}
                 </div>
@@ -83,45 +83,123 @@
     {% endif %}
 
 </div>
-
-{% block extra_js %}
+{% block scripts %}
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const checkboxes = document.querySelectorAll('.select-supplier-checkbox');
-    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    // --- Обработчик чекбоксов ---
+    document.addEventListener('DOMContentLoaded', function () {
+        const checkboxes = document.querySelectorAll('.select-supplier-checkbox');
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
-    checkboxes.forEach(checkbox => {
-        checkbox.addEventListener('change', function() {
-            const supplierId = this.getAttribute('data-supplier-id');
-            const section = this.getAttribute('data-section');
-            const action = this.checked ? 'add' : 'remove';
+        checkboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', function () {
+                const supplierId = this.getAttribute('data-supplier-id');
+                const section = this.getAttribute('data-section');
+                const action = this.checked ? 'add' : 'remove';
 
-            fetch('{% url "save_selected_suppliers" %}', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                    'X-CSRFToken': csrfToken,
-                },
-                body: `supplier_id=${supplierId}&action=${action}&section=${section}`
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    document.querySelector('p strong').textContent = `Выбрано для отправки: ${data.current_count}`;
-                } else {
+                fetch('{% url "save_selected_suppliers" %}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-CSRFToken': csrfToken,
+                    },
+                    body: `supplier_id=${supplierId}&action=${action}&section=${section}`
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        document.querySelector('p strong').textContent = `Выбрано для отправки: ${data.current_count}`;
+                    } else {
+                        this.checked = !this.checked;
+                        alert(data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Ошибка при сохранении выбора:', error);
                     this.checked = !this.checked;
-                    alert(data.message);
-                }
-            })
-            .catch(error => {
-                console.error('Ошибка при сохранении выбора:', error);
-                this.checked = !this.checked;
-                alert('Произошла ошибка при сохранении выбора.');
+                    alert('Произошла ошибка при сохранении выбора.');
+                });
             });
         });
     });
-});
+
+    // --- Обработчик динамического обновления стран ---
+    document.addEventListener('DOMContentLoaded', function() {
+        // Проверяем, был ли скрипт уже запущен
+        if (window.dynamicCountryScriptLoaded) {
+            console.warn('Dynamic country script already loaded, skipping.');
+            return;
+        }
+        window.dynamicCountryScriptLoaded = true; // Устанавливаем флаг
+
+        const productSelect = document.querySelector('#id_search_product select');
+        const countrySelect = document.querySelector('#id_search_country select');
+
+        if (!productSelect || !countrySelect) {
+            console.warn('Elements for dynamic country update not found. Skipping initialization.');
+            return;
+        }
+
+        const initialCountryOptions = Array.from(countrySelect.options);
+
+        productSelect.addEventListener('change', function() {
+            const selectedProduct = productSelect.value;
+            countrySelect.innerHTML = '';
+
+            if (!selectedProduct) {
+                initialCountryOptions.forEach(option => {
+                    countrySelect.appendChild(option.cloneNode(true));
+                });
+                return;
+            }
+
+            console.log('Fetching countries for product ID:', selectedProduct);
+
+            fetch('{% url "get_countries_for_technology" %}?product=' + encodeURIComponent(selectedProduct), {
+                method: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+            })
+            .then(response => {
+                console.log('Response status:', response.status);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Received countries:', data.countries);
+
+                const defaultOption = document.createElement('option');
+                defaultOption.value = '';
+                defaultOption.text = 'выбрать страну';
+                countrySelect.appendChild(defaultOption);
+
+                if (data.countries && data.countries.length > 0) {
+                    data.countries.forEach(country => {
+                        const option = document.createElement('option');
+                        option.value = country;
+                        option.text = country;
+                        countrySelect.appendChild(option);
+                    });
+                } else {
+                    const noOption = document.createElement('option');
+                    noOption.value = '';
+                    noOption.text = 'Нет доступных стран';
+                    noOption.disabled = true;
+                    countrySelect.appendChild(noOption);
+                }
+            })
+            .catch(error => {
+                console.error('Ошибка при загрузке стран:', error);
+                alert('Ошибка при загрузке стран.');
+                initialCountryOptions.forEach(option => {
+                    countrySelect.appendChild(option.cloneNode(true));
+                });
+            });
+        });
+    });
 </script>
-{% endblock extra_js %}
+{% endblock scripts %}
 
 {% endblock %}

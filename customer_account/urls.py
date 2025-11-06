@@ -18,8 +18,11 @@ from .views import (
     suppliers_by_product_goods,
     suppliers_by_product_technology,
     suppliers_by_product_logistic,
-    save_selected_suppliers, # Новый импорт
-    clear_mail_send_list,   # Новый импорт
+    save_selected_suppliers, 
+    clear_mail_send_list,   
+    get_countries_for_product,
+    get_countries_for_technology,
+    get_countries_for_logistic,
 
 )
 
@@ -28,8 +31,11 @@ urlpatterns = [
     path("", dashbord, name="dashbord"),
     path("payment/", payment, name="payment"),
     path("customer-request/", customer_request, name="customer_request"),
+    path('get_countries_for_product/', get_countries_for_product, name='get_countries_for_product'),
     path("technology-request/", technology_request, name="technology_request"),
+    path('get_countries_for_technology/', get_countries_for_technology, name='get_countries_for_technology'),
     path("logistic-request/", logistic_request, name="logistic_request"),
+    path('get_countries_for_logistic/', get_countries_for_logistic, name='get_countries_for_logistic'),
     path("customer-mail/", customer_mail, name="customer_mail"),
     path("customer-calculation/", customer_calculation, name="customer_calculation"),
     # Новые пути для сохранения и очистки списка рассылки

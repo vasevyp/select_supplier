@@ -104,9 +104,9 @@
                                     <tr>
                                         <td>{{ item.sent_email.product }}</td>
                                         <td>{{ item.sent_email.email }}</td>
-                                        <td>{{ item.sent_email.sended_at|date:"d.m.Y H:i" }}</td>
+                                        <td>{{ item.sent_email.sended_at|date:"d.m.Y" }}</td>
                                         {% if item.response %}
-                                        <td>{{ item.response.received_at|date:"d.m.Y H:i" }}</td>
+                                        <td>{{ item.response.received_at|date:"d.m.Y" }}</td>
                                         <td>
                                             <div class="text-truncate" style="max-width: 200px;">
                                                 {{ item.response.message|striptags|truncatechars:50 }}
