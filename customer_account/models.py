@@ -107,7 +107,7 @@ class MailSendList(models.Model):
         if not self.pk: # Проверяем только при создании новой записи
             current_count = MailSendList.objects.filter(user=self.user).count()
             if current_count >= 100:
-                 raise ValidationError('Превышен лимит в 100 строк для отправки писем.')
+                raise ValidationError('Превышен лимит в 100 строк для отправки писем.')
         super().clean()
 
     @classmethod

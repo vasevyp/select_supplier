@@ -42,7 +42,7 @@ class MailSendListAdmin(admin.ModelAdmin):
 @admin.register(SendedEmailSave)
 class SendedEmailSaveAdmin(admin.ModelAdmin):
     # readonly_fields = ('name','website')
-    list_display = ("user", "email", "product")
+    list_display = ("user", "email", "product", "id")
     search_fields = ("user", "product",)
     list_filter = ("user",  "product")
     save_on_top = True

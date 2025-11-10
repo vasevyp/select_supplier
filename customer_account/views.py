@@ -14,7 +14,7 @@ from django.core.exceptions import ValidationError # Для обработки �
 from django.utils.text import slugify
 from django.db.models import Subquery, OuterRef, Count, Q, F, Prefetch
 # from django.db import transaction # Добавим для безопасности
-
+# from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger # NEW
 
 from users.models import Profile
 from bank_clearing.models import UserSearchCount, UserSearchCountHistory, SubscriptionRates
@@ -641,8 +641,9 @@ def dashbord(request):
         except SubscriptionRates.DoesNotExist:
             history.plan = None
 
-    # Вычисляем общие показатели
+    # Вычисляем общие показатели по подписке
     total_requests = user_unique_request + user_subscribe
+    total_no_response = len(response_data) - len(responses)
 
     context = {
         "aggregated_goods_data": aggregated_goods_data,
@@ -657,6 +658,8 @@ def dashbord(request):
         "last_payment": last_payment,
         "subscription_plan": subscription_plan,
         "subscription_history": subscription_history,
+        "total_response": len(responses),
+        "total_no_response": total_no_response,
     }
     
     return render(request, "account/dashbord.html", context)
