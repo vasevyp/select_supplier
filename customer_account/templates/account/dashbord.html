@@ -116,7 +116,7 @@
                                         <td>
                                             <a href="{% url 'supplier_response_detail' item.response.id %}"
                                                 class="btn bg-blue1 bg-hover1 color-button-text btn-sm"
-                                                title="Просмотреть детали">
+                                                title="Просмотреть ответ">
                                                 <i class="fas fa-eye"></i>
                                             </a>
                                         </td>                                        
@@ -164,7 +164,7 @@
                                     <tr>
                                         <th>Продукт</th>
                                         <th>Email поставщика</th>
-                                        <th>Дата запроса</th>
+                                        <th class="d-none d-md-block">Дата запроса</th>
                                         <!-- <th>Дата ответа</th> -->
                                         <!-- <th>Ответ поставщика</th> -->
                                         <th>Запрос</th>
@@ -177,8 +177,16 @@
                                         {% if not item.response %}
                                         <td>{{ item.sent_email.product }}</td>
                                         <td>{{ item.sent_email.email }}</td>
-                                        <td>{{ item.sent_email.sended_at|date:"d.m.Y" }}</td>
-                                        <td>{{ item.sent_email.message }}</td>
+                                        <td class="d-none d-md-block">{{ item.sent_email.sended_at|date:"d.m.Y" }}</td>
+                                        <td>
+                                            <!-- {{ item.sent_email.message }} -->
+                                            <a href="{% url 'customer_mail_detail' item.sent_email.id %}"
+                                                class="btn bg-blue1 bg-hover1 color-button-text btn-sm"
+                                                title="Посмотреть запрос">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+
+                                        </td>
                                         
                                         {% endif %}
                                     </tr>
@@ -561,6 +569,28 @@ z-index:1;background: #9d9e9e; font-size:14px">
 {% block scripts %}
 <script>
     document.addEventListener('DOMContentLoaded', function () {
+        // --- НОВЫЙ КОД: Активация вкладки по якорю из URL ---
+        function activateTabFromHash() {
+            if (window.location.hash) {
+                const hash = window.location.hash.substring(1); // Получаем значение якоря без #
+                const targetTab = document.getElementById(hash);
+
+                // Проверяем, является ли якорь ID одной из вкладок
+                if (targetTab && targetTab.classList.contains('tab-pane')) {
+                    // Находим соответствующую кнопку-переключатель
+                    const tabTrigger = document.querySelector(`a[href="#${hash}"]`);
+                    if (tabTrigger) {
+                        // Инициализируем Bootstrap Tab и активируем вкладку
+                        const tab = new bootstrap.Tab(tabTrigger);
+                        tab.show(); // Активирует вкладку
+
+                        // Прокручиваем к вкладке (опционально)
+                        // targetTab.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                }
+            }
+        }
+
         // Инициализация табов
         const tabTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tab"]'));
         tabTriggerList.forEach(function (triggerEl) {
@@ -601,6 +631,9 @@ z-index:1;background: #9d9e9e; font-size:14px">
                 });
             });
         }
+
+        // --- ВАЖНО: Вызов функции активации вкладки ПОСЛЕ инициализации ---
+        activateTabFromHash();
     });
 </script>
 {% endblock %}

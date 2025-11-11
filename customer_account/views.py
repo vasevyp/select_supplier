@@ -524,6 +524,19 @@ def customer_mail(request):
 
     context = {"results": senden_mail}
     return render(request, "mail/customer_mail.html", context)
+@login_required
+def customer_mail_detail(request, customer_mail_id):
+    """Детальная страница отправленного пользователем запроса поставщику"""
+    # Получаем объект SendedEmailSave, проверяя, что он принадлежит текущему пользователю
+    sent_email = get_object_or_404(
+        SendedEmailSave, id=customer_mail_id, user=request.user
+    )
+
+    context = {
+        "sent_email": sent_email
+    }
+    return render(request, "mail/customer_mail_detail.html", context)
+
 
 
 # отображение данных в Личном Кабинете

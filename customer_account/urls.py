@@ -23,6 +23,7 @@ from .views import (
     get_countries_for_product,
     get_countries_for_technology,
     get_countries_for_logistic,
+    customer_mail_detail,
 
 )
 
@@ -45,6 +46,7 @@ urlpatterns = [
     path("redirect-send-emails/", redirect_send_emails, name="redirect_send_emails"),
     path("email-success/", email_success, name="email_success"),
     path('supplier-responses/', supplier_responses_view, name='supplier_responses'),
+    path('customer-mail/<int:customer_mail_id>/', customer_mail_detail, name='customer_mail_detail'),
     path('supplier-response/<int:response_id>/', supplier_response_detail, name='supplier_response_detail'),
     path('supplier-response/<int:response_id>/download/', download_supplier_response, name='download_supplier_response'),
     # Новые URL для просмотра списка поставщиков по продукту

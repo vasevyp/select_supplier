@@ -1,0 +1,96 @@
+<!-- customer_account/templates/mail/customer_mail_detail.html -->
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2 class="mb-0">Детали отправленного запроса</h2>
+                <a href="{% url 'dashbord' %}#supplier_no_responses" class="btn btn-light btn-sm" id="back-to-supplier-no-responses">
+                    <i class="fas fa-arrow-left"></i> Назад к списку
+                </a>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="card mb-3">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">Информация о запросе</h5>
+                        </div>
+                        <div class="card-body">
+                            <dl class="row">
+                                <dt class="col-sm-4">Продукт/Услуга:</dt>
+                                <dd class="col-sm-8">{{ sent_email.product }}</dd>
+
+                                <dt class="col-sm-4">Email получателя:</dt>
+                                <dd class="col-sm-8">{{ sent_email.email }}</dd>
+
+                                <dt class="col-sm-4">Дата отправки:</dt>
+                                <dd class="col-sm-8">{{ sent_email.sended_at|date:"d.m.Y H:i" }}</dd>
+
+                                <dt class="col-sm-4">Раздел:</dt>
+                                <dd class="col-sm-8">{{ sent_email.section }}</dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card mb-3">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">Информация о пользователе</h5>
+                        </div>
+                        <div class="card-body">
+                            <dl class="row">
+                                <dt class="col-sm-4">Имя:</dt>
+                                <dd class="col-sm-8">{{ request.user.first_name }} {{ request.user.last_name }}</dd>
+
+                                <dt class="col-sm-4">Email:</dt>
+                                <dd class="col-sm-8">{{ request.user.email }}</dd>
+
+                                <!-- Добавьте другие поля профиля, если нужно -->
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Текст запроса</h5>
+                </div>
+                <div class="card-body">
+                    {% autoescape off %} <!-- ВНИМАНИЕ: используйте с осторожностью! -->
+                    <pre class="request-text">{{ sent_email.message }}</pre>
+                    {% endautoescape %}
+                </div>
+            </div>
+
+            
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.request-text {
+    white-space: pre-wrap;
+    word-break: break-word;
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 5px;
+    font-size: 1rem;
+    line-height: 1.6;
+}
+.card-header {
+    font-weight: 600;
+}
+dt {
+    font-weight: 500;
+}
+</style>
+{% endblock %}
