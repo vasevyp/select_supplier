@@ -98,10 +98,9 @@
                                 <thead class="bg-blue1 text-white">
                                     <tr>
                                         <th>Продукт</th>
-                                        <th>Email поставщика</th>
+                                        <th class="d-none d-md-block">Email поставщика</th>
                                         <th>Дата запроса</th>
-                                        <th>Дата ответа</th>
-                                        <!-- <th>Ответ поставщика</th> -->
+                                        <th>Дата ответа</th>                                       
                                         <th>Детали</th>
                                     </tr>
                                 </thead>
@@ -110,7 +109,7 @@
                                     <tr>                                       
                                         {% if item.response %}
                                         <td>{{ item.response.product }}</td>
-                                        <td>{{ item.response.email }}</td>
+                                        <td class="d-none d-md-block">{{ item.response.email }}</td>
                                         <td>{{ item.sent_email.sended_at|date:"d.m.Y" }}</td>
                                         <td>{{ item.response.received_at|date:"d.m.Y" }}</td>                                      
                                         <td>
@@ -163,10 +162,8 @@
                                 <thead class="bg-blue1 text-white">
                                     <tr>
                                         <th>Продукт</th>
-                                        <th>Email поставщика</th>
-                                        <th class="d-none d-md-block">Дата запроса</th>
-                                        <!-- <th>Дата ответа</th> -->
-                                        <!-- <th>Ответ поставщика</th> -->
+                                        <th class="d-none d-md-block">Email поставщика</th>
+                                        <th>Дата запроса</th>                                        
                                         <th>Запрос</th>
                                     </tr>
                                 </thead>
@@ -176,8 +173,8 @@
                                         
                                         {% if not item.response %}
                                         <td>{{ item.sent_email.product }}</td>
-                                        <td>{{ item.sent_email.email }}</td>
-                                        <td class="d-none d-md-block">{{ item.sent_email.sended_at|date:"d.m.Y" }}</td>
+                                        <td class="d-none d-md-block">{{ item.sent_email.email }}</td>
+                                        <td>{{ item.sent_email.sended_at|date:"d.m.Y" }}</td>
                                         <td>
                                             <!-- {{ item.sent_email.message }} -->
                                             <a href="{% url 'customer_mail_detail' item.sent_email.id %}"

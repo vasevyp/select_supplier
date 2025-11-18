@@ -2,7 +2,7 @@
 from django.urls import path
 
 from . views import SupplierDetailView, supplier_selection, Category_list, Country_list, Supplier_list,\
-technology_selection, logistic_selection, TechnologyDetailView, LogisticDetailView
+technology_selection, logistic_selection, TechnologyDetailView, LogisticDetailView, debug_database
 from . upload import upload_suppliers, upload_technology, upload_logistic, export_to_excel, supplier_delete
 
 
@@ -25,5 +25,6 @@ urlpatterns = [
     path('logistic-selection', logistic_selection, name='logistic_selection'),
     path('techology/<int:pk>/', TechnologyDetailView.as_view(), name='technology_detail'),
     path('logistic/<int:pk>/', LogisticDetailView.as_view(), name='logistic_detail'),
+    # path('debug/', debug_database, name='debug_database'),
     
 ]

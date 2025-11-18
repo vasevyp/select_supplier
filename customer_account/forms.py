@@ -75,7 +75,7 @@ class SearchResultLogisticForm(forms.Form):
     )
     search_country = forms.ChoiceField(
         choices=[('', 'выбрать страну')],  # Заполняется в __init__
-        label='Страна',
+        label='Страна-отправитель',
         required=False
     )
   

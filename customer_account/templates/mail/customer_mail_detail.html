@@ -62,7 +62,7 @@
                     <h5 class="mb-0">Текст запроса</h5>
                 </div>
                 <div class="card-body">
-                    {% autoescape off %} <!-- ВНИМАНИЕ: используйте с осторожностью! -->
+                    {% autoescape off %} 
                     <pre class="request-text">{{ sent_email.message }}</pre>
                     {% endautoescape %}
                 </div>

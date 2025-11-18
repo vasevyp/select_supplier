@@ -1,4 +1,5 @@
 """supplier app views"""
+import re
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.views.generic import ListView, DetailView
@@ -17,7 +18,7 @@ from customer_account.models import (
     SearchResultLogistic,
 )
 from bank_clearing.models import UserSearchCount, UserSearchCountHistory
-from .forms import SupplierSearchForm
+from .forms import SupplierSearchForm, TechnologySearchForm, LogisticSearchForm
 from .models import (
     Supplier,
     Country,
@@ -76,8 +77,7 @@ class LogisticDetailView(DetailView):
     context_object_name = "supplier"
 
 
-# Блок поиска
-# ****************************************
+# ******** Блок поиска ****************************************
 # Словарь для маппинга типов поиска
 SEARCH_CONFIG = {
     "supplier": {
@@ -86,7 +86,8 @@ SEARCH_CONFIG = {
         "search_result_model": SearchResult,
         "template": "supplier/supplier_search.html",
         "section": "goods",
-        "category_param": "category",
+        # "category_param": "category",
+        "form_class": SupplierSearchForm,
     },
     "technology": {
         "model": Technology,
@@ -94,7 +95,8 @@ SEARCH_CONFIG = {
         "search_result_model": SearchResultTechnology,
         "template": "technology/technology_search.html",
         "section": "technology",
-        "category_param": "category_technology",
+        # "category_param": "category_technology",
+        "form_class": TechnologySearchForm,
     },
     "logistic": {
         "model": Logistic,
@@ -102,132 +104,286 @@ SEARCH_CONFIG = {
         "search_result_model": SearchResultLogistic,
         "template": "logistic/logistic_search.html",
         "section": "logistics",
-        "category_param": "category_logistic",
+        # "category_param": "category_logistic",
+        "form_class": LogisticSearchForm,
     },
 }
 
 
-# *******************2 поиск по продукту, можно без страны и без категории *****************************
+# ******************* поиск по продукту, можно без страны и без категории *****************************
+
 def perform_search(search_type, request_data, user):
-    """Универсальная функция поиска с оптимизациями (в любой комбинации) и сохранением результата поиска как уникального"""
+    """Универсальная функция поиска для работы с данными, где страны и категории перечислены в одной строке"""
     config = SEARCH_CONFIG[search_type]
 
-    category_id = request_data.get(config["category_param"])
+    # Инициализируем переменные для всех типов поиска
+    category_name = ""
+    product_query = ""
+    # Получаем название страны из формы для фильтрации и сохранения (если ID предоставлен или объект)
+    country_name_for_filter = None
     country_id = request_data.get("country")
-    language = request_data.get("language")
-    product = request_data.get("product")
-    query = product.strip() if product else ""
+    if country_id: # Проверяем, что country_id не None и не пустой
+        # Проверяем, является ли country_id объектом модели Country
+        if isinstance(country_id, Country):
+            country_name_for_filter = country_id.country
+        # Если нет, предполагаем, что это ID (целое число)
+        elif isinstance(country_id, int):
+            try:
+                country_obj = Country.objects.get(id=country_id)
+                country_name_for_filter = country_obj.country
+            except Country.DoesNotExist:
+                # Обработка случая, если страна по ID не найдена
+                return {
+                    "results": [],
+                    "message404": "Выбранная страна не найдена",
+                    "select_except": 0,
+                    "count": 0,
+                }
+        # Если country_id - строка или другой тип, можно попробовать найти по названию или вернуть ошибку
+        # В данном случае, если это не объект и не int, вероятно, форма передала что-то не то.
+        # Добавим обработку на всякий случай.
+        else:
+            # Попробуем интерпретировать как ID, если это возможно
+            try:
+                country_id_as_int = int(country_id)
+                country_obj = Country.objects.get(id=country_id_as_int)
+                country_name_for_filter = country_obj.country
+            except (ValueError, TypeError, Country.DoesNotExist):
+                # Если не получилось, ищем по названию (если country_id - это строка с названием)
+                # Однако, если это строка, но не название, это всё равно приведёт к ошибке.
+                # В реальности, ModelChoiceField должен возвращать объект или None.
+                # Если возникает TypeError или ValueError при int(), это означает, что пришло что-то неожиданное.
+                # Лучше вернуть ошибку.
+                print(f"DEBUG: Unexpected type for country_id: {type(country_id)}, value: {country_id}")
+                return {
+                    "results": [],
+                    "message404": "Некорректное значение для страны",
+                    "select_except": 0,
+                    "count": 0,
+                }
 
-    # Проверка обязательного параметра product
-    if not query:
-        return {
-            "results": [],
-            "message404": "ВНИМАНИЕ! Введите наименование продукта для поиска!",
-            "select_except": 0,
-            "count": 0,
-        }
+    # Для технологий и логистики используем категорию, для товаров - текстовый продукт
+    if search_type in ["technology", "logistic"]:
+        category_id = request_data.get("category_technology") if search_type == "technology" else request_data.get("category_logistic")
+        # country_id и country_name_for_filter уже получены выше
+        language = request_data.get("language")
+
+        # Получаем название категории для поиска
+        if category_id:
+            try:
+                if isinstance(category_id, int):
+                    category_obj = config["category_model"].objects.get(id=category_id)
+                else:
+                    category_obj = category_id
+                category_name = category_obj.category.strip()
+            except (config["category_model"].DoesNotExist, AttributeError):
+                return {
+                    "results": [],
+                    "message404": "Выбранная категория не найдена",
+                    "select_except": 0,
+                    "count": 0,
+                }
+        else:
+            return {
+                "results": [],
+                "message404": "ВНИМАНИЕ! Выберите категорию для поиска!",
+                "select_except": 0,
+                "count": 0,
+            }
+    else:
+        # Для поставщиков товаров
+        category_id = request_data.get("category")
+        # country_name_for_filter уже получено выше
+        language = request_data.get("language")
+        product_query = request_data.get("product", "").strip()
+
+        if not product_query:
+            return {
+                "results": [],
+                "message404": "ВНИМАНИЕ! Введите наименование продукта для поиска!",
+                "select_except": 0,
+                "count": 0,
+            }
 
     try:
-        # Определяем поле поиска
-        search_field = "product_ru" if language == "ru" else "product"
+        # Строим базовый запрос
+        base_query = config["model"].objects.all()
 
-        # Создаем точный поиск по отдельным словам
-        search_query = SearchQuery(
-            query, config="russian" if language == "ru" else "english"
-        )
+        # Добавляем фильтры в зависимости от типа поиска
+        filters = Q()
 
-        # Начинаем строить запрос
-        base_query = config["model"].objects.annotate(search=SearchVector(search_field))
+        # Для логистики - особый случай, когда страны перечислены в одной строке
+        if search_type == "logistic":
+            # Для логистики ищем вхождение страны в поле country (так как там много стран в одной строке)
+            if country_name_for_filter:
+                filters &= Q(country__icontains=country_name_for_filter)
 
-        # Добавляем фильтр по текстовому поиску
-        search_filter = Q(search=search_query)
+            # Ищем вхождение категории в product_ru (для русского языка)
+            if language == "ru":
+                filters &= Q(product_ru__icontains=category_name)
+            else:
+                filters &= Q(product__icontains=category_name)
 
-        # Добавляем фильтры в зависимости от заполненных полей
-        if country_id:
-            country = Country.objects.select_related().get(id=country_id)
-            search_filter &= Q(country=country)
+        elif search_type == "technology":
+            # Для технологий используем ту же логику, что и для логистики
+            # country_name_for_filter уже получено выше
+            if country_name_for_filter:
+                filters &= Q(country__icontains=country_name_for_filter)
 
-        if category_id:
-            category = (
-                config["category_model"].objects.select_related().get(id=category_id)
+            if language == "ru":
+                filters &= Q(product_ru__icontains=category_name)
+            else:
+                filters &= Q(product__icontains=category_name)
+
+        else:
+            # Для товаров - полнотекстовый поиск (оригинальная логика)
+            search_field = "product_ru" if language == "ru" else "product"
+            search_query = SearchQuery(
+                product_query, config="russian" if language == "ru" else "english"
             )
-            search_filter &= Q(category=category)
+            base_query = base_query.annotate(search=SearchVector(search_field))
+            filters &= Q(search=search_query)
 
-        # Выполняем поиск с оптимизацией
-        results = base_query.filter(search_filter).order_by("-id")
+            # Для товаров - обычная фильтрация по стране (одна страна на запись)
+            # country_name_for_filter уже получено выше
+            if country_name_for_filter:
+                filters &= Q(country=country_name_for_filter)
 
+            # Добавляем фильтр по категории для товаров
+            if category_id:
+                if isinstance(category_id, int):
+                    category_obj = Category.objects.get(id=category_id)
+                    category_name_for_filter = category_obj.category
+                else:
+                    category_name_for_filter = category_id.category
+                filters &= Q(category=category_name_for_filter)
+
+        # Выполняем поиск
+        results = base_query.filter(filters).order_by("-id")
         result_count = results.count()
 
+        # Расширенная отладочная информация
+        print(f"=== ДЕТАЛЬНАЯ ОТЛАДКА ===")
+        print(f"Тип поиска: {search_type}")
+
+        if search_type in ["technology", "logistic"]:
+            print(f"Категория для поиска: '{category_name}'")
+            if country_name_for_filter:
+                print(f"Страна для поиска (вхождение): '{country_name_for_filter}'")
+        else:
+            print(f"Продукт для поиска: '{product_query}'")
+            if country_name_for_filter:
+                print(f"Страна для поиска (точное совпадение): '{country_name_for_filter}'")
+
+        print(f"Язык: {language}")
+        print(f"Найдено результатов: {result_count}")
+
+        # Проверяем данные в базе поэтапно
+        if country_name_for_filter and search_type in ["technology", "logistic"]:
+            country_data_count = config["model"].objects.filter(country__icontains=country_name_for_filter).count()
+            print(f"Всего записей, содержащих страну '{country_name_for_filter}': {country_data_count}")
+
+        if search_type in ["technology", "logistic"]:
+            category_data_count = config["model"].objects.filter(
+                Q(product_ru__icontains=category_name) | Q(product__icontains=category_name)
+            ).count()
+            print(f"Всего записей, содержащих категорию '{category_name}': {category_data_count}")
+
+        # Показываем примеры данных
+        sample_data = config["model"].objects.all().values('country', 'product', 'product_ru')[:3]
+        print(f"Примеры данных из БД (первые 3): {list(sample_data)}")
+        print(f"========================")
+
         if result_count > 0:
-            # Приводим товар к нижнему регистру для сохранения
-            normalized_product = query.lower()
-            # Сохранение результатов поиска - только уникальные комбинации
+            # Сохранение результатов поиска
             successfully_processed = 0
             already_exists = 0
             errors = []
-            
+
             for item in results:
                 try:
-                    # Подготавливаем данные с обработкой ограничений
+                    # Подготавливаем данные
                     email = item.email or ""
                     if len(email) > 254:
                         email = email[:254]
-                    
-                    product_name = normalized_product  # Используем нормализованное имя
+
+                    # Определяем product_name в зависимости от типа поиска
+                    if search_type in ["technology", "logistic"]:
+                        product_name = category_name.lower()
+                    else:
+                        product_name = product_query.lower()
+
                     if len(product_name) > 255:
                         product_name = product_name[:255]
-                    
-                    # ---!Добавляем country и category ---
-                    country_name = item.country or ""
-                    category_name = item.category or ""
+
+                    # --- ИЗМЕНЕНИЕ в определении country_name для сохранения ---
+                    # Для логистики - используем страну из формы (country_name_for_filter)
+                    # Для остальных - используем страну из item
+                    if search_type == "logistic":
+                        country_name_to_save = country_name_for_filter or ""
+                    else:
+                        country_name_to_save = item.country or ""
+
+                    category_name_item = item.category or ""
+
+                    # --- ИЗМЕНЕНИЕ в get_or_create ---
+                    # Добавляем 'country' в параметры, по которым проверяется уникальность
+                    # для SearchResultLogistic
+                    if search_type == "logistic":
+                        search_result, created = config["search_result_model"].objects.get_or_create(
+                            user_id=user.id,
+                            supplier_name_id=item.id,
+                            product=product_name,
+                            country=country_name_to_save, # Добавлено для уникальности
+                            defaults={
+                                'supplier_email': email,
+                                # 'country' уже в ключе, не добавляем в defaults
+                                'category': category_name_item
+                            }
+                        )
+                    else:
+                        # Для остальных типов (supplier, technology) оставляем старую логику
+                        search_result, created = config["search_result_model"].objects.get_or_create(
+                            user_id=user.id,
+                            supplier_name_id=item.id,
+                            product=product_name,
+                            # country не участвует в уникальности для других типов
+                            defaults={
+                                'supplier_email': email,
+                                'country': country_name_to_save, # country сохраняется из item.country
+                                'category': category_name_item
+                            }
+                        )
 
 
-                    # Создаем или получаем существующую запись
-                    search_result, created = config["search_result_model"].objects.get_or_create(
-                        user_id=user.id,
-                        supplier_name_id=item.id,
-                        product=product_name,
-                        defaults={
-                            'supplier_email': email,
-                            'country': country_name,  # Сохраняем country из item
-                            'category': category_name # Сохраняем category из item
-
-                        }
-                    )
-                    
                     if created:
                         successfully_processed += 1
                     else:
-                        # Если запись уже существует, обновляем email
                         update_fields = []
                         if search_result.supplier_email != email:
                             search_result.supplier_email = email
                             update_fields.append('supplier_email')
-                        if search_result.country != country_name:
-                            search_result.country = country_name
-                            update_fields.append('country')
-                        if search_result.category != category_name:
-                            search_result.category = category_name
+                        # Для SearchResultLogistic страна теперь часть уникальности,
+                        # поэтому она не должна обновляться в рамках одного запроса,
+                        # если запись уже существует с этой страной и продуктом.
+                        # Обновление country возможно только если логика вызова функции
+                        # предполагает изменение параметров между вызовами,
+                        # но в текущем контексте, если запись нашлась по новому ключу 
+                        # (user, supplier, country, product),
+                        # она не будет обновляться по старому ключу.
+                        # Логика обновления для остальных полей:
+                        if search_result.category != category_name_item:
+                            search_result.category = category_name_item
                             update_fields.append('category')
 
                         if update_fields:
                             search_result.save(update_fields=update_fields)
-
                         already_exists += 1
 
-                        #     search_result.save()
-                        # already_exists += 1
-                        
                 except Exception as e:
-                    errors.append((item.id, item.name, str(e)))
+                    errors.append((item.id, getattr(item, 'name', 'Unknown'), str(e)))
 
-            # Логирование для отладки (можно удалить в production)
-            print(f"Новых записей создано: {successfully_processed}")
-            print(f"Уже существующих записей: {already_exists}")
-            if errors:
-                print(f"Ошибок: {len(errors)}")
-
-            # Обновляем счетчик поиска и создаем запись в истории
+            # Обновляем счетчик поиска
             updated_counter = update_user_search_count_and_history(
                 user, config["section"]
             )
@@ -247,53 +403,59 @@ def perform_search(search_type, request_data, user):
                 "count": result_count,
             }
         else:
+            # Показываем более информативное сообщение
+            if search_type in ["technology", "logistic"]:
+                if country_name_for_filter:
+                    message = f"По вашему запросу категории '{category_name}' в стране '{country_name_for_filter}' поставщиков не найдено."
+                else:
+                    message = f"По вашему запросу категории '{category_name}' поставщиков не найдено."
+            else:
+                if country_name_for_filter:
+                    message = f"По вашему запросу продукта '{product_query}' в стране '{country_name_for_filter}' поставщиков не найдено."
+                else:
+                    message = f"По вашему запросу продукта '{product_query}' поставщиков не найдено."
+
             return {
                 "results": [],
                 "message404": "",
-                "select_except": "По вашему запросу поставщиков не найдено. Попробуйте изменить параметры поиска.",
+                "select_except": message,
                 "count": 0,
             }
 
-    except (config["category_model"].DoesNotExist, Country.DoesNotExist):
-        return {
-            "results": [],
-            "message404": "Неверные параметры поиска",
-            "select_except": "Попробуйте выбрать другие параметры поиска.",
-            "count": 0,
-        }
     except Exception as e:
         error_msg = f"Критическая ошибка в perform_search: {str(e)}"
         print(error_msg)
+        import traceback
+        traceback.print_exc()
         return {
             "results": [],
             "message404": "Произошла ошибка при поиске",
             "select_except": "Попробуйте повторить поиск позже.",
             "count": 0,
-        }
-# *******************************************************************    
+        }    
 
 @login_required
 def supplier_selection(request):
-    """Выбор полных данных по поставщику товаров за все периоды Полнотекстовый поиск"""
+    """Выбор полных данных по поставщику товаров"""
     return _generic_selection_view(request, "supplier")
 
 
 @login_required
 def technology_selection(request):
-    """Выбор из базы полных данных по поставщику технологий за все периоды Полнотекстовый поиск"""
+    """Выбор из базы полных данных по поставщику технологий"""
     return _generic_selection_view(request, "technology")
 
 
 @login_required
 def logistic_selection(request):
-    """Выбор из базы полных данных по поставщику услуг логистики за все периоды Полнотекстовый поиск"""
+    """Выбор из базы полных данных по поставщику услуг логистики"""
     return _generic_selection_view(request, "logistic")
-
 
 def _generic_selection_view(request, search_type):
     """Универсальная функция для обработки запросов поиска"""
     config = SEARCH_CONFIG[search_type]
-    form = SupplierSearchForm
+    form_class = config["form_class"]
+    
     results = []
     language = ""
     select_except = 0
@@ -310,32 +472,52 @@ def _generic_selection_view(request, search_type):
 
     if has_search_quota:
         if request.method == "POST":
-            # Извлекаем данные из запроса
-            request_data = {
-                "category": request.POST.get("category"),
-                "category_technology": request.POST.get("category_technology"),
-                "category_logistic": request.POST.get("category_logistic"),
-                "country": request.POST.get("country"),
-                "language": request.POST.get("language"),
-                "product": request.POST.get("product"),
-            }
+            form = form_class(request.POST)
+            if form.is_valid():
+                # Извлекаем данные из формы
+                request_data = form.cleaned_data
+                
+                # Передаем данные напрямую из cleaned_data в perform_search
+                request_data_dict = {
+                    "category": request_data.get("category"),
+                    "category_technology": request_data.get("category_technology"),
+                    "category_logistic": request_data.get("category_logistic"),
+                    "country": request_data.get("country"),
+                    "language": request_data.get("language"),
+                    "product": request_data.get("product", ""),
+                }
 
-            language = request.POST.get("language", "")
-            product = request.POST.get("product", "")
+                language = request_data.get("language", "")
+                
+                # Определяем product для отображения в шаблоне
+                if search_type == "supplier":
+                    product = request_data.get("product", "")
+                else:
+                    # Для технологий и логистики - название категории
+                    category_field = "category_technology" if search_type == "technology" else "category_logistic"
+                    category_obj = request_data.get(category_field)
+                    product = category_obj.category if category_obj else ""
 
-            # Выполняем поиск
-            search_result = perform_search(search_type, request_data, request.user)
-            results = search_result["results"]
-            message404 = search_result["message404"]
-            select_except = search_result["select_except"]
-            count = search_result["count"]
-            available_message = search_result.get("available_message", "")
+                # Выполняем поиск
+                search_result = perform_search(search_type, request_data_dict, request.user)
+                results = search_result["results"]
+                message404 = search_result["message404"]
+                select_except = search_result["select_except"]
+                count = search_result["count"]
+                available_message = search_result.get("available_message", "")
+            else:
+                # Форма не валидна
+                form = form_class(request.POST)
+                print("Форма не валидна:", form.errors)
+        else:
+            form = form_class()
     else:
         available_message = "Ваш остаток по подписке равен 0. Поиск недоступен."
+        form = form_class()
         # Получаем общее количество для отображения
         count = config["model"].objects.count()
 
-    # Если не было POST запроса, показываем общее количество
+    # Если не было POST запроса или форма не валидна, показываем общее количество
     if count == 0 and request.method != "POST":
         count = config["model"].objects.count()
 
@@ -359,13 +541,39 @@ def _generic_selection_view(request, search_type):
             "message404": message404,
             "available_count": available_count,
             "available_message": available_message,
+            "search_type": search_type,
         },
     )
 
+# ******* end Блок поиска ****************************************
 
-# ****************************************
+# ************************
+# добавим эту функцию временно debug.html
+@login_required
+def debug_database(request):
+    """Временная функция для отладки базы данных"""
+    from django.db import connection
+    from django.db.models import Count
+    
+    # Статистика по логистике
+    logistic_stats = Logistic.objects.all().values('country').annotate(count=Count('id')).order_by('-count')[:20]
+    
+    # Статистика по товарам
+    supplier_stats = Supplier.objects.all().values('country').annotate(count=Count('id')).order_by('-count')[:20]
+    
+    # Примеры категорий логистики
+    logistic_categories = Logistic.objects.values_list('product_ru', flat=True).distinct()[:10]
+    
+    context = {
+        'logistic_stats': logistic_stats,
+        'supplier_stats': supplier_stats,
+        'logistic_categories': logistic_categories,
+    }
+    
+    return render(request, 'supplier/debug.html', context)
+# *************************
 
-# Блок  счетчика поиска пользователя
+# **** Блок  счетчика поиска пользователя ****
 def get_or_create_user_search_count(user):
     """Получение или создание счетчика поиска пользователя с обработкой конкурентности"""
     try:
@@ -407,3 +615,5 @@ def update_user_search_count_and_history(user, section):
                 return None
     except UserSearchCount.DoesNotExist:
         return None
+    
+# **** end Блок  счетчика поиска пользователя ****    

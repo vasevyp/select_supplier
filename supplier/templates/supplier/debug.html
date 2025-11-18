@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug Database</title>
+</head>
+<body>
+    <h1>Статистика базы данных</h1>
+    
+    <h2>Логистика - топ стран:</h2>
+    <ul>
+    {% for stat in logistic_stats %}
+        <li>{{ stat.country }}: {{ stat.count }} записей</li>
+    {% empty %}
+        <li>Нет данных по логистике</li>
+    {% endfor %}
+    </ul>
+    
+    <h2>Товары - топ стран:</h2>
+    <ul>
+    {% for stat in supplier_stats %}
+        <li>{{ stat.country }}: {{ stat.count }} записей</li>
+    {% empty %}
+        <li>Нет данных по товарам</li>
+    {% endfor %}
+    </ul>
+    
+    <h2>Примеры категорий логистики:</h2>
+    <ul>
+    {% for category in logistic_categories %}
+        <li>"{{ category }}"</li>
+    {% empty %}
+        <li>Нет категорий</li>
+    {% endfor %}
+    </ul>
+</body>
+</html>

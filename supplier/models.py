@@ -193,7 +193,7 @@ class Logistic(models.Model):
     """Поставщики логистических услуг"""
 
     index = models.IntegerField()
-    country = models.CharField(max_length=255, db_index=True, verbose_name="Страна")
+    country = models.TextField(db_index=True, verbose_name="Страна")
     category = models.CharField(max_length=255, verbose_name="Категория")
     name = models.CharField(max_length=255, verbose_name="Наименование компании")
     website = models.URLField(verbose_name="Сайт")
@@ -239,6 +239,8 @@ class Logistic(models.Model):
         indexes = [
             GinIndex(fields=["search_vector_product"]),
             GinIndex(fields=["search_vector_product_ru"]),
+            GinIndex(fields=['country'], name='logistic_country_gin_idx', opclasses=['gin_trgm_ops']), # Для поиска по подстроке
+            # models.Index(fields=['country']),
         ]
 
     def __str__(self):

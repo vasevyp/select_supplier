@@ -49,6 +49,7 @@ class SearchResultTechnology(models.Model):
             models.Index(fields=['user', 'product']),
             models.Index(fields=['country']),
             models.Index(fields=['category']),
+            
         ]
     def __str__(self):
         return self.product
@@ -67,12 +68,13 @@ class SearchResultLogistic(models.Model):
         """Help Supplier data"""
         verbose_name = 'Логистика в выборке'
         verbose_name_plural = 'Выборка Логистики'
-        unique_together = ('user', 'supplier_name', 'product')  # Добавляем уникальность
+        unique_together = ('user', 'supplier_name', 'country', 'product')  # Добавляем уникальность
         # Добавим индексы для новых полей и для ускорения фильтрации по user и product
         indexes = [
             models.Index(fields=['user', 'product']),
             models.Index(fields=['country']),
             models.Index(fields=['category']),
+            models.Index(fields=['user', 'supplier_name', 'country', 'product']),
         ]
     def __str__(self):
         return self.product   

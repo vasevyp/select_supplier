@@ -12,7 +12,7 @@ from supplier.models import (
     CategoryTechnology,
     CategoryLogistic,
 )
-from supplier.forms import SupplierSearchForm
+from supplier.forms import SupplierSearchForm, ServiceSearchForm
 from bank_clearing.models import SubscriptionRates
 
 from .models import SupplierDemo, TechnologyDemo, LogisticDemo, MainPage, PolicyPage, ConsentPage

@@ -173,7 +173,7 @@ def logistic_request(request):
     }
     return render(request, "account/logistic_request.html", context)
 
-# --- ПРЕДСТАВЛЕНИЕ ДЛЯ СОХРАНЕНИЯ/УДАЛЕНИЯ ВЫБРАННЫХ ПОСТАВЩИКОВ ---
+# --- ПРЕДСТАВЛЕНИЕ ДЛЯ СОХРАНЕНИЯ/УДАЛЕНИЯ ВЫБРАННЫХ ПОСТАВЩИКОВ В ШАБЛОНЕ ЧЕРЕЗ ЧЕКПОИНТ---
 @require_POST
 @login_required
 def save_selected_suppliers(request):
@@ -250,7 +250,7 @@ def save_selected_suppliers(request):
         return JsonResponse({'success': False, 'message': 'Произошла внутренняя ошибка.'})
 
 
-# --- ПРЕДСТАВЛЕНИЕ ДЛЯ ОЧИСТКИ СПИСКА ---
+# --- ПРЕДСТАВЛЕНИЕ ДЛЯ ОЧИСТКИ СПИСКА ДЛЯ ОТПРАВКИ EMAIL---
 @login_required
 def clear_mail_send_list(request):
     "Представление для очистки списка MailSendList текущего пользователя."
@@ -267,7 +267,7 @@ def clear_mail_send_list(request):
     return redirect('customer_request') # или 'technology_request', 'logistic_request' в зависимости от контекста
 
 
-# Представление для получения стран по продукту при выборке для отправки email
+# Представление для получения списка стран по продукту при выборке для отправки email
 def get_countries_for_product(request):
     """Возвращает JSON-список стран для выбранного продукта конкретного пользователя."""
     if request.method == 'GET' and request.headers.get('X-Requested-With') == 'XMLHttpRequest':
