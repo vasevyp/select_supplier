@@ -39,7 +39,6 @@ z-index:1;background: #9d9e9e; font-size:14px">
                 {% else %}
                 <th scope="col" class="d-none d-lg-table-cell">Продукты</th>
                 {% endif %}
-                <!-- <th scope="col">Заказать</th> -->
                 <!-- <th scope="col">id</th> -->
                 <!-- <th scope="col">pk</th> -->
 
@@ -58,7 +57,6 @@ z-index:1;background: #9d9e9e; font-size:14px">
                 {% else %}
                 <td class='text-danger data_no d-none d-lg-table-cell'>{{item.product_ru|slice:":255"}}</td>
                 {% endif %}
-                <!-- <td>ORDER</td> -->
                 <!-- <td>{{item.id}}</td> -->
                 <!-- <td>{{item.pk}}</td> -->
 
@@ -86,14 +84,15 @@ z-index:1;background: #9d9e9e; font-size:14px">
                             <div class="form-group">
 
                                 <p>
-                                    <label for="name" class="control-label mt-3 mb-1"> <b>Наименование технологии</b> &nbsp
-                                    </label>
-                                    {{ form.product }}
-
-                                <div class="text-danger">{{message404}}</div>
-                                
-                                <label for="name" class="control-label mt-2"> <b>Страна поставщика</b> </label>
-                                {{ form.country }}<br>
+                                     <label for="name" class="control-label mt-4"><b>Технология</b></label>
+                                <br>{{ form.category_technology }}
+                                {% if form.category_technology.errors %}
+                            <div class="text-danger">{{ form.category_technology.errors }}</div>
+                            {% endif %}
+                            <p>
+                                <label for="name" class="control-label"><b>Страна</b></label>
+                                <br>{{ form.country }}
+                            </p>
                                
                                 <label for="name" class="control-label mt-3 mb-1"> <b>Выбрать язык поиска</b> &nbsp
                                     &nbsp &nbsp

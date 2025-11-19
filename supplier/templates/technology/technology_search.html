@@ -6,7 +6,8 @@
 {% block content %}
 {% if select_except %}
 <div class='ms-5 mt-5'>
-    <h5 class='text-danger'>ВНИМАНИЕ! Поставщиков по категории <span class="text-primary">"{{product}}"</span> не найдено.</h5>
+    <h5 class='text-danger'>ВНИМАНИЕ! Поставщиков по категории <span class="text-primary">"{{product}}"</span> не
+        найдено.</h5>
     <p>{{select_except}}</p>
     <a href="{% url 'technology_selection' %}">Вернуться к форме выбора</a>
 </div>
@@ -58,7 +59,8 @@
                 <div class="card-body">
                     <h4>Поиск поставщиков технологий</h4>
                     {% if available_message %}
-                    <div class="text-danger">{{ available_message }} <a class="fw-bold" href="{% url 'bank_cleaning:subscription_list' %}">Оформите подписку</a></div>
+                    <div class="text-danger">{{ available_message }} <a class="fw-bold"
+                            href="{% url 'bank_cleaning:subscription_list' %}">Оформите подписку</a></div>
                     {% else %}
                     Доступно поисков: {{ available_count }}
                     {% endif %}
@@ -71,14 +73,15 @@
                                 <label for="name" class="control-label mt-4"><b>Технология</b></label>
                                 <br>{{ form.category_technology }}
                                 {% if form.category_technology.errors %}
-                                <div class="text-danger">{{ form.category_technology.errors }}</div>
-                                {% endif %}
-                                <p>
+                            <div class="text-danger">{{ form.category_technology.errors }}</div>
+                            {% endif %}
+                            <p>
                                 <label for="name" class="control-label"><b>Страна</b></label>
-                                <br>{{ form.country }}</p>
-                                
-                                <label for="name" class="control-label mt-3 mb-1"><b>Выбрать язык поиска</b></label>
-                                {{ form.language }}
+                                <br>{{ form.country }}
+                            </p>
+
+                            <label for="name" class="control-label mt-3 mb-1"><b>Выбрать язык поиска</b></label>
+                            {{ form.language }}
                             </p>
 
                             {% if user.is_authenticated %}
@@ -86,13 +89,15 @@
                                 <span>Искать поставщика</span>
                             </button>
                             {% endif %}
-                            
+
                             <hr>
                             <p>Для информации:</p>
                             <p>
-                                <label for="name" class="control-label mb-1 color-blue1"><b>Страны с благоприятным режимом ВЭД</b></label>
+                                <label for="name" class="control-label mb-1 color-blue1"><b>Страны с благоприятным
+                                        режимом ВЭД</b></label>
                                 <span>{{ form.country_demo_a }}</span><br>
-                                <label for="name" class="control-label mb-1 color-second-text"><b>Страны с особым режимом ВЭД</b></label>
+                                <label for="name" class="control-label mb-1 color-second-text"><b>Страны с особым
+                                        режимом ВЭД</b></label>
                                 <span>{{ form.country_demo_b }}</span>
                             </p>
                         </div>

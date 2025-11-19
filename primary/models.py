@@ -95,7 +95,7 @@ class TechnologyDemo(models.Model):
 class LogisticDemo(models.Model):
     '''Поставщики логистических услуг'''
     index=models.IntegerField()
-    country = models.CharField(max_length=255, db_index=True, verbose_name='Страна')
+    country = models.TextField(db_index=True, verbose_name="Страна")
     category = models.CharField(max_length=255,verbose_name='Категория')
     name = models.CharField(max_length=255, verbose_name='Наименование компании')
     website = models.URLField(verbose_name='Сайт')  
